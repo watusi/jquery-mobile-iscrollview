@@ -1,5 +1,6 @@
 watusi/jquery-mobile-iscrollview, Version 1.0
 =============================================
+
 JQuery Mobile widget plug-in for easy use of the [iscroll4.js](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
