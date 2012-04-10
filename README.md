@@ -1,12 +1,12 @@
 watusi/jquery-mobile-iscrollview, Version 1.0
 =============================================
-
 JQuery Mobile widget plug-in for easy use of the [iscroll4.js](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
 
 This is a full JQuery [Widget Factory](https://github.com/scottgonzalez/jquery-ui-1.8-widget-factory)
-widget implementation. It follows the *widget-factory-mobile* [Widget Factory Pattern](https://github.com/addyosmani/jquery-plugin-patterns).
+widget implementation. It follows the *widget-factory-mobile*
+[Widget Factory Pattern](https://github.com/addyosmani/jquery-plugin-patterns).
 ---
 
 Usage
@@ -17,7 +17,7 @@ wrapper will be scrolled.
 
 It does not use the typical JQuery Mobile `data-role="something"` attribute,
 because a common use case would be to use a `data-role="content"` div as the
-container, and, of course, you can't have two `data-role` attributes on the
+container, and, of course, you can't have two 'data-role' attributes on the
 same element.
 
 Currently, this widget supports a single scrolling region on a page.
@@ -37,7 +37,8 @@ Since this widget resizes the scrolling region, there is no need for
 fixed positioning of header/footer.
 
 Additional fixed-height elements (which are not headers or footers)
-outside of the scrolling region should be given the `iscroll-foreground` class.
+outside of the scrolling region should be given the `iscroll-foreground`
+class.
 ---
 
 Example
@@ -118,7 +119,8 @@ the iscroll4 refresh method directly, do so using the iscroll member
 variable.
 
 `enable` and `disable` are standard widget methods. Each of these calls
-iscroll4's corresponding method and then calls the underlying widget method.
+iscroll4's corresponding method and then calls the underlying widget
+method.
 ---
 
 Methods
@@ -348,7 +350,8 @@ following additional components:
 * jquery.actual, commit 0530ce5c64..., Feb 22, 2012
 
 Please obtain these components independently for your projects, so that
-you can be sure of what version you are getting, and avail yourself of any updates/improvements.
+you can be sure of what version you are getting, and avail yourself
+of any updates/improvements.
 ---
 
 Testing
@@ -358,7 +361,8 @@ included in the demo directory. Contribution of a test suite would be most
 welcome. :)
 
 Most testing has been done using JQuery 1.6.4/JQuery Mobile 1.0.1. Some
-rudimentary testing has been done using JQuery 1.7.2/JQuery Mobile 1.1.0-RC2, with no obvious problems noted.
+rudimentary testing has been done using JQuery 1.7.2/JQuery Mobile 1.1.0-RC2,
+with no obvious problems noted.
 ---
 
 Variable names
