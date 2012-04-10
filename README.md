@@ -7,6 +7,7 @@ projects.
 This is a full JQuery [Widget Factory](https://github.com/scottgonzalez/jquery-ui-1.8-widget-factory)
 widget implementation. It follows the *widget-factory-mobile*
 [Widget Factory Pattern](https://github.com/addyosmani/jquery-plugin-patterns).
+
 ---
 
 Usage
@@ -39,6 +40,7 @@ fixed positioning of header/footer.
 Additional fixed-height elements (which are not headers or footers)
 outside of the scrolling region should be given the `iscroll-foreground`
 class.
+
 ---
 
 Example
@@ -68,6 +70,7 @@ Example
     </div>
 
   </div>
+
 ---
 
 Calling methods
@@ -121,6 +124,7 @@ variable.
 `enable` and `disable` are standard widget methods. Each of these calls
 iscroll4's corresponding method and then calls the underlying widget
 method.
+
 ---
 
 Methods
@@ -198,6 +202,7 @@ method directly, please see "calling methods" above.
 ####stop()
 
 ####zoom(x, y, scale, time)
+
 ---
 
 Options
@@ -294,6 +299,7 @@ because it's not possible to determine the height of fixed-height elements prior
 this event.
 
 Default: `true`
+
 ---
 
 Events
@@ -352,6 +358,7 @@ following additional components:
 Please obtain these components independently for your projects, so that
 you can be sure of what version you are getting, and avail yourself
 of any updates/improvements.
+
 ---
 
 Testing
@@ -363,6 +370,7 @@ welcome. :)
 Most testing has been done using JQuery 1.6.4/JQuery Mobile 1.0.1. Some
 rudimentary testing has been done using JQuery 1.7.2/JQuery Mobile 1.1.0-RC2,
 with no obvious problems noted.
+
 ---
 
 Variable names
@@ -372,6 +380,7 @@ The source code code follows the following conventions:
 * Upper-case first letter: constant
 * $ first letter: variable contains a JQuery object
 * first letter: Private method
+
 ---
 
 Bugs and Enhancements
