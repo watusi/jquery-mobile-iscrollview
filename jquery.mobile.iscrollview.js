@@ -32,8 +32,8 @@ Author: @scottjehl
 Further changes: @addyosmani
 Licensed under the MIT license
 
-dependency:  iScroll 3.7.1 https://cubiq.org/iscroll
-             jquery.actual https://github.com/dreamerslab/jquery.actual commit 0530ce5c64..., Feb 22, 2012
+dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
+             jquery.actual 1.0.6 https://github.com/dreamerslab/jquery.actual
              jQuery 1.6.4  (JQM 1.0.1) or 1.7.2 (JQM 1.1)
              JQuery Mobile >= 1.0.1 or 1.1rc2
 

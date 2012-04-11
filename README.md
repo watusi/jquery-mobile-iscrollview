@@ -216,7 +216,7 @@ syntax:
     .iscrollview("option", {hScroll: true});  Sets option, alternative syntax
     .iscrollview("option", {hScroll: true, vScroll:true}; Set multiple options
 
-The widget handles copying widget options to the `iscroll object options and
+The widget handles copying widget options to the iscroll object options and
 vice-versa.
 
 This widget also supports setting options directly in the `data-iscroll`
@@ -226,7 +226,7 @@ boolean values should **not** be enclosed in quotation marks.
 
 ###Example of options set in data-iscroll attribute:
 
-    <div data-role="content" data-iscroll='{"hScroll":true, "vScroll":false, "resizeEvents": "orientationchange"}' data-theme="c">
+    <div data-role="content" data-iscroll='{"hScroll":true,"vScroll":false,"resizeEvents":"orientationchange"}' data-theme="c">
 
 
 ###Widget Options
