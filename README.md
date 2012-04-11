@@ -18,7 +18,7 @@ wrapper will be scrolled.
 
 It does not use the typical JQuery Mobile `data-role="something"` attribute,
 because a common use case would be to use a `data-role="content"` div as the
-container, and, of course, you can't have two 'data-role' attributes on the
+container, and, of course, you can't have two `data-role` attributes on the
 same element.
 
 Currently, this widget supports a single scrolling region on a page.
@@ -177,8 +177,8 @@ methods.
 
 ####refresh()
 
-Note that this performs the proper timing for the iscroll4 refresh
-function using setTimeout. If you want to call the iscroll4 refresh()
+Note that this performs the proper timing for the iscroll4 `refresh()`
+function using `setTimeout`. If you want to call the iscroll4 `refresh()`
 method directly, please see "calling methods" above.
 
 ####scrollTo(x, y, time, relative)
@@ -189,14 +189,14 @@ method directly, please see "calling methods" above.
 
 ####disable()
 
-Note that this method also calls the default widget disable() method.
-If you want to call the iscroll4 disable()
+Note that this method also calls the default widget `disable()` method.
+If you want to call the iscroll4 `disable()`
 method directly, please see "calling methods" above.
 
 ####enable()
 
-Note that this method also calls the default widget enable() method.
-If you want to call the iscroll4 enable()
+Note that this method also calls the default widget `enable()` method.
+If you want to call the iscroll4 `enable()`
 method directly, please see "calling methods" above.
 
 ####stop()
@@ -226,7 +226,7 @@ boolean values should **not** be enclosed in quotation marks.
 
 ###Example of options set in data-iscroll attribute:
 
-    <div data-role="content" data-iscroll='{hScroll:true, vScroll:false, resizeEvents: "orientationchange"}' data-theme="c">
+    <div data-role="content" data-iscroll='{"hScroll":true, vScroll:false, "resizeEvents": "orientationchange"}' data-theme="c">
 
 
 ###Widget Options
@@ -269,7 +269,7 @@ A JQuery selector which selects the fixed-height elements on the page which are 
 of the scrolling area. The heights of these elements will be added-up, and subtracted
 from the total viewport height to arrive at the wrapper height.
 
-Default: `"div.ui-header, div.ui-footer, div.iscroll-foreground"`
+Default: `".ui-header, .ui-footer, .iscroll-foreground"`
 
 ####resizeWrapper
 
