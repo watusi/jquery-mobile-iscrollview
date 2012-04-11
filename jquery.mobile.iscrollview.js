@@ -101,7 +101,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // occurs too late resulting is visual distraction.
     resizeEvents: "resize",
 
-    // Refresh iscrollview on page show event. This should be true DOM inside a
+    // Refresh iscrollview on page show event. This should be true if content inside a
     // scrollview might change while the page is cached but not shown.
     refreshOnPageBeforeShow: true,
 
@@ -186,10 +186,10 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // These are copied to the iscroll object's options object on instantiation.
     // They  call the private _trigger method provided by the widget factory
     // base object. Normally, iscroll4 callbacks can be null or omitted. But since
-    // we can't know in advance whether the corresponding widget events have been
-    // bound, we have set a callback for each that calls _trigger. This will
-    // call the corresponding widget callback as well as trigger the corresponding
-    // widget event if bound.
+    // we can't know in advance whether the corresponding widget events might be bound
+    // or delegated in the future, we have set a callback for each that calls _trigger.
+    // This will call the corresponding widget callback as well as trigger the
+    // corresponding widget event if bound.
     //------------------------------------------------------------------------------
     _proxy_event_funcs: {
       onRefresh:           function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("refresh",e);},
@@ -365,7 +365,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // such as PhoneGap, Rhodes, etc./We assume that fixed-height headers/footers
   // were not changed
   //
-  // This also seems necessary for soem desktop browsers even when not
+  // This also seems necessary for some desktop browsers even when not
   // changing content asynchronously. This is probably because we are
   // not able to determine fixed-height element heights prior to this,
   // even using jQuery.actual plugin.
@@ -494,11 +494,11 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // Convenience wrappers around iscroll4 public methods
     // So, you can use:
     //
-    // $(".some-class").iscrollview.scrollTo(...);
+    // $(".some-class").iscrollview("scrollTo", x, y, time, relative);
     //
     // instead of:
     //
-    // $(".some-class").jqmData("iscrollview").iscroll.scrollTo(...);
+    // $(".some-class").jqmData("iscrollview").iscroll.scrollTo(x, y, time, relative);
     //
     //----------------------------------------------------
     scrollTo:        function(x,y,time,relative) { this.iscroll.scrollTo(x,y,time,relative); },

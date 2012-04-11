@@ -314,8 +314,8 @@ of the option corresponds to the event name **without** the widget name
 prefix. So, you can add a callback function for the refresh event
 with the key `refresh`.
 
-When an event is fired it will call the callback if defined in options,
-and, as well, fire any bound events.
+When an event is triggered it will call the callback if defined in options,
+and, as well, trigger any bound events.
 
 See the iscroll4 source code for a list of supported events.
 
