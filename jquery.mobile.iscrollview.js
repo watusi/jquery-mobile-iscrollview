@@ -218,7 +218,7 @@ dependency:  iScroll 3.7.1 https://cubiq.org/iscroll
     },
 
   // Create a set of iscroll4 object options from the widget options.
-  // We have to omit any widget-specific options (currently, none) that are
+  // We have to omit any widget-specific options that are
   // not also iscroll4 options. Also, copy the proxy event functions to the
   // iscroll4 options.
   _create_iscroll_options: function() {
@@ -498,7 +498,7 @@ dependency:  iScroll 3.7.1 https://cubiq.org/iscroll
     //
     // instead of:
     //
-    // $(".some-class").iscrollview.iscroll.scrollTo(...);
+    // $(".some-class").jqmData("iscrollview").iscroll.scrollTo(...);
     //
     //----------------------------------------------------
     scrollTo:        function(x,y,time,relative) { this.iscroll.scrollTo(x,y,time,relative); },

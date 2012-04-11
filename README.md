@@ -284,7 +284,7 @@ A space-separated list of events which will cause a resize of the wrapper.
 
 In some mobile environments, it may be desirable to either substitute or add
 the `orientationchange` event. For iOS, however, the `resize` event works better,
-because the `orientationchange` event occurs to late to be useful, resulting
+because the `orientationchange` event occurs to late too be useful, resulting
 in undesirable visual artifacts.
 
 Default: `"resize"`
@@ -347,7 +347,8 @@ The demo directory contains a simple example of a JQuery Mobile page using
 a scrollview to scroll a long list of items. To demo, simply open the
 `index.html` file in your browser.
 
-As a convenience, the demo directory is self-contained, and contains the
+As a convenience, the demo directory is self-contained (except for the widget,
+which is expected to be found in the parent directory), and contains the
 following additional components:
 
 * JQuery 1.6.4
