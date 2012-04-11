@@ -226,7 +226,7 @@ boolean values should **not** be enclosed in quotation marks.
 
 ###Example of options set in data-iscroll attribute:
 
-    <div data-role="content" data-iscroll='{"hScroll":true, vScroll:false, "resizeEvents": "orientationchange"}' data-theme="c">
+    <div data-role="content" data-iscroll='{"hScroll":true, "vScroll":false, "resizeEvents": "orientationchange"}' data-theme="c">
 
 
 ###Widget Options
