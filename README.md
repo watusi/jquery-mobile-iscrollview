@@ -1,6 +1,6 @@
 watusi/jquery-mobile-iscrollview, Version 1.0
 =============================================
-JQuery Mobile widget plug-in for easy use of the [iscroll4.js](https://github.com/cubiq/iscroll)
+JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
 
@@ -13,7 +13,7 @@ widget implementation. It follows the *widget-factory-mobile*
 Usage
 -----
 The most basic usage of this widget is simple: just add a `data-iscroll`
-attribute to a container. This is the iscroll4 wrapper. The first child of the
+attribute to a container. This is the iScroll wrapper. The first child of the
 wrapper will be scrolled.
 
 It does not use the typical JQuery Mobile `data-role="something"` attribute,
@@ -98,16 +98,16 @@ methods. You can first get the instance into a variable:
       var myView = $(".example-wrapper").jqmData("iscrollview");
       myView.refresh();
 
-This means, as well, you can easily call any underlying iscroll4 method
+This means, as well, you can easily call any underlying iScroll method
 through the exposed `iscroll` member variable. For example,
 
       $(".example-wrapper").jqmData('iscrollview').iscroll.scrollTo(0,10,200,true);
 
-So, if you replace iscroll4.js with a newer version that has new methods,
-or if you need to call iscroll4 private methods,  or access iscroll4
+So, if you replace iscroll.js with a newer version that has new methods,
+or if you need to call iScroll private methods,  or access iScroll
 member variables, you can call them without any need to modify this widget.
 
-This widget wraps all current iscroll4 public methods,
+This widget wraps all current iScroll public methods,
 so the above example can also be called like this:
 
       $(".example-wrapper").iscrollview("scrollTo", 0, 10, 200, true);
@@ -115,17 +115,17 @@ so the above example can also be called like this:
 The exceptions are the `destroy`, `refresh`, `enable`, and `disable` methods.
 
 `destroy` is a standard widget factory method. In this widget, it
-calls the iscroll `destroy` method and then calls the base widget
-destroy. If you need direct access to iscroll's `destroy` method,
-you can access it directly using the iscroll member variable.
+calls the iScroll `destroy` method and then calls the base widget
+destroy. If you need direct access to iScroll's `destroy` method,
+you can access it directly using the `iscroll` member variable.
 
-The widget's `refresh` method insures that the underlying iscroll4
+The widget's `refresh` method insures that the underlying iScroll
 refresh method is called with the proper timing. If you need to call
-the iscroll4 refresh method directly, do so using the iscroll member
+the iScroll refresh method directly, do so using the `iscroll` member
 variable.
 
 `enable` and `disable` are standard widget methods. Each of these calls
-iscroll4's corresponding method and then calls the underlying widget
+iScroll's corresponding method and then calls the underlying widget
 method.
 
 ---
@@ -142,13 +142,13 @@ See "Options", below.
 
 ####destroy()
 
-Destroys the iscroll4 instance and removes page modifications. Also calls the
+Destroys the iScroll instance and removes page modifications. Also calls the
 underlying widget `destroy()` code.
 
 ###Custom Widget Methods
 
 These are additional methods implemented in this widget which do
-not have corresponding iscroll4 methods.
+not have corresponding iScroll methods.
 
 ####resizeWrapper()
 
@@ -167,21 +167,21 @@ wrapper size to what it was initially, prior to the very first call
 to `resizeWrapper()`.
 
 
-### iscroll4 Methods
+### iScroll Methods
 
-These are methods that exist in iscroll4. They are available on
+These are methods that exist in iScroll. They are available on
 the widget as a convenience. See "calling methods" for information
-on how to access any iscroll4 methods that are not implemented in
-the widget. (For example, because you have updated iscroll4 to
+on how to access any iScroll methods that are not implemented in
+the widget. (For example, because you have updated iScroll to
 a newer version, and this widget has not been updated yet.)
 
-Please see the iscroll4 documentation for details on using these
+Please see the iScroll documentation for details on using these
 methods.
 
 ####refresh()
 
-Note that this performs the proper timing for the iscroll4 `refresh()`
-function using `setTimeout`. If you want to call the iscroll4 `refresh()`
+Note that this performs the proper timing for the iScroll `refresh()`
+function using `setTimeout`. If you want to call the iScroll `refresh()`
 method directly, please see "calling methods" above.
 
 ####scrollTo(x, y, time, relative)
@@ -193,13 +193,13 @@ method directly, please see "calling methods" above.
 ####disable()
 
 Note that this method also calls the default widget `disable()` method.
-If you want to call the iscroll4 `disable()`
+If you want to call the iScroll `disable()`
 method directly, please see "calling methods" above.
 
 ####enable()
 
 Note that this method also calls the default widget `enable()` method.
-If you want to call the iscroll4 `enable()`
+If you want to call the iScroll `enable()`
 method directly, please see "calling methods" above.
 
 ####stop()
@@ -210,6 +210,9 @@ method directly, please see "calling methods" above.
 
 Options
 -------
+
+### Programatic access
+
 This widget supports programmatic access to options using standard widget factory
 syntax:
 
@@ -219,16 +222,24 @@ syntax:
     .iscrollview("option", {hScroll: true});  Sets option, alternative syntax
     .iscrollview("option", {hScroll: true, vScroll:true}; Set multiple options
 
-The widget handles copying widget options to the iscroll object options and
+The widget handles copying widget options to the iScroll object options and
 vice-versa.
+
+### Setting options in the data-iscroll attribute
 
 This widget also supports setting options directly in the `data-iscroll`
 attribute. The options need to be in **strict** JSON format. This means that keys
 and string values need to be enclosed in **double** quotes **only**. Numeric and
 boolean values should **not** be enclosed in quotation marks.
 
+#### Example:
+
+    <div data-role="content" data-iscroll='{"hScroll":true,"vScroll":false,"resizeEvents":"orientationchange"}' data-theme="c">
+
+### Modifying options after instantiation
+
 If you modify an option after a scroller has been instantiated, the underlying
-iscroll4 object will be destroyed and re-created. This is because iscroll4 does
+iScroll object will be destroyed and re-created. This is because iScroll does
 not currently support modifying options after the object has been created.
 
 However, unofficially, some options can be changed without destroying and
@@ -236,15 +247,10 @@ re-creating the object. It is unclear exactly which options these are, and
 so this widget does not attempt it. There is skeletal code in the source
 that is commented-out to do this if you wish to experiment.
 
-###Example of options set in data-iscroll attribute:
-
-    <div data-role="content" data-iscroll='{"hScroll":true,"vScroll":false,"resizeEvents":"orientationchange"}' data-theme="c">
-
-
 ###Widget Options
 
 The following options are available which affect the widget itself. These are
-not iscroll4 options.
+not iScroll options.
 
 ####pageClass
 A CSS class, or a space-separated list of classes, which will be added to the page
@@ -268,7 +274,7 @@ Default: `"iscroll-scroller"`
 
 ####adaptPage
 
-If true, necessary adaptations will be made to the page to accommodate iscroll4. If false,
+If true, necessary adaptations will be made to the page to accommodate iScroll. If false,
 the adaptations will not be made. If multiple scrollers are used on the same page, only
 one of them should have `adaptPage` set to true. You can also set this false if you
 want to make the adaptations yourself.
@@ -329,7 +335,7 @@ with the key `refresh`.
 When an event is triggered it will call the callback if defined in options,
 and, as well, trigger any bound events.
 
-See the iscroll4 source code for a list of supported events.
+See the iScroll source code for a list of supported events.
 
 ###Example event delegation:
 
