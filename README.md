@@ -227,6 +227,15 @@ attribute. The options need to be in **strict** JSON format. This means that key
 and string values need to be enclosed in **double** quotes **only**. Numeric and
 boolean values should **not** be enclosed in quotation marks.
 
+If you modify an option after a scroller has been instantiated, the underlying
+iscroll4 object will be destroyed and re-created. This is because iscroll4 does
+not currently support modifying options after the object has been created.
+
+However, unofficially, some options can be changed without destroying and
+re-creating the object. It is unclear exactly which options these are, and
+so this widget does not attempt it. There is skeletal code in the source
+that is commented-out to do this if you wish to experiment.
+
 ###Example of options set in data-iscroll attribute:
 
     <div data-role="content" data-iscroll='{"hScroll":true,"vScroll":false,"resizeEvents":"orientationchange"}' data-theme="c">
