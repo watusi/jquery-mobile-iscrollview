@@ -21,15 +21,18 @@ because a common use case would be to use a `data-role="content"` div as the
 container, and, of course, you can't have two `data-role` attributes on the
 same element.
 
-Currently, this widget supports a single scrolling region on a page.
-The widget will re-size the container to take up all available height
+This widget has only been tested with a single scroller on a page.
+The widget will (normally) re-size the container to take up all available height
 within the viewport after fixed headers/footers are taken into account,
-and will make necessary adjustments to the page CSS.
+and will make necessary adjustments to the page CSS. This can be disabled,
+and should only be enabled for one scroller on a given page.
 
-However, the architecture has been designed with the idea of ultimately
-supporting multiple scrolling regions - for example, a future version
-might support a secondary gallery-like horizontal scroll region. So, all
-data is stored in the container, not the page.
+The widget has been designed to
+support multiple scrolling regions on a page - for example, you might
+want a second, gallery-like horizontal scroll region. So, all
+data related to a scroller is stored in the scroller's container, not the page.
+Feel free to experiment with multiple scrollers - I just haven't had the
+need so haven't put the effort into testing and supporting that scenario.
 
 Make sure to use a `data-position="inline"` attribute for headers and
 footers, **not** `data-position="fixed"`. With `data-position="fixed"`, and
