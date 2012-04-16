@@ -249,11 +249,11 @@ visible and non-visible portions.
 The height, in pixels, of the scroller. This is the total height of the scroller, including
 visible and non-visible portions.
 
-#### minSCrollX()
+#### minScrollX()
 
-#### minSCrollY()
+#### minScrollY()
 
-### #maxScrollX()
+### maxScrollX()
 
 #### maxScrollY()
 
