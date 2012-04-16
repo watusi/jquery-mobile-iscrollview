@@ -178,11 +178,22 @@ a newer version, and this widget has not been updated yet.)
 Please see the iScroll documentation for details on using these
 methods.
 
-####refresh()
+####refresh(callback, context)
 
 Note that this performs the proper timing for the iScroll `refresh()`
 function using `setTimeout`. If you want to call the iScroll `refresh()`
 method directly, please see "calling methods" above.
+
+If present, the optional callback function will be called (with the supplied optional context
+parameter) upon completion of the refresh, which is asynchronous, since it waits
+for the DOM update to complete first.
+
+This permits the application to perform some action (such as scrolling the
+the scroller, say if positioned at the end of a list) after the iScroll refresh
+function has completed and updated it's internal variables.
+
+While one might use a refresh event for this, the callback eliminates any
+ambiguity as to *which* specific `refresh()` call has completed.
 
 ####scrollTo(x, y, time, relative)
 

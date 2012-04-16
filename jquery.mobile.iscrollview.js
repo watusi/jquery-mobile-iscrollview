@@ -300,15 +300,22 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   //Refresh the iscroll object
   // Insure that refresh is called with proper timing
   //-------------------------------------------------
-  refresh: function() {
-    // Let the browser complete rendering
-    // iscroll4 has a private _resize() method that currently does exactly
-    // this. But we repeat the code here, because the implementation
-    // of _resize() might change in the future and do more than
-    // simply refresh with proper timing.
+  refresh: function(callback, context) {
+    // Let the browser complete rendering, then refresh the scroller
+  //
+  // Optional callback parameter is called if present after iScroll internal
+  // refresh() is called. This permits caller to perform some action
+  // guranteed to occur after the refresh has occured. While the caller
+  // might bind to the refresh event, this is more convenient and avoids
+  // an ambiguouty over WHICH call to refresh has completed.
     var _this = this;
+    var _callback = callback;
+    var _context = context;
     setTimeout(function() {
-      _this.iscroll.refresh(); }, IsAndroid ? 200 : 0);
+      _this.iscroll.refresh();
+      if (_callback)
+          _callback(_context);
+      }, IsAndroid ? 200 : 0);
     },
 
   //-------------------------------
