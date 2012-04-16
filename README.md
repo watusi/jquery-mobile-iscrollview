@@ -206,8 +206,6 @@ method directly, please see "calling methods" above.
 
 ####zoom(x, y, scale, time)
 
----
-
 ### iScroll Accessors
 
 This widget provides accessors for some iScroll internal variables that might be useful
