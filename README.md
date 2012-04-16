@@ -253,7 +253,7 @@ visible and non-visible portions.
 
 #### minScrollY()
 
-### maxScrollX()
+###$ maxScrollX()
 
 #### maxScrollY()
 
