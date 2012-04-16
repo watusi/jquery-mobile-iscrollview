@@ -307,7 +307,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // refresh() is called. This permits caller to perform some action
   // guranteed to occur after the refresh has occured. While the caller
   // might bind to the refresh event, this is more convenient and avoids
-  // an ambiguouty over WHICH call to refresh has completed.
+  // any ambiguity over WHICH call to refresh has completed.
     var _this = this;
     var _callback = callback;
     var _context = context;
