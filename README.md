@@ -208,6 +208,55 @@ method directly, please see "calling methods" above.
 
 ---
 
+### iScroll Accessors
+
+This widget provides accessors for some iScroll internal variables that might be useful
+to an application. These are all read-only accessors.
+
+For example, let's say you are adding elements to the end of a scrolled list.
+You'd like to scroll up (using scrollToElement) if the new element would be
+below the visible area. But if the list is intially empty, you'd want to avoid
+this until the scrolling area is initially full. So you need to compare the
+scroller height (scrollerH) to the wrapper height (wrapperH).
+
+While wrapper and scroller height can be easily obtained using JQuery functions,
+these functions can still be useful because they reflect the precise internal
+state of  the scroller.
+
+#### x()
+
+Current x origin (top) of the scroller.
+
+#### y()
+
+Current y origin (left) of the scroller.
+
+#### wrapperW()
+
+The width, in pixels, of the wrapper. This is the visible width of the scrolling area.
+
+#### wrapperH()
+
+The height, in pixels, of the wrapper. This is the visible height of the scrolling area.
+
+#### scrollerW()
+
+The width, in pixels, of the scroller. This is the total width of the scroller, including
+visible and non-visible portions.
+
+#### scrollerH()
+
+The height, in pixels, of the scroller. This is the total height of the scroller, including
+visible and non-visible portions.
+
+#### minSCrollX()
+
+#### minSCrollY()
+
+### #maxScrollX()
+
+#### maxScrollY()
+
 Options
 -------
 

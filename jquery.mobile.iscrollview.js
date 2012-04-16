@@ -307,7 +307,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // of _resize() might change in the future and do more than
     // simply refresh with proper timing.
     var _this = this;
-    setTimeout(function() { _this.iscroll.refresh(); }, IsAndroid ? 200 : 0);
+    setTimeout(function() {
+      _this.iscroll.refresh(); }, IsAndroid ? 200 : 0);
     },
 
   //-------------------------------
@@ -508,7 +509,33 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     enable:          function()                  { this.iscroll.enable(); },
     stop:            function()                  { this.iscroll.stop(); },
     zoom:            function(x,y,scale,time)    { this.iscroll.zoom(x,y,scale,time); },
-    isReady:         function()                  { return this.iscroll.isReady(); }
+    isReady:         function()                  { return this.iscroll.isReady(); },
+
+
+    //----------------------------------------------------------------------------------
+    // Accessors for iscroll4 internal variables. These are sometimes useful externally.
+    // For example, let's say you are adding elements to the end of a scrolled list.
+    // You'd like to scroll up (using scrollToElement) if the new element would be
+    // below the visible area. But if the list is intially empty, you'd want to avoid
+    // this until the scrolling area is initially full. So you need to compare the
+    // scroller height (scrollerH) to the wrapper height (wrapperH).
+    //
+    // These are also useful for creating "pull to refresh" functionality.
+    //
+    // These methods give easy access to these variables. They are all read-only
+    // accessors.
+    //-----------------------------------------------------------------------------------
+    x:          function() { return this.iscroll.x; },
+    y:          function() { return this.iscroll.y; },
+    wrapperW:   function() { return this.iscroll.wrapperW; },
+    wrapperH:   function() { return this.iscroll.wrapperH; },
+    scrollerW:  function() { return this.iscroll.scrollerW; },
+    scrollerH:  function() { return this.iscroll.scrollerH; },
+    minScrollX: function() { return this.iscroll.minScrollX; },
+    minScrollY: function() { return this.iscroll.minScrollY; },
+    maxScrollX: function() { return this.iscroll.maxScrollX; },
+    maxScrollY: function() { return this.iscroll.maxScrollY; }
+
     });
 
 })( jQuery, window, document );
