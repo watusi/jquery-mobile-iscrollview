@@ -254,19 +254,44 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // Raise fixed-height elements
   //----------------------------
   _raiseFixedHeightElements: function() {
-  var $page = this.element.parents(":jqmData(role='page')");  // The page containing the wrapper
-    $page.find(this.options.fixedHeightSelector).each(function() {
+    this.$page.find(this.options.fixedHeightSelector).each(function() {
       $(this).jqmData("iscrollviewOrigZindex", $(this).css("z-index"));
       $(this).css("z-index", 1000);
      });
   },
 
   _undoRaiseFixedHeightElements: function() {
-  var $page = this.element.parents(":jqmData(role='page')");  // The page containing the wrapper
-    $page.find(this.options.fixedHeightSelector).each(function() {
+    this.$page.find(this.options.fixedHeightSelector).each(function() {
       var zIndex = $(this).jqmData("iscrollviewOrigZindex");
       if (zIndex != null) $(this).css("z-index", zIndex);
     });
+  },
+
+  //----------------------------------
+  // Adapt the page for this widget
+  // This should only be done for one
+  // iscrollview widget per page.
+  //----------------------------------
+  _adaptPage: function() {
+    this.$page.addClass(this.options.pageClass);
+
+    // XXX: fix crumbled css in transition changePage
+    // for jquery mobile 1.0a3 in jquery.mobile.navigation.js changePage
+    //  in loadComplete in removeContainerClasses in .removeClass(pageContainerClasses.join(" "));
+    this._origPageOverflow = this.$page.css("overflow");  // Save for later restore
+    this.$page.css({overflow: "hidden"});
+    this._raiseFixedHeightElements();
+
+    // Prevent moving the page with touch. Should be optional?
+    // (Maybe you want a scrollview within a scrollable page)
+    this.$page.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
+  },
+
+  _undoAdaptPage: function() {
+    this.$page.unbind("touchmove", this._preventDefaultFunc);
+    this._undoRaiseFixedHeightElements();
+    if ("_origPageOverflow" in this) this.$page.css("overflow", this._origPageOverflow);
+    this.$page.removeClass(this.options.pageClass);
   },
 
   //--------------------------------------------------------
@@ -274,26 +299,24 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   resizeWrapper: function() {
-    var $wrapper = this.element;
-    var $page = $wrapper.parents(":jqmData(role='page')");
     var barsHeight = 0;
 
     // The first time we resize, save the size of the wrapper
     if (this._firstResize) {
-      this._origWrapperHeight = $wrapper.height();
+      this._origWrapperHeight = this.$wrapper.height();
       this._firstResize = false;
       }
 
-    $page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers
+    this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers
       barsHeight += $(this).actual("innerHeight");
       });
 
     windowHeightFix = IsWebkit ? WebkitWindowHeightFix : 0;
-    $wrapper.height($(window).actual("height") - barsHeight - windowHeightFix);
+    this.$wrapper.height($(window).actual("height") - barsHeight - windowHeightFix);
     },
 
   undoResizeWrapper: function() {
-    if ("_origWrapperHeight" in this) this.element.height(this._origWrapperHeight);
+    if ("_origWrapperHeight" in this) this.$wrapper.height(this._origWrapperHeight);
   },
 
   //-------------------------------------------------
@@ -328,84 +351,69 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // the widget was called via this.element
     // The options defined above can be accessed via
     // this.options
-
-  var $wrapper = this.element;                            // JQuery object containing the element we are creating this widget for
-  var wrapper = $wrapper.get(0);                          // Raw DOM node for same
-  var $page = $wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
-  var $scroller = $wrapper.children(":first");            // Get the first child of the wrapper, which is the
+    this.$wrapper = this.element;                            // JQuery object containing the element we are creating this widget for
+    this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
+    this.$scroller = this.$wrapper.children(":first");            // Get the first child of the wrapper, which is the
                                                           //   element that we will scroll
-  if (!$scroller) { return; }                             // If there isn't one, nothing to do
+    if (!this.$scroller) { return; }                             // If there isn't one, nothing to do
 
-  // Merge options from data-iscroll, if present
-  $.extend(true, this.options, $wrapper.jqmData("iscroll"));
+    // Merge options from data-iscroll, if present
+    $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));
 
-  // Add some convenient classes in case user wants to style pages/wrappers/scrollers
-  //  that use iscroll.
-  $wrapper.addClass(this.options.wrapperClass);
-  $scroller.addClass(this.options.scrollerClass);
+    // Add some convenient classes in case user wants to style pages/wrappers/scrollers
+    //  that use iscroll.
+    this.$wrapper.addClass(this.options.wrapperClass);
+    this.$scroller.addClass(this.options.scrollerClass);
 
-  // Adapt the page containing the iscrollview widget
-  if (this.options.adaptPage) {
-    $page.addClass(this.options.pageClass);
+    if (this.options.adaptPage) this._adaptPage();
 
-    // XXX: fix crumbled css in transition changePage
-    // for jquery mobile 1.0a3 in jquery.mobile.navigation.js changePage
-    //  in loadComplete in removeContainerClasses in .removeClass(pageContainerClasses.join(" "));
-    this._origPageOverflow = $page.css("overflow");  // Save for later restore
-    $page.css({overflow: "hidden"});
-    this._raiseFixedHeightElements();
+    this._origWrapperZindex = this.$wrapper.css("z-index");     // Save for un-do in destroy()
+    this._origWrapperOverflow = this.$wrapper.css("overflow");
+    this.$wrapper.css({ "z-index" : 1,            // Lower the wrapper
+                      "overflow" : "hidden" }); // hide overflow
 
-    // Prevent moving the page with touch. Should be optional?
-    // (Maybe you want a scrollview within a scrollable page)
-    $page.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
-  }
+    // Prevent moving the wrapper with touch
+    this.$wrapper.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
 
-  this._origWrapperZindex = $wrapper.css("z-index");     // Save for un-do in destroy()
-  this._origWrapperOverflow = $wrapper.css("overflow");
-  $wrapper.css({ "z-index" : 1,            // Lower the wrapper
-                 "overflow" : "hidden" }); // hide overflow
+    //Refresh the iscroll object when the page is shown, in case content was changed
+    // asynchronously while it was hidden. Applicable to mobile native app environments
+    // such as PhoneGap, Rhodes, etc./We assume that fixed-height headers/footers
+    // were not changed
+    //
+    // This also seems necessary for some desktop browsers even when not
+    // changing content asynchronously. This is probably because we are
+    // not able to determine fixed-height element heights prior to this,
+    // even using jQuery.actual plugin.
+    if (this.options.refreshOnPageBeforeShow)
+      this.$page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
 
-  // Prevent moving the wrapper with touch
-  $wrapper.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
+    // Resize the wrapper and refresh iScroll on resize
+    // You might want to do this on orientationchange on mobile
+    // devices, but, on iOS, at least, resize event works better,
+    // because orientationchange event happens too late and you will
+    // see footer(s) being pushed down after the rotation
+    //
+    // iscroll4 has event handling for resize and orientation change,
+    // but doesn't seem to work with JQuery Mobile, probably because
+    // of it's page structure for AJAX loading. So, we have to do this
+    // in the widget code. As well, we need to resize the wrapper in any
+    // case.
+    //
+    // TODO: This doesn't seem to set the scrollbar range correctly in
+    //       landscape orientation. It seems to be a bug in iscroll4 itself.
+    //       I tried destroy/recreate iscroll object, but that doesn't
+    //       help.
+    //
+    // TODO: Consider using jquery-resize.js to rate-limit resize events
+    if (this.options.resizeWrapper) {
+      this.resizeWrapper();   // Resize wrapper to take remaining space after bars
+      $(window).bind(this.options.resizeEvents, $.proxy(this._windowResizeFunc, this));
+      }
 
-  //Refresh the iscroll object when the page is shown, in case content was changed
-  // asynchronously while it was hidden. Applicable to mobile native app environments
-  // such as PhoneGap, Rhodes, etc./We assume that fixed-height headers/footers
-  // were not changed
-  //
-  // This also seems necessary for some desktop browsers even when not
-  // changing content asynchronously. This is probably because we are
-  // not able to determine fixed-height element heights prior to this,
-  // even using jQuery.actual plugin.
-  if (this.options.refreshOnPageBeforeShow)
-    $page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
+    // Create the iScroll object
+    this.iscroll = new iScroll(this.$wrapper.get(0), this._create_iscroll_options());
 
-  // Resize the wrapper and refresh iScroll on resize
-  // You might want to do this on orientationchange on mobile
-  // devices, but, on iOS, at least, resize event works better,
-  // because orientationchange event happens too late and you will
-  // see footer(s) being pushed down after the rotation
-  //
-  // iscroll4 has event handling for resize and orientation change,
-  // but doesn't seem to work with JQuery Mobile, probably because
-  // of it's page structure for AJAX loading. So, we have to do this
-  // in the widget code. As well, we need to resize the wrapper in any
-  // case.
-  //
-  // TODO: This doesn't seem to set the scrollbar range correctly in
-  //       landscape orientation. It seems to be a bug in iscroll4 itself.
-  //       I tried destroy/recreate iscroll object, but that doesn't
-  //       help.
-  //
-  // TODO: Consider using jquery-resize.js to rate-limit resize events
-  if (this.options.resizeWrapper) {
-    this.resizeWrapper();   // Resize wrapper to take remaining space after bars
-    $(window).bind(this.options.resizeEvents, $.proxy(this._windowResizeFunc, this));
-    }
-
-  // Create the iScroll object
-  this.iscroll = new iScroll(wrapper, this._create_iscroll_options());
-  this._merge_from_iscroll_options();     // Merge iscroll options into widget options
+    this._merge_from_iscroll_options();     // Merge iscroll options into widget options
   },
 
   //----------------------------------------------------------
@@ -413,29 +421,23 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // the widget has made to the DOM
   //----------------------------------------------------------
   destroy: function () {
-    var $wrapper = this.element;                            // JQuery object containing the element we are creating this widget for
-    var $page = $wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
-    var $scroller = $wrapper.children(":first");            // Get the first child of the wrapper, which is the
-                                                            //   element that we will scroll
     this.iscroll.destroy();
     this.iscroll = null;
 
+    if (this.options.adaptPage) this._undoAdaptPage();
+
     // Remove the classes we added, since no longer using iscroll at
     // this point.
-    $wrapper.removeClass(this.options.wrapperClass);
-    $scroller.removeClass(this.options.scrollerClass);
-    $page.removeClass(this.options.pageClass);
+    this.$wrapper.removeClass(this.options.wrapperClass);
+    this.$scroller.removeClass(this.options.scrollerClass);
 
     // Remove CSS modifications made to the DOM
-    if ("_origPageOverflow" in this) $page.css("overflow", this._origPageOverflow);
-    this._undoRaiseFixedHeightElements();
-    if ("_origWrapperZindex" in this) $wrapper.css("z-index", this._origWrapperZindex);
-    if ("_origWrapperOverflow" in this) $wrapper.css("overflow", this._origWrapperOverflow);
+    if ("_origWrapperZindex" in this) this.$wrapper.css("z-index", this._origWrapperZindex);
+    if ("_origWrapperOverflow" in this) this.$wrapper.css("overflow", this._origWrapperOverflow);
 
     // Unbind events
-    $page.unbind("touchmove", this._preventDefaultFunc);
-    $wrapper.unbind("touchmove", this._preventDefaultFunc);
-    $page.unbind("pagebeforeshow", this._pageBeforeShowFunc);
+    this.$wrapper.unbind("touchmove", this._preventDefaultFunc);
+    this.$page.unbind("pagebeforeshow", this._pageBeforeShowFunc);
     $(window).unbind(this.options.resizeEvents, this._windowResizeFunc);
 
     this.undoResizeWrapper();   // Resize wrapper back to original size
@@ -485,10 +487,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
 
         default:
           this.options[ key ] = value;
-          var $wrapper = this.element;                            // JQuery object containing the element we are creating this widget for
-          var wrapper = $wrapper.get(0);                          // Raw DOM node for same
           this.iscroll.destroy();
-          this.iscroll = new iScroll(wrapper, this._create_iscroll_options());
+          this.iscroll = new iScroll(this.$wrapper.get(0), this._create_iscroll_options());
           break;
         }
       // For UI 1.8, _setOption must be manually invoked from
