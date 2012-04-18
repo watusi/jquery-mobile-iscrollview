@@ -1,5 +1,5 @@
-watusi/jquery-mobile-iscrollview, Version 1.0
-=============================================
+watusi/jquery-mobile-iscrollview, Version 1.0+
+==============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
@@ -375,6 +375,14 @@ because it's not possible to determine the height of fixed-height elements prior
 this event.
 
 Default: `true`
+
+####fixInput
+
+If true, applies a fix to allow input elements to work within a scroller. This is optional
+because there is an alternative fix that patches iScroll itself. You should enable this
+options on pages that contain input elements.
+
+Default: `false`
 
 ---
 
