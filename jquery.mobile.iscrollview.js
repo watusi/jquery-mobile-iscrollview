@@ -46,21 +46,31 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   //----------------------------------
   var IsWebkit =  (/webkit/i).test(navigator.appVersion);
   var IsAndroid = (/android/gi).test(navigator.appVersion);
-
-  // I have no frickin' idea what this mystery 34 pixels is about,
-  // but it's necessary...
-  var WebkitWindowHeightFix = 34;
+  var IsFirefox = (/firefox/i).test(navigator.userAgent);
 
   $.widget( "mobile.iscrollview", $.mobile.widget, {
 
-  //-------------------------------------------
-  // The iscroll4 object. Affords direct access
-  // to iscroll4 methods
-  //--------------------------------------------
-  iscroll: null,
+  //=========================================================
+  // All instance variables are declared here. This is not
+  // strictly necessary, but is helpful to document the use
+  // of instance variables.
+  //=========================================================
 
-  // True on first resize, so we can capture original wrapper height
-  _firstResize: true,
+  iscroll:     null,  // The underlying iScroll object
+  $wrapper:    null,  // The wrapper element
+  $scroller:   null,  // The scroller element (first child of wrapper)
+  $page:       null,  // The page element that contains the wrapper
+
+  _firstResize:     true,    // True on first resize, so we can capture original wrapper height
+
+  _barsHeight:       null,   // Total height of headers, footers, etc.
+
+  // These are all the original values of CSS attributes before this widget
+  // modifies them. We store these here so that they can be restored on _destroy()
+  _origPageOverflow:     null,
+  _origWrapperHeight:    null,
+  _origWrapperZindex:    null,
+  _origWrapperOverflow:  null,
 
   //----------------------------------------------------
   // Options to be used as defaults
@@ -109,6 +119,9 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // false if you are using a patched iscroll4 with different fix or to
     // disable for performance reasons
     fixInput: false,
+
+    wrapperAdd: 0,      // Shouldn't be necessary, but in case user needs to fudge
+                        // Can be + or -
 
     //-------------------------------------------------------------
     // Widget events. These correspond to events defined for the
@@ -295,24 +308,86 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   },
 
   //--------------------------------------------------------
+  // Calculate total bar heights.
+  //--------------------------------------------------------
+  calculateBarsHeight: function() {
+    var barsHeight = 0;
+    this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers
+        barsHeight += $(this).actual( "outerHeight", { includeMargin : true } );
+        });
+    this._barsHeight = barsHeight;
+  },
+
+  //-----------------------------------------------------------------------
+  // Determine the box-sizing model of an element
+  // While jQuery normalizes box-sizing models when retriving geometry,
+  // it doesn't consider it when SETTING geometry. So, this is useful when
+  // setting geometry. (e.g. the height of the wrapper)
+  //-----------------------------------------------------------------------
+  _getBoxSizing: function($elem) {
+    var                prefix = "";
+    if (IsFirefox)     prefix = "-moz-";
+    else if (IsWebkit) prefix = "-webkit-";   // note: can drop prefix for Chrome >=10, Safari >= 5.1 (534.12)
+    var boxSizing = $elem.css(prefix + "box-sizing");
+    if (!boxSizing && prefix) boxSizing = $elem.css("box-sizing");  // Not found, try again with standard CSS
+    if (!boxSizing) {     // Still not found - no CSS property available to guide us.
+      if ($.boxModel)     // See what JQuery thinks the global box model is
+        boxSizing = "content-box";
+      else
+        boxSizing = "border-box";
+      }
+    return boxSizing;
+    },
+
+  //-----------------------------------------------------------------
+  // Get the height adjustment for setting the height of an element,
+  // based on the content-box model
+  //-----------------------------------------------------------------
+  _getHeightAdjustForBoxModel: function($elem) {
+    // Take into account the box model. This defaults to either W3C or traditional
+    // model for a given browser, but can be overridden with CSS
+    var adjust;
+    switch (this._getBoxSizing($elem)) {
+      default:
+      case "content-box":     // AKA W3C
+        // We will subtract padding, border, margin
+        adjust = $elem.actual( "outerHeight", { includeMargin : true } ) -
+                 $elem.actual( "height" );
+        break;
+
+      case "border-box":      // AKA traditional, or IE5 (old browsers and IE quirks mode)
+        // only subtract margin
+        adjust = $elem.actual("outerHeight", { includeMargin: true } ) -
+                 $elem.actual( "outerHeight" );
+        break;
+
+      case "padding-box":    // Firefox-only
+        // subtract margin and border
+        adjust = $elem.actual( "outerHeight" ) -
+                 $elem.actual( "height" );
+        break;
+      }
+    return adjust;
+    },
+
+  //--------------------------------------------------------
   //Resize the wrapper for the scrolled region to fill the
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   resizeWrapper: function() {
-    var barsHeight = 0;
+  var adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
+    this.$wrapper.height(
+      $(window).actual("height")  // Height of the window
+      - this._barsHeight          // Height of fixed bars or "other stuff" outside of the wrapper
+      - adjust                    // Make adjustment based on content-box model
+      + this.options.wrapperAdd   // User-supplied fudge-factor if needed
+      );
 
     // The first time we resize, save the size of the wrapper
     if (this._firstResize) {
-      this._origWrapperHeight = this.$wrapper.height();
+      this._origWrapperHeight = this.$wrapper.height() - adjust;
       this._firstResize = false;
       }
-
-    this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers
-      barsHeight += $(this).actual("innerHeight");
-      });
-
-    windowHeightFix = IsWebkit ? WebkitWindowHeightFix : 0;
-    this.$wrapper.height($(window).actual("height") - barsHeight - windowHeightFix);
     },
 
   undoResizeWrapper: function() {
@@ -360,6 +435,14 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // Merge options from data-iscroll, if present
     $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));
 
+    // Calculate height of headers, footers, etc.
+    // We only do this at create time. If you change their height after creation,
+    // please call calculateBarsHeight() yourself prior to calling resizeWrapper().
+    // Calling this from resize events on desktop platforms is unreliable.
+    // Some desktop platforms (example, Safari) will report unreliable element
+    // heights during resize.
+    this.calculateBarsHeight();
+
     // Add some convenient classes in case user wants to style pages/wrappers/scrollers
     //  that use iscroll.
     this.$wrapper.addClass(this.options.wrapperClass);
@@ -398,11 +481,6 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // of it's page structure for AJAX loading. So, we have to do this
     // in the widget code. As well, we need to resize the wrapper in any
     // case.
-    //
-    // TODO: This doesn't seem to set the scrollbar range correctly in
-    //       landscape orientation. It seems to be a bug in iscroll4 itself.
-    //       I tried destroy/recreate iscroll object, but that doesn't
-    //       help.
     //
     // TODO: Consider using jquery-resize.js to rate-limit resize events
     if (this.options.resizeWrapper) {
