@@ -439,6 +439,48 @@ See the iScroll source code for a list of supported events.
 
 ---
 
+Scroll Bars
+-----------
+iScroll, by default, creates a scroll bar at the right-hand side (for vertical scrolling)
+or bottom (for horizontal scrolling) of the screen, which is the full height (or width)
+of the screen. This is almost certainly not what you actually want!
+
+By default, this widget hides the portion of the scrollbar that would normally overlay
+your header(s) and footer(s).
+
+But you probably really want a scroll bar that is at the right-hand side (or bottom) of the wrapper,
+and is the height of the wrapper. Unfortunately, it's not practical for this widget to
+do this for you - that would require modifying `iscroll.js.` However, it is fairly easy to
+customize your scrollbars with just a few lines of CSS.
+
+iScroll gives you the ability to customize scroll bars. See the iscroll4 documentation
+for full details. You can customize the height, width, position, color, etc. etc. of
+the scrollbar. To do so, you need to set the `scrollbarClass` option and then provide
+CSS to customize the scrollbar.
+
+However, in many cases, all that is really desired is to set the top and bottom location
+of the scrollbar. i.e. to line it up with the corresponding wrapper. In this case,
+you can add some very minimal CSS.
+
+In this case, do NOT set the `scrollbarClass` option. Setting this option causes
+iScroll to omit quite a bit of it's initialization of the scrollbar, and then you
+are required to supply a considerable amount of CSS.
+
+Instead, you can usually use a CSS rule similar to this:
+
+    div.my-iscroll-wrapper > div:last-child {
+      top: 46px !important;
+      bottom: 22px !important;
+    }
+
+iScroll appends the scrollbar to the end of your wrapper. Unless you have appended something
+else yourself, you can target the last child of the wrapper, and so you don't need the
+`scrollbarClass` to identify the scrollbar. So, iScroll will still do all of it's usual
+initialization. By using the `!important` modifier, your CSS will override the top and
+bottom locations that iScroll itself sets.
+
+You will need to know, in advance, the height of any headers and/or footers.
+
 Demo
 ----
 The demo directory contains a simple example of a JQuery Mobile page using
