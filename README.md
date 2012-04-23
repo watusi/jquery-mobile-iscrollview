@@ -481,6 +481,29 @@ bottom locations that iScroll itself sets.
 
 You will need to know, in advance, the height of any headers and/or footers.
 
+Multiple Scrolling Areas
+------------------------
+If you wish to have multiple scrolling areas, please note the following:
+
+- The `adaptPage` option should be set to `true` for no more than one of
+your scrollers. Since it defaults to `true`, you will need to set it to
+false for all but (a maximum of) one of your scrollers.
+
+- The `resizeWrapper` option should be set to `true` for no more than one
+of your scrollers. If you have multiple scrollers one above the other,
+then at most one of them can be auto-sized. If you have multiple scrollers
+side-by-side, then you will probably have to size all them yourself.
+Since `resizeWrapper` is `true` by default, you will need to set the option
+to `false` for all but (a maximum) of one of your scrollers.
+
+- You should set the `resizeEvents` option to an empty string for those
+scrollers for which you have set `resizeWrapper` to `false`.
+
+- iScroll will not work correctly if scrollbars from multiple scrollers
+overlap. It will fail to scroll in all but one of the scrollers that
+have overlapping scrollbars. Please see the documentation on scrollbar
+customization, above.
+
 Demo
 ----
 The demo directory contains a simple example of a JQuery Mobile page using
