@@ -173,7 +173,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       "resizeWrapper",
       "resizeEvents",
       "refreshOnPageBeforeShow",
-      "fixInput"
+      "fixInput",
+      "wrapperAdd"
       ],
 
     //-----------------------------------------------------------------------
