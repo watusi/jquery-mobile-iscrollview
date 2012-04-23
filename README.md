@@ -481,6 +481,10 @@ bottom locations that iScroll itself sets.
 
 You will need to know, in advance, the height of any headers and/or footers.
 
+You will probably want to maintain a small (perhaps 2 pixel, for example) offset from the
+header/footer to match the offset from the edge of the page. So, add this offset to
+the height of the header/footer.
+
 Multiple Scrolling Areas
 ------------------------
 If you wish to have multiple scrolling areas, please note the following:
