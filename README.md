@@ -74,7 +74,60 @@ Example
 
   </div>
 
+
 ---
+
+Scrolling Inset Listviews
+-------------------------
+When scrolling a listview with `data-inset=true`, you may have a problem
+reaching the bottom of the scrolling area. You will be able to scroll to
+the bottom, but the scroller will then "snap back". This will occur also,
+if you are scrolling a series of listviews in some wrapper - for example,
+this is common on Setup pages when emulating iOS native appearance.
+
+This appears to be due to the fact that iScroll either partially or completely
+ignores scroller margins.
+
+You can correct this by wrapping your scroller with a `<div>` and adding some
+padding to the `<div>`. Because of the way iScroll works, you will only need
+to add padding to the *bottom* of this div. You should *double* the top
+or bottom margin of the inset listview being scrolled (since you are adding
+it all to the bottom.)
+
+For example:
+
+  <div data-role="page" id="index">
+
+    <div data-role="header" data-position="inline">
+      <h1>INDEX PAGE</h1>
+    </div>
+
+    <div data-role="content" class='example-wrapper' data-iscroll>
+      <div style="padding-bottom: 3em;">
+        <ul data-inset="true">
+          <li>Some content</li>
+          <li Some content</li>
+        </ul>
+      </div>
+    </div>
+
+    <div data-role="footer" class="ui-bar" data-position="inline">
+      Some footer text.
+    </div>
+
+  </div>
+
+(Rather than using inline styles, it would be better to assign a class, and
+put the padding in a style sheet. The padding is shown inline above only for
+clarity.)
+
+When scrolling a listview where `data-inset="false"` (the default), you do
+not need any additional padding, unless you wish to show padding around
+the listview. Generally, you will want padding around a `data-inset="true"`
+listview, both to allow it to scroll completely to the bottom, as well as to
+maintain the visual appearence of the inset. This is generally not needed or
+desired for `data-inset="false" listviews.
+
 
 Calling methods
 ---------------
