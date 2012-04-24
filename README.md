@@ -126,7 +126,7 @@ not need any additional padding, unless you wish to show padding around
 the listview. Generally, you will want padding around a `data-inset="true"`
 listview, both to allow it to scroll completely to the bottom, as well as to
 maintain the visual appearence of the inset. This is generally not needed or
-desired for `data-inset="false" listviews.
+desired for `data-inset="false"` listviews.
 
 
 Calling methods
@@ -560,6 +560,88 @@ scrollers for which you have set `resizeWrapper` to `false`.
 overlap. It will fail to scroll in all but one of the scrollers that
 have overlapping scrollbars. Please see the documentation on scrollbar
 customization, above.
+
+Listviews With List Items That Are Buttons
+------------------------------------------
+Listviews that have list items that are buttons (i.e. the items are clickable,
+because they are wrapped in an `<a>` tag)
+can be very slow on touchscreen devices. This is not an iScroll or
+jquery.mobile.iscrollview problem per-se - it is inherent to JQuery Mobile.
+
+There is a discussion of this issue here:
+
+  http://forum.jquery.com/topic/why-jqm-touchscreen-list-scrolling-performance-stinks-and-what-to-do-about-it
+
+The gist of it is that as you scroll a list, your finger slips from one list
+item to the next, causing a "piano key" visual effect. The effect is both
+distracting to the user and slow.
+
+A work-around is to insure that up/down/hover states for your scrollable
+listviews are identical, so that there is no *hover* effect and no *selected*
+effect. If you're developing exclusively for a touch-screen mobile device,
+there's little to no need for these effects. Users don't expect them: they
+expect something to happen when they tap, but not a useless effect.
+
+This is an *example* of CSS overrides that will remove the hover and selected effects.
+You will need to modify this CSS to match your theme. The important thing is that
+the up, down, and hover states must have identical CSS, so that there is no transition
+between states.
+
+    /*
+      Sane overrides for buttons in lists
+
+      JQM default styling has up/down/hover/select styles for buttons. This is nice for real
+      buttons, but slows list scrolling to a crawl. This can be avoided by styling the
+      up/down/hover states identically.
+    */
+
+    ul.ui-listview *.ui-btn-up-c,
+    ul.ui-listview *.ui-btn-down-c,
+    ul.ui-listview *.ui-btn-hover-c
+       {
+       border-color: #ccc;
+       background: #eee;
+       font-weight: bold;
+       color: #444;
+       text-shadow: 0 1px 1px #f6f6f6;
+       background-image: -webkit-gradient(linear, left top, left bottom, from( #fdfdfd), to( #eee));
+       }
+
+    ul.ui-listview *.ui-btn-up-c a.ui-link-inherit,
+    ul.ui-listview *.ui-btn-down-c a.ui-link-inherit,
+    ul.ui-listview *.ui-btn-hover-c a.ui-link-inherit
+      { color: #444; }
+
+Caching List Items
+------------------
+Webkit-based browsers can exhibit a "flicker" effect when initially scrolling. Once
+you have scrolled down to the bottom of the list, the flicker will typically
+stop.
+
+This issue is discussed here:
+
+  http://cubiq.org/you-shall-not-flicker
+
+A work-around for this issue to to force list items to be pre-cached. See
+the above link for why this works.
+
+You can implement this fix in your CSS like this:
+
+    /* Force list items to be cached
+       See: cubiq.org/you-shall-not-flicker */
+     .iscroll-scroller,
+     .iscroll-scroller * {
+       -webkit-transition-duration: 0;
+       -webkit-transform: translate3d(0,0,0);
+       }
+
+
+
+
+
+
+
+
 
 Demo
 ----
