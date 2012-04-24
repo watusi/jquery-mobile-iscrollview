@@ -1,6 +1,6 @@
 /*
 jquery.mobile.iscrollview.js
-Version: 1.0+
+Version: 1.1
 jQuery Mobile iScroll4 view widget
 Copyright (c), 2012 Watusiware Corporation
 Distributed under the MIT License
