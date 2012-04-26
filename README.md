@@ -336,7 +336,8 @@ The minimum Y scroll position. This defines the top-most position of the scroll.
 user can scroll past the minimum Y, but then the scroller will snap-back to the minimum
 Y position.
 
-This is useful when implementing pull-down-to-refresh.
+Note that this variable that is preset to -`topOffset` option value, and is useful
+when implementing pull-down-to-refresh.
 
 #### maxScrollX(val)
 

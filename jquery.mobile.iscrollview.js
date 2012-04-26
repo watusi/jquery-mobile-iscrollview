@@ -613,8 +613,6 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     //
     // These are also useful for creating "pull to refresh" functionality.
     //
-    // These methods give easy access to these variables. They are all read-only
-    // accessors.
     //-----------------------------------------------------------------------------------
     x:          function() { return this.iscroll.x; },
     y:          function() { return this.iscroll.y; },
@@ -622,6 +620,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     wrapperH:   function() { return this.iscroll.wrapperH; },
     scrollerW:  function() { return this.iscroll.scrollerW; },
     scrollerH:  function() { return this.iscroll.scrollerH; },
+
+    // These have setters. Useful for "pull to refresh".
     minScrollX: function(val) { if (val != null) this.iscroll.minScrollX = val; return this.iscroll.minScrollX; },
     minScrollY: function(val) { if (val != null) this.iscroll.minScrollY = val; return this.iscroll.minScrollY; },
     maxScrollX: function(val) { if (val != null) this.iscroll.maxScrollX = val; return this.iscroll.maxScrollX; },
