@@ -1,6 +1,6 @@
 /*
 jquery.mobile.iscrollview.js
-Version: 1.1
+Version: 1.1+
 jQuery Mobile iScroll4 view widget
 Copyright (c), 2012 Watusiware Corporation
 Distributed under the MIT License
@@ -34,8 +34,8 @@ Licensed under the MIT license
 
 dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
              jquery.actual 1.0.6 https://github.com/dreamerslab/jquery.actual
-             jQuery 1.6.4  (JQM 1.0.1) or 1.7.2 (JQM 1.1)
-             JQuery Mobile >= 1.0.1 or 1.1rc2
+             jQuery 1.6.4  (JQM 1.0.1) or 1.7.1 (JQM 1.1)
+             JQuery Mobile = 1.0.1 or 1.1
 
 */
 
@@ -204,20 +204,25 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // or delegated in the future, we have set a callback for each that calls _trigger.
     // This will call the corresponding widget callback as well as trigger the
     // corresponding widget event if bound.
+    //
+    // Event callbacks are passed two values:
+    //
+    //  e   The underlying DOM event (if any) associated with this event
+    //  v   The iscrollview object that triggered this event
     //------------------------------------------------------------------------------
     _proxy_event_funcs: {
-      onRefresh:           function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("refresh",e);},
-      onBeforeScrollStart: function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("beforescrollstart",e);},
-      onScrollStart:       function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("scrollstart",e);},
-      onBeforeScrollMove:  function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("beforescrollmove",e);},
-      onScrollMove:        function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("scrollmove",e);},
-      onBeforeScrollEnd:   function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("beforescrollend", e);},
-      onScrollEnd:         function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("scrollend",e);},
-      onTouchEnd:          function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("touchend",e);},
-      onDestroy:           function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("destroy",e);},
-      onZoomStart:         function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("zoomstart",e);},
-      onZoom:              function(e) {$(this,wrapper).jqmData("iscrollview")._trigger("zoom",e);},
-      onZoomEnd:           function(e) {$(this.wrapper).jqmData("iscrollview")._trigger("zoomend",e);}
+      onRefresh:           function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("refresh",e,v);},
+      onBeforeScrollStart: function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollstart",e,v);},
+      onScrollStart:       function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollstart",e,v);},
+      onBeforeScrollMove:  function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollmove",e,v);},
+      onScrollMove:        function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollmove",e,v);},
+      onBeforeScrollEnd:   function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollend",e,v);},
+      onScrollEnd:         function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollend",e,v);},
+      onTouchEnd:          function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("touchend",e,v);},
+      onDestroy:           function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("destroy",e,v);},
+      onZoomStart:         function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoomstart",e,v);},
+      onZoom:              function(e) {v=$(this,wrapper).jqmData("iscrollview");v._trigger("zoom",e,v);},
+      onZoomEnd:           function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoomend",e,v);}
       },
 
   // Merge options from the iscroll object into the widget options

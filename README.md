@@ -1,5 +1,5 @@
-watusi/jquery-mobile-iscrollview, Version 1.1
-=============================================
+watusi/jquery-mobile-iscrollview, Version 1.1+
+==============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
@@ -468,11 +468,14 @@ with the key `refresh`.
 When an event is triggered it will call the callback if defined in options,
 and, as well, trigger any bound events.
 
-See the iScroll source code for a list of supported events.
+Event callbacks receive two parameters:
+
+event - The underlying DOM event (if any) associated with this event
+iscrollview - The iscrollview object associated with this event
 
 ###Example event delegation:
 
-    $(document).delegate("div.my-content", "iscrollviewrefresh", function(event) {
+    $(document).delegate("div.my-content", "iscrollviewrefresh", function(event, iscrollview) {
         console.write("iscrollviewrefresh occured");
         }
 
