@@ -276,10 +276,10 @@ method directly, please see "calling methods" above.
 
 ####zoom(x, y, scale, time)
 
-### iScroll Accessors
+### iScroll Getters
 
-This widget provides accessors for some iScroll internal variables that might be useful
-to an application. These are all read-only accessors.
+This widget provides getters for some iScroll internal variables that might be useful
+to an application. These are all read-only.
 
 For example, let's say you are adding elements to the end of a scrolled list.
 You'd like to scroll up (using scrollToElement) if the new element would be
@@ -317,13 +317,40 @@ visible and non-visible portions.
 The height, in pixels, of the scroller. This is the total height of the scroller, including
 visible and non-visible portions.
 
-#### minScrollX()
+### iScroll Getters/Setters
 
-#### minScrollY()
+This widget provides getters with options setter functionality for some iScroll internal
+variables that might be useful to an application. If a value is provided, then the
+functions act as setters. In any case, they return the value of the associated internal
+variable.
 
-#### maxScrollX()
+#### minScrollX(val)
 
-#### maxScrollY()
+The minimum X scroll position. This defines the left-most position of scroll. The user
+can scroll past the minimum X, but then the scroller will snap-back to the mimimum X
+position.
+
+#### minScrollY(val)
+
+The minimum Y scroll position. This defines the top-most position of the scroll. The
+user can scroll past the minimum Y, but then the scroller will snap-back to the minimum
+Y position.
+
+This is useful when implementing pull-down-to-refresh.
+
+#### maxScrollX(val)
+
+The maximum X scroll position. This defines the right-most position of scroll. The user
+can scroll past the maximum X, but then the scroller will snap-back to the maximum X
+position.
+
+#### maxScrollY(val)
+
+The maximum Y scroll position. This defines the bottom-most position of the scroll. The
+user can drag past the maximum Y, but then the scroller will snap-back to the maximum
+Y position.
+
+This is useful when implementing pull-up-to-refresh.
 
 Options
 -------
@@ -468,10 +495,19 @@ with the key `refresh`.
 When an event is triggered it will call the callback if defined in options,
 and, as well, trigger any bound events.
 
-Event callbacks receive two parameters:
+Bound event callbacks receive two parameters:
 
 event - The underlying DOM event (if any) associated with this event
 iscrollview - The iscrollview object associated with this event
+
+As well, when a bound event callback is called, `this` will be the DOM
+object that triggered the event. (e.g. the wrapper).
+
+In the case of callbacks that are specified in the options hash,
+`this` will be the underlying iscroll object. In this case, you will
+not get the `event` and `iscrollview` parameters. In other words,
+callbacks specified in the options hash work exactly as documented
+in the iScroll documentation.
 
 ###Example event delegation:
 
@@ -638,14 +674,6 @@ You can implement this fix in your CSS like this:
        -webkit-transform: translate3d(0,0,0);
        }
 
-
-
-
-
-
-
-
-
 Demo
 ----
 The demo directory contains a simple example of a JQuery Mobile page using
@@ -674,7 +702,7 @@ included in the demo directory. Contribution of a test suite would be most
 welcome. :)
 
 Most testing has been done using JQuery 1.6.4/JQuery Mobile 1.0.1. Some
-rudimentary testing has been done using JQuery 1.7.2/JQuery Mobile 1.1.0-RC2,
+rudimentary testing has been done using JQuery 1.7.1/JQuery Mobile 1.1.0,
 with no obvious problems noted.
 
 ---
