@@ -534,26 +534,21 @@ in the iScroll documentation.
 
 Scroll Bars
 -----------
-iScroll, by default, creates a scroll bar at the right-hand side (for vertical scrolling)
-or bottom (for horizontal scrolling) of the screen, which is the full height (or width)
-of the screen. This is almost certainly not what you actually want!
+Note: Some information previously found in this section was incorrect. iScroll does
+correctly create scroll bars that are the height of wrapper, *not* the full height
+of the page. jquery.mobile.iscrollview.js had a bug which caused iScroll to
+create full page-height scrollbars.
 
-By default, this widget hides the portion of the scrollbar that would normally overlay
-your header(s) and footer(s).
-
-But you probably really want a scroll bar that is at the right-hand side (or bottom) of the wrapper,
-and is the height of the wrapper. Unfortunately, it's not practical for this widget to
-do this for you - that would require modifying `iscroll.js.` However, it is fairly easy to
-customize your scrollbars with just a few lines of CSS.
+The technique described here is still useful in case you want to customize the position
+of your scrollbars without fully customizing every aspect of the scrollbars.
 
 iScroll gives you the ability to customize scroll bars. See the iscroll4 documentation
 for full details. You can customize the height, width, position, color, etc. etc. of
 the scrollbar. To do so, you need to set the `scrollbarClass` option and then provide
 CSS to customize the scrollbar.
 
-However, in many cases, all that is really desired is to set the top and bottom location
-of the scrollbar. i.e. to line it up with the corresponding wrapper. In this case,
-you can add some very minimal CSS.
+However, in many cases, all that is really desired is to set the position
+of the scrollbar. In this case, you can add some very minimal CSS.
 
 In this case, do NOT set the `scrollbarClass` option. Setting this option causes
 iScroll to omit quite a bit of it's initialization of the scrollbar, and then you
@@ -571,12 +566,6 @@ else yourself, you can target the last child of the wrapper, and so you don't ne
 `scrollbarClass` to identify the scrollbar. So, iScroll will still do all of it's usual
 initialization. By using the `!important` modifier, your CSS will override the top and
 bottom locations that iScroll itself sets.
-
-You will need to know, in advance, the height of any headers and/or footers.
-
-You will probably want to maintain a small (perhaps 2 pixel, for example) offset from the
-header/footer to match the offset from the edge of the page. So, add this offset to
-the height of the header/footer.
 
 Multiple Scrolling Areas
 ------------------------

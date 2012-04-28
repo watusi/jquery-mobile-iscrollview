@@ -1,3 +1,32 @@
+/******************************************************************************
+  jslint directives. In case you hate yourself, and need that reinforced...
+
+  You will still get a few warnings that can't be turned off, or that I'm just
+  too stubborn to "fix"
+
+  sloppy, white: let me indent any way I damn please! I like to line things
+                 up nice and purty.
+
+  nomen: tolerate leading _ for variable names. Leading _ is a requirement for
+         JQuery Widget Factory private members
+*******************************************************************************/
+
+/*jslint browser: true, sloppy: true, white: true, nomen: true, maxerr: 50, indent: 2 */
+/*global jQuery:false, iScroll:false */
+
+/*******************************************************************************
+  But instead, be kind to yourself, and use jshint.
+
+  Note jshint nomen and white options are opposite of jslint
+
+  You can't specify an indent of you use white: false, otherwise it will
+  still complain
+*******************************************************************************/
+
+/*jshint forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true,
+         undef:true, curly:true, browser:true, jquery:true, indent:2, maxerr:50,
+         sloppy:true, white:false, nomen:false */
+
 /*
 jquery.mobile.iscrollview.js
 Version: 1.1+
@@ -39,16 +68,19 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
 
 */
 
-;(function ( $, window, document, undefined ) {
+;   // Ignore jslint/jshint warning - for safety - terminate previous file if unterminated
+
+(function ($, window, document, undefined) { // Ignore jslint warning on undefined
+  "use strict";
 
   //----------------------------------
   // "class constants"
   //----------------------------------
-  var IsWebkit =  (/webkit/i).test(navigator.appVersion);
-  var IsAndroid = (/android/gi).test(navigator.appVersion);
-  var IsFirefox = (/firefox/i).test(navigator.userAgent);
+  var IsWebkit =  (/webkit/i).test(navigator.appVersion),
+      IsAndroid = (/android/gi).test(navigator.appVersion),
+      IsFirefox = (/firefox/i).test(navigator.userAgent);
 
-  $.widget( "mobile.iscrollview", $.mobile.widget, {
+  $.widget("mobile.iscrollview", $.mobile.widget, {
 
   //=========================================================
   // All instance variables are declared here. This is not
@@ -139,15 +171,14 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // the function reference and call after your code.
     beforescrollstart: function(e) {
       if ($(this).iscrollview("option", "fixInput")) {  // note we are not in iscrollview object context
-       var target = e.target;
-       while (target.nodeType != 1) target = target.parentNode;
-       var tagName = target.tagName.toLowerCase();
-       if (tagName == 'select' || tagName == 'input' || tagName != 'textarea')
-          return;
-       }
+        var tagName,
+            target = e.target;
+        while (target.nodeType !== 1) { target = target.parentNode; }
+        tagName = target.tagName.toLowerCase();
+        if (tagName === "select" || tagName === "input" || tagName === "textarea") { return; }
+        }
       e.preventDefault();
       },
-
 
     scrollstart:       null,
     beforescrollmove:  null,
@@ -211,18 +242,18 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     //  v   The iscrollview object that triggered this event
     //------------------------------------------------------------------------------
     _proxy_event_funcs: {
-      onRefresh:           function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("refresh",e,v);},
-      onBeforeScrollStart: function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollstart",e,v);},
-      onScrollStart:       function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollstart",e,v);},
-      onBeforeScrollMove:  function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollmove",e,v);},
-      onScrollMove:        function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollmove",e,v);},
-      onBeforeScrollEnd:   function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollend",e,v);},
-      onScrollEnd:         function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollend",e,v);},
-      onTouchEnd:          function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("touchend",e,v);},
-      onDestroy:           function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("destroy",e,v);},
-      onZoomStart:         function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoomstart",e,v);},
-      onZoom:              function(e) {v=$(this,wrapper).jqmData("iscrollview");v._trigger("zoom",e,v);},
-      onZoomEnd:           function(e) {v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoomend",e,v);}
+      onRefresh:           function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("refresh",e,v);},
+      onBeforeScrollStart: function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollstart",e,v);},
+      onScrollStart:       function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollstart",e,v);},
+      onBeforeScrollMove:  function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollmove",e,v);},
+      onScrollMove:        function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollmove",e,v);},
+      onBeforeScrollEnd:   function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollend",e,v);},
+      onScrollEnd:         function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollend",e,v);},
+      onTouchEnd:          function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("touchend",e,v);},
+      onDestroy:           function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("destroy",e,v);},
+      onZoomStart:         function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoomstart",e,v);},
+      onZoom:              function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoom",e,v);},
+      onZoomEnd:           function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoomend",e,v);}
       },
 
   // Merge options from the iscroll object into the widget options
@@ -232,7 +263,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   _merge_from_iscroll_options: function() {
     var options = $.extend(true, {}, this.iscroll.options);
     // Delete event options from the temp options
-    for (var key in this._proxy_event_funcs) delete options[key];
+    $.each(this._proxy_event_funcs, function(k,v) {delete options[k];});
     $.extend(this.options, options);   // Merge result into widget options
     },
 
@@ -243,9 +274,9 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   _create_iscroll_options: function() {
     var options = $.extend(true, {}, this.options);  // temporary copy of widget options
     // Remove options that are widget-only options
-    for (var i in this._widget_only_options) delete options[this._widget_only_options[i]];
+    $.each(this._widget_only_options, function(i,v) {delete options[v];});
     // Remove widget event options
-    for (var key in this._event_map) delete options[key];
+    $.each(this._event_map, function(k,v) {delete options[k];});
     // Add proxy event functions
     return $.extend(options, this._proxy_event_funcs);
     },
@@ -282,7 +313,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   _undoRaiseFixedHeightElements: function() {
     this.$page.find(this.options.fixedHeightSelector).each(function() {
       var zIndex = $(this).jqmData("iscrollviewOrigZindex");
-      if (zIndex != null) $(this).css("z-index", zIndex);
+      if (zIndex !== null) { $(this).css("z-index", zIndex); }
     });
   },
 
@@ -309,7 +340,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   _undoAdaptPage: function() {
     this.$page.unbind("touchmove", this._preventDefaultFunc);
     this._undoRaiseFixedHeightElements();
-    if ("_origPageOverflow" in this) this.$page.css("overflow", this._origPageOverflow);
+    if (this._origPageOverflow !== undefined) { this.$page.css("overflow", this._origPageOverflow); }
     this.$page.removeClass(this.options.pageClass);
   },
 
@@ -331,16 +362,17 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // setting geometry. (e.g. the height of the wrapper)
   //-----------------------------------------------------------------------
   _getBoxSizing: function($elem) {
-    var                prefix = "";
-    if (IsFirefox)     prefix = "-moz-";
-    else if (IsWebkit) prefix = "-webkit-";   // note: can drop prefix for Chrome >=10, Safari >= 5.1 (534.12)
-    var boxSizing = $elem.css(prefix + "box-sizing");
-    if (!boxSizing && prefix) boxSizing = $elem.css("box-sizing");  // Not found, try again with standard CSS
+    var  boxSizing,
+         prefix = "";
+
+    if (IsFirefox)     { prefix = "-moz-"; }
+    else if (IsWebkit) { prefix = "-webkit-"; } // note: can drop prefix for Chrome >=10, Safari >= 5.1 (534.12)
+    boxSizing = $elem.css(prefix + "box-sizing");
+    if (!boxSizing && prefix) { boxSizing = $elem.css("box-sizing"); }  // Not found, try again with standard CSS
     if (!boxSizing) {     // Still not found - no CSS property available to guide us.
-      if ($.boxModel)     // See what JQuery thinks the global box model is
-        boxSizing = "content-box";
-      else
-        boxSizing = "border-box";
+      // See what JQuery thinks the global box model is
+      if ($.boxModel) { boxSizing = "content-box"; }
+      else            { boxSizing = "border-box"; }
       }
     return boxSizing;
     },
@@ -354,13 +386,6 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // model for a given browser, but can be overridden with CSS
     var adjust;
     switch (this._getBoxSizing($elem)) {
-      default:
-      case "content-box":     // AKA W3C
-        // We will subtract padding, border, margin
-        adjust = $elem.actual( "outerHeight", { includeMargin : true } ) -
-                 $elem.actual( "height" );
-        break;
-
       case "border-box":      // AKA traditional, or IE5 (old browsers and IE quirks mode)
         // only subtract margin
         adjust = $elem.actual("outerHeight", { includeMargin: true } ) -
@@ -370,6 +395,13 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       case "padding-box":    // Firefox-only
         // subtract margin and border
         adjust = $elem.actual( "outerHeight" ) -
+                 $elem.actual( "height" );
+        break;
+
+      case "content-box":     // AKA W3C  Ignore jshint warning
+      default:                // Ignore jslint warning
+        // We will subtract padding, border, margin
+        adjust = $elem.actual( "outerHeight", { includeMargin : true } ) -
                  $elem.actual( "height" );
         break;
       }
@@ -383,10 +415,10 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   resizeWrapper: function() {
   var adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
     this.$wrapper.height(
-      $(window).actual("height")  // Height of the window
-      - this._barsHeight          // Height of fixed bars or "other stuff" outside of the wrapper
-      - adjust                    // Make adjustment based on content-box model
-      + this.options.wrapperAdd   // User-supplied fudge-factor if needed
+      $(window).actual("height") - // Height of the window
+      this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
+      adjust +                     // Make adjustment based on content-box model
+      this.options.wrapperAdd   // User-supplied fudge-factor if needed
       );
 
     // The first time we resize, save the size of the wrapper
@@ -397,7 +429,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     },
 
   undoResizeWrapper: function() {
-    if ("_origWrapperHeight" in this) this.$wrapper.height(this._origWrapperHeight);
+    if (this.origWrapperHeight !== undefined) { this.$wrapper.height(this._origWrapperHeight); }
   },
 
   //-------------------------------------------------
@@ -412,13 +444,12 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // guranteed to occur after the refresh has occured. While the caller
   // might bind to the refresh event, this is more convenient and avoids
   // any ambiguity over WHICH call to refresh has completed.
-    var _this = this;
-    var _callback = callback;
-    var _context = context;
+    var _this = this,
+        _callback = callback,
+        _context = context;
     setTimeout(function() {
       _this.iscroll.refresh();
-      if (_callback)
-          _callback(_context);
+      if (_callback) { _callback(_context); }
       }, IsAndroid ? 200 : 0);
     },
 
@@ -454,7 +485,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     this.$wrapper.addClass(this.options.wrapperClass);
     this.$scroller.addClass(this.options.scrollerClass);
 
-    if (this.options.adaptPage) this._adaptPage();
+    if (this.options.adaptPage) { this._adaptPage(); }
 
     this._origWrapperZindex = this.$wrapper.css("z-index");     // Save for un-do in destroy()
     this._origWrapperOverflow = this.$wrapper.css("overflow");
@@ -473,8 +504,9 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // changing content asynchronously. This is probably because we are
     // not able to determine fixed-height element heights prior to this,
     // even using jQuery.actual plugin.
-    if (this.options.refreshOnPageBeforeShow)
+    if (this.options.refreshOnPageBeforeShow) {
       this.$page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
+      }
 
     // Resize the wrapper and refresh iScroll on resize
     // You might want to do this on orientationchange on mobile
@@ -495,7 +527,9 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       }
 
     // Create the iScroll object
-    this.iscroll = new iScroll(this.$wrapper.get(0), this._create_iscroll_options());
+    /*jslint newcap:true */
+    this.iscroll = new iScroll(this.$wrapper.get(0), this._create_iscroll_options());  // Ignore jshint warning
+    /* jslint newcap:false */
 
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options
   },
@@ -508,7 +542,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     this.iscroll.destroy();
     this.iscroll = null;
 
-    if (this.options.adaptPage) this._undoAdaptPage();
+    if (this.options.adaptPage) { this._undoAdaptPage(); }
 
     // Remove the classes we added, since no longer using iscroll at
     // this point.
@@ -516,8 +550,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     this.$scroller.removeClass(this.options.scrollerClass);
 
     // Remove CSS modifications made to the DOM
-    if ("_origWrapperZindex" in this) this.$wrapper.css("z-index", this._origWrapperZindex);
-    if ("_origWrapperOverflow" in this) this.$wrapper.css("overflow", this._origWrapperOverflow);
+    if (this._origWrapperZindex !== undefined)   { this.$wrapper.css("z-index", this._origWrapperZindex); }
+    if (this._origWrapperOverflow !== undefined) { this.$wrapper.css("overflow", this._origWrapperOverflow); }
 
     // Unbind events
     this.$wrapper.unbind("touchmove", this._preventDefaultFunc);
@@ -548,7 +582,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     //----------------------------------------------------------
     //Respond to any changes the user makes to the option method
     //----------------------------------------------------------
-    _setOption: function ( key, value ) {
+    _setOption: function( key, value ) {
       // iScroll4 doesn't officially support changing options after an iscroll object has been
       // instantiated. However, some changes will work if you do a refresh() after changing the
       // option. This is undocumented other than from user comments on the iscroll4 Google
@@ -559,7 +593,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       // TODO: Research which options can be successfully changed without destroying and
       //       re-creating the iscroll object. For now, I'm taking a safe approach and
       //       always destroying and re-creating the iscroll object.
-      switch (key) {
+      //switch (key) {
         //case "hScroll":
         //case "vScroll":
         //case "hScrollbar":
@@ -569,12 +603,14 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
           //this.iscroll.refresh();               // Don't think we need the timing hack here
           //break;
 
-        default:
+        //default:
           this.options[ key ] = value;
           this.iscroll.destroy();
-          this.iscroll = new iScroll(this.$wrapper.get(0), this._create_iscroll_options());
-          break;
-        }
+          /*jslint newcap: true */
+          this.iscroll = new iScroll(this.$wrapper.get(0), this._create_iscroll_options()); // Ignore jshint warning
+          /*jslint newcap: false */
+          //break;
+        //}
       // For UI 1.8, _setOption must be manually invoked from
       // the base widget
       $.Widget.prototype._setOption.apply(this, arguments);
@@ -596,12 +632,10 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     scrollTo:        function(x,y,time,relative) { this.iscroll.scrollTo(x,y,time,relative); },
     scrollToElement: function(el,time)           { this.iscroll.scrollToElement(el,time); },
     scrollToPage:    function(pageX,pageY,time)  { this.iscroll.scrollToPage(pageX,pageY,time); },
-    disable:         function()                  { this.iscroll.disable(); },
-    enable:          function()                  { this.iscroll.enable(); },
     stop:            function()                  { this.iscroll.stop(); },
     zoom:            function(x,y,scale,time)    { this.iscroll.zoom(x,y,scale,time); },
     isReady:         function()                  { return this.iscroll.isReady(); },
-
+    // See disable() enable() elsewhere above - they are standard widget methods
 
     //----------------------------------------------------------------------------------
     // Accessors for iscroll4 internal variables. These are sometimes useful externally.
@@ -622,18 +656,19 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     scrollerH:  function() { return this.iscroll.scrollerH; },
 
     // These have setters. Useful for "pull to refresh".
-    minScrollX: function(val) { if (val != null) this.iscroll.minScrollX = val; return this.iscroll.minScrollX; },
-    minScrollY: function(val) { if (val != null) this.iscroll.minScrollY = val; return this.iscroll.minScrollY; },
-    maxScrollX: function(val) { if (val != null) this.iscroll.maxScrollX = val; return this.iscroll.maxScrollX; },
-    maxScrollY: function(val) { if (val != null) this.iscroll.maxScrollY = val; return this.iscroll.maxScrollY; }
+    minScrollX: function(val) { if (val !== undefined) { this.iscroll.minScrollX = val; } return this.iscroll.minScrollX; },
+    minScrollY: function(val) { if (val !== undefined) { this.iscroll.minScrollY = val; } return this.iscroll.minScrollY; },
+    maxScrollX: function(val) { if (val !== undefined) { this.iscroll.maxScrollX = val; } return this.iscroll.maxScrollX; },
+    maxScrollY: function(val) { if (val !== undefined) { this.iscroll.maxScrollY = val; } return this.iscroll.maxScrollY; }
 
     });
 
-})( jQuery, window, document );
+})( jQuery, window, document );  // Ignore jslint warning
 
 
 // Self-init
 $(document).bind("pagecreate", function (e) {
+  "use strict";
   // In here, e.target refers to the page that was created
   // (it's the target of the pagecreate event)
   // So, we can simply find elements on this page that match a
