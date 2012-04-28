@@ -501,7 +501,7 @@ Bound event callbacks receive two parameters:
 
 * event - The underlying DOM event (if any) associated with this event
 * data -  A map containing data passed to the event by this widget
- * :iscrollview object associated with this event
+ * :iscrollview reference to the iscrollview object associated with this event
 
 As well, when a bound event callback is called, `this` will be the DOM
 object that triggered the event. (e.g. the wrapper).
