@@ -499,8 +499,9 @@ and, as well, trigger any bound events.
 
 Bound event callbacks receive two parameters:
 
-event - The underlying DOM event (if any) associated with this event
-iscrollview - The iscrollview object associated with this event
+* event - The underlying DOM event (if any) associated with this event
+* data -  A map containing data passed to the event by this widget
+ * :iscrollview object associated with this event
 
 As well, when a bound event callback is called, `this` will be the DOM
 object that triggered the event. (e.g. the wrapper).
@@ -511,9 +512,15 @@ not get the `event` and `iscrollview` parameters. In other words,
 callbacks specified in the options hash work exactly as documented
 in the iScroll documentation.
 
+In this case, you can still access the iscrollview easily, because
+the widget injects a reference to it into iScroll. I recommend that
+you don't use the option hash callbacks, though - it's much easier
+to use JQuery event binding.
+
 ###Example event delegation:
 
-    $(document).delegate("div.my-content", "iscrollviewrefresh", function(event, iscrollview) {
+    $(document).delegate("div.my-content", "iscrollviewrefresh", function(event, data) {
+        var iscrollview = data.iscrollview;  // In case we need to reference the iscrollview
         console.write("iscrollviewrefresh occured");
         }
 

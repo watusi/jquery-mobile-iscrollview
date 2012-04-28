@@ -80,6 +80,35 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       IsAndroid = (/android/gi).test(navigator.appVersion),
       IsFirefox = (/firefox/i).test(navigator.userAgent);
 
+  //===============================================================================
+  // We need to add an iscrollview member to iScroll, so that we can efficiently
+  // pass the iscrollview when triggering jQuery events. Otherwise, we'd have to
+  // make a call to $(wrapper).jqmData() on each event trigger, which could have an impact
+  // on performance for high-frequency events.
+  //
+  // We can't do that after construction, because iScroll triggers the refresh
+  // event during construction. So, it's necessary to subclass iScroll.
+  //
+  // This is also convenient should we find the need to subclass other iScroll
+  // methods (besides the constructor).
+  //===============================================================================
+    // See: www.golimojo.com/etc/js-subclass.html
+  function _subclass(constructor, superConstructor) {
+    function SurrogateConstructor() {}
+    SurrogateConstructor.prototype = superConstructor.prototype;
+    var prototypeObject = new SurrogateConstructor();
+    prototypeObject.constructor = constructor;
+    constructor.prototype = prototypeObject;
+    }
+
+  function _iScrollIscrollview(iscrollview, scroller, options) {
+  // Event proxies will use this
+    this.iscrollview = iscrollview;        // Ignore jslint/jshint warning
+    iScroll.call(this, scroller, options); // Ignore jslint/jshint warning
+    }
+
+  _subclass(_iScrollIscrollview, iScroll);
+
   $.widget("mobile.iscrollview", $.mobile.widget, {
 
   //=========================================================
@@ -239,21 +268,22 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // Event callbacks are passed two values:
     //
     //  e   The underlying DOM event (if any) associated with this event
-    //  v   The iscrollview object that triggered this event
+    //  d   Data map
+    //        iscrollview : The iscrollview object
     //------------------------------------------------------------------------------
     _proxy_event_funcs: {
-      onRefresh:           function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("refresh",e,v);},
-      onBeforeScrollStart: function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollstart",e,v);},
-      onScrollStart:       function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollstart",e,v);},
-      onBeforeScrollMove:  function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollmove",e,v);},
-      onScrollMove:        function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollmove",e,v);},
-      onBeforeScrollEnd:   function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("beforescrollend",e,v);},
-      onScrollEnd:         function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("scrollend",e,v);},
-      onTouchEnd:          function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("touchend",e,v);},
-      onDestroy:           function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("destroy",e,v);},
-      onZoomStart:         function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoomstart",e,v);},
-      onZoom:              function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoom",e,v);},
-      onZoomEnd:           function(e) {var v=$(this.wrapper).jqmData("iscrollview");v._trigger("zoomend",e,v);}
+      onRefresh:           function(e) {this.iscrollview._trigger("refresh",           e, {"iscrollview": this.iscrollview });},
+      onBeforeScrollStart: function(e) {this.iscrollview._trigger("beforescrollstart", e, {"iscrollview": this.iscrollview });},
+      onScrollStart:       function(e) {this.iscrollview._trigger("scrollstart",       e, {"iscrollview": this.iscrollview });},
+      onBeforeScrollMove:  function(e) {this.iscrollview._trigger("beforescrollmove",  e, {"iscrollview": this.iscrollview });},
+      onScrollMove:        function(e) {this.iscrollview._trigger("scrollmove",        e, {"iscrollview": this.iscrollview });},
+      onBeforeScrollEnd:   function(e) {this.iscrollview._trigger("beforescrollend",   e, {"iscrollview": this.iscrollview });},
+      onScrollEnd:         function(e) {this.iscrollview._trigger("scrollend",         e, {"iscrollview": this.iscrollview });},
+      onTouchEnd:          function(e) {this.iscrollview._trigger("touchend",          e, {"iscrollview": this.iscrollview });},
+      onDestroy:           function(e) {this.iscrollview._trigger("destroy",           e, {"iscrollview": this.iscrollview });},
+      onZoomStart:         function(e) {this.iscrollview._trigger("zoomstart",         e, {"iscrollview": this.iscrollview });},
+      onZoom:              function(e) {this.iscrollview._trigger("zoom",              e, {"iscrollview": this.iscrollview });},
+      onZoomEnd:           function(e) {this.iscrollview._trigger("zoomend",           e, {"iscrollview": this.iscrollview });}
       },
 
   // Merge options from the iscroll object into the widget options
@@ -453,6 +483,15 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       }, IsAndroid ? 200 : 0);
     },
 
+   //---------------------------
+   // Create the iScroll object
+   //---------------------------
+  _create_iscroll_object: function() {
+    /*jslint newcap:true */
+  this.iscroll = new _iScrollIscrollview(this, this.$wrapper.get(0), this._create_iscroll_options());  // Ignore jshint warning
+  /* jslint newcap:false */
+  },
+
   //-------------------------------
   // _create()
   //-------------------------------
@@ -526,11 +565,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       $(window).bind(this.options.resizeEvents, $.proxy(this._windowResizeFunc, this));
       }
 
-    // Create the iScroll object
-    /*jslint newcap:true */
-    this.iscroll = new iScroll(this.$wrapper.get(0), this._create_iscroll_options());  // Ignore jshint warning
-    /* jslint newcap:false */
-
+    this._create_iscroll_object();
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options
   },
 
@@ -606,9 +641,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
         //default:
           this.options[ key ] = value;
           this.iscroll.destroy();
-          /*jslint newcap: true */
-          this.iscroll = new iScroll(this.$wrapper.get(0), this._create_iscroll_options()); // Ignore jshint warning
-          /*jslint newcap: false */
+          this._create_iscroll_object();
           //break;
         //}
       // For UI 1.8, _setOption must be manually invoked from
@@ -664,7 +697,6 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     });
 
 })( jQuery, window, document );  // Ignore jslint warning
-
 
 // Self-init
 $(document).bind("pagecreate", function (e) {
