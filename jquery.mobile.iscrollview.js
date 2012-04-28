@@ -149,8 +149,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
 
     // true to fix iscroll4 input element focus problem in the widget.
     // false if you are using a patched iscroll4 with different fix or to
-    // disable for performance reasons
-    fixInput: false,
+    // disable for some other reason
+    fixInput: true,
 
     wrapperAdd: 0,      // Shouldn't be necessary, but in case user needs to fudge
                         // Can be + or -

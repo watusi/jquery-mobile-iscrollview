@@ -466,8 +466,9 @@ Default: `true`
 ####fixInput
 
 If true, applies a fix to allow input elements to work within a scroller. This is optional
-because there is an alternative fix that patches iScroll itself. You should enable this
-options on pages that contain input elements.
+because there is an alternative fix that patches iScroll itself. You should disable this
+option if you are using the patched verison of iScroll, or in case it causes some sort
+of trouble.
 
 Default: `false`
 
