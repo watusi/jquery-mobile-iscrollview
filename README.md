@@ -432,7 +432,7 @@ A JQuery selector which selects the fixed-height elements on the page which are 
 of the scrolling area. The heights of these elements will be added-up, and subtracted
 from the total viewport height to arrive at the wrapper height.
 
-Default: `".ui-header, .ui-footer, .iscroll-foreground"`
+Default: `"[data-role='header'], [data-role='footer'], .iscroll-foreground"`
 
 ####resizeWrapper
 
