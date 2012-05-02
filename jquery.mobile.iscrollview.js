@@ -156,7 +156,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // JQuery selector for fixed-height elements on page.
     // Use iscroll-foreground class for arbitrary fixed-height elements other than
     // header/footer
-    fixedHeightSelector: "[data-role='header'], [data-role='footer'], .iscroll-foreground",
+    fixedHeightSelector: ":jqmData(role='header'), :jqmData(role='footer'), .iscroll-foreground",
 
     // true to resize the wrapper to take all viewport space after fixed-height elements
     // (typically header/footer)
