@@ -701,11 +701,14 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
 // Self-init
 $(document).bind("pagecreate", function (e) {
   "use strict";
-  // In here, e.target refers to the page that was created
-  // (it's the target of the pagecreate event)
-  // So, we can simply find elements on this page that match a
-  // selector of our choosing, and call our plugin on them.
-  $(e.target).find(":jqmData(iscroll)").iscrollview();
+  // In here, e.target refers to the page that was created (it's the target of the pagecreate event)
+  // So, we can simply find elements on this page that match a selector of our choosing, and call 
+  // our plugin on them.
+  
+  // The find() below returns an array of jQuery page objects. The Widget Factory will
+  // enumerate these and call the widget _create() fucntion for each member of the array.
+  // If the array is of zero length, then no _create() fucntion is called.
+  jQuery(e.target).find(":jqmData(iscroll)").iscrollview();
   });
 
 
