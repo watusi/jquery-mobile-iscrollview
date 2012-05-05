@@ -9,7 +9,8 @@ widget implementation. It follows the *widget-factory-mobile*
 [Widget Factory Pattern](https://github.com/addyosmani/jquery-plugin-patterns).
 
 ---
-Patched iScroll
+Using Patched iScroll
+=====================
 
 This widget works best with a special version of iScroll that has a small patch. This patch allows
 an external script (e.g. this one) to change how iScroll gets the dimensions of elements.
@@ -19,16 +20,18 @@ jQuery mobile hides the content of pages when they are not the current page. Thu
 iScroll is not able to properly initialize prior to the jQuery Mobile `pageshow` event.
 
 The special version of iScroll allows this widget to override the dimension-getting functions
-in iScroll using calls to the jQuery.actual plugin, which is able to get the dimensions of
+in iScroll using calls to the `jQuery.actual` plugin, which is able to get the dimensions of
 hidden elements.
 
 This widget will work with the standard iScroll distribution, but it will not be optimal. You
-may see unwanted visual artifacts when the scroller is refresh on the `pageshow` event.
+may see unwanted visual artifacts when the scroller is refreshed on the `pageshow` event.
 
-The demo directory contains a copy of the special version of iScroll in `iscroll-watusi.js`. 
-This file may also in the future contain other changes made to iScroll by WatusiWare Corporation.
-You can obtain a current copy of this version of iScroll from: https://github.com/watusi/iscroll
-Please use the "watusi" branch (the default branch for this repository).
+The demo directory contains a copy of the special version of iScroll in `demo/iscroll-watusi.js`. 
+The demo uses this version of iScroll. The standard iScroll is also available in directory in 
+`demo/iscroll-cubiq.js`. This file may also in the future contain other changes made to iScroll 
+by WatusiWare Corporation.You can obtain a current copy of this version of iScroll from: 
+https://github.com/watusi/iscroll Please use the "watusi" branch (the default branch for this 
+repository).
 
 You can use this special version of iScroll with other projects. If an external script does not
 override the dimension-getting functions in iScroll, it will act just like the standard iScroll.
@@ -481,15 +484,15 @@ Default: `"resize"`
 If true, the scroller will be refreshed on every JQuery Mobile `pageshow` event.
 This should be set to true if scroller content might have changed asynchronously while
 the page was loaded into the DOM but not shown, as might happen in some native
-application environment. As well, this is necessary if not using a verison of iScroll with
+application environment. As well, this is necessary if not using a version of iScroll with
 overridable dimension-fetching functions, because it's not possible to determine the height 
 of fixed-height elements prior to this event.
 
 I've forked iScroll to make it possible to override iScrolls fetching of element dimensions.
-If you are using my version of iScroll, it's not necessary to refresh on pageshow, since
-this widget then overrides this using jQuery.actual so that iScroll CAN get the dimensions
+If you are using my version of iScroll, it's not necessary to refresh on `pageshow`, since
+this widget overrides this using jQuery.actual so that iScroll CAN get the dimensions
 of hidden elements. In this case, if you change page content while a page is hidden, you should
-call refresh() to insure that the scroll range and scrollbar(s) are updated.
+be sure to call `refresh()` to insure that the scroll range and scrollbar(s) are updated.
 
 Default: `true` if iScroll does not have overridable dimension-fetching functions
          `false` if iScroll does have overridable dimension-fetching functions
