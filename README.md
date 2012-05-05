@@ -495,6 +495,7 @@ of hidden elements. In this case, if you change page content while a page is hid
 be sure to call `refresh()` to insure that the scroll range and scrollbar(s) are updated.
 
 Default: `true` if iScroll does not have overridable dimension-fetching functions
+
          `false` if iScroll does have overridable dimension-fetching functions
 
 ####fixInput
