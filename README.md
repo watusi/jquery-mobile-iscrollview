@@ -9,6 +9,30 @@ widget implementation. It follows the *widget-factory-mobile*
 [Widget Factory Pattern](https://github.com/addyosmani/jquery-plugin-patterns).
 
 ---
+Patched iScroll
+
+This widget works best with a special version of iScroll that has a small patch. This patch allows
+an external script (e.g. this one) to change how iScroll gets the dimensions of elements.
+
+ Using standard DOM methods, it's not possible to easily get the dimensions of hidden elements. 
+jQuery mobile hides the content of pages when they are not the current page. Thus, the standard
+iScroll is not able to properly initialize prior to the jQuery Mobile `pageshow` event.
+
+The special version of iScroll allows this widget to override the dimension-getting functions
+in iScroll using calls to the jQuery.actual plugin, which is able to get the dimensions of
+hidden elements.
+
+This widget will work with the standard iScroll distribution, but it will not be optimal. You
+may see unwanted visual artifacts when the scroller is refresh on the `pageshow` event.
+
+The demo directory contains a copy of the special version of iScroll in `iscroll-watusi.js`. 
+This file may also in the future contain other changes made to iScroll by WatusiWare Corporation.
+You can obtain a current copy of this version of iScroll from: https://github.com/watusi/iscroll
+Please use the "watusi" branch (the default branch for this repository).
+
+You can use this special version of iScroll with other projects. If an external script does not
+override the dimension-getting functions in iScroll, it will act just like the standard iScroll.
+
 
 Usage
 -----
@@ -454,14 +478,21 @@ Default: `"resize"`
 
 ####refreshOnPageBeforeShow
 
-If true, the scroller will be refreshed on every JQuery Mobile `beforepageshow` event.
+If true, the scroller will be refreshed on every JQuery Mobile `pageshow` event.
 This should be set to true if scroller content might have changed asynchronously while
 the page was loaded into the DOM but not shown, as might happen in some native
-application environments. As well, this is necessary in some desktop browser environments,
-because it's not possible to determine the height of fixed-height elements prior to
-this event.
+application environment. As well, this is necessary if not using a verison of iScroll with
+overridable dimension-fetching functions, because it's not possible to determine the height 
+of fixed-height elements prior to this event.
 
-Default: `true`
+I've forked iScroll to make it possible to override iScrolls fetching of element dimensions.
+If you are using my version of iScroll, it's not necessary to refresh on pageshow, since
+this widget then overrides this using jQuery.actual so that iScroll CAN get the dimensions
+of hidden elements. In this case, if you change page content while a page is hidden, you should
+call refresh() to insure that the scroll range and scrollbar(s) are updated.
+
+Default: `true` if iScroll does not have overridable dimension-fetching functions
+         `false` if iScroll does have overridable dimension-fetching functions
 
 ####fixInput
 
@@ -542,13 +573,13 @@ to use JQuery event binding.
 
 Scroll Bars
 -----------
-Note: Some information previously found in this section was incorrect. iScroll does
-correctly create scroll bars that are the height of wrapper, *not* the full height
-of the page. jquery.mobile.iscrollview.js had a bug which caused iScroll to
-create full page-height scrollbars.
+Note: I am still investinging why scroll bars are sometimes created the full height and at the right
+hand side of the browser window (rather than the height at at the right hand side of the wrapper)
+in some browsers. It is not clear if this is a bug in iScroll or in this widget. For example,
+the scrollbar is correctly created in Safari Mobile, but not in desktop Safari.
 
-The technique described here is still useful in case you want to customize the position
-of your scrollbars without fully customizing every aspect of the scrollbars.
+In the mean time, this is a useful workaround, and can also be used if you want to customize
+the position of a scroll bar without fully-customizing it's appearance.
 
 iScroll gives you the ability to customize scroll bars. See the iscroll4 documentation
 for full details. You can customize the height, width, position, color, etc. etc. of

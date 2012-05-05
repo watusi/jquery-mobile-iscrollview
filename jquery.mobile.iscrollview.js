@@ -78,7 +78,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   //----------------------------------
   var IsWebkit =  (/webkit/i).test(navigator.appVersion),
       IsAndroid = (/android/gi).test(navigator.appVersion),
-      IsFirefox = (/firefox/i).test(navigator.userAgent);
+      IsFirefox = (/firefox/i).test(navigator.userAgent),    
+      IScrollHasDimensionFunctions = iScroll.prototype._clientWidth != undefined;
 
   //===============================================================================
   // We need to add an iscrollview member to iScroll, so that we can efficiently
@@ -88,9 +89,6 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   //
   // We can't do that after construction, because iScroll triggers the refresh
   // event during construction. So, it's necessary to subclass iScroll.
-  //
-  // This is also convenient should we find the need to subclass other iScroll
-  // methods (besides the constructor).
   //===============================================================================
     // See: www.golimojo.com/etc/js-subclass.html
   function _subclass(constructor, superConstructor) {
@@ -101,14 +99,32 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     constructor.prototype = prototypeObject;
     }
 
-  function _iScrollIscrollview(iscrollview, scroller, options) {
+  function _iScroll(iscrollview, scroller, options) {
+  
+  // Override width/height functions (if present in patched
+  // iScroll) with our own. These use jquery.actual to get the
+  // height/width while a page is loaded but hidden. So, refresh()
+  // will work at the time of construction at pagecreate
+  this._clientWidth  = function(ele) { 
+    return $(ele).actual("innerWidth");  
+    };
+  this._clientHeight = function(ele) { 
+    return $(ele).actual("innerHeight"); 
+    };
+  this._offsetWidth  = function(ele) { 
+    return $(ele).actual("outerWidth");  
+    };
+  this._offsetHeight = function(ele) { 
+    return $(ele).actual("outerHeight"); 
+    };    
+  
   // Event proxies will use this
-    this.iscrollview = iscrollview;        // Ignore jslint/jshint warning
-    iScroll.call(this, scroller, options); // Ignore jslint/jshint warning
-    }
+  this.iscrollview = iscrollview;      // Ignore jslint/jshint warning 
+  iScroll.call(this, scroller, options); // Ignore jslint/jshint warning
+  }
 
-  _subclass(_iScrollIscrollview, iScroll);
-
+  _subclass(_iScroll, iScroll);
+  
   $.widget("mobile.iscrollview", $.mobile.widget, {
 
   //=========================================================
@@ -174,7 +190,9 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
 
     // Refresh iscrollview on page show event. This should be true if content inside a
     // scrollview might change while the page is cached but not shown.
-    refreshOnPageBeforeShow: true,
+    // Default to false if we have a version of iScroll that we can patch with
+    // jQuery.actual. Default to true otherwise.
+    refreshOnPageBeforeShow: !IScrollHasDimensionFunctions,
 
     // true to fix iscroll4 input element focus problem in the widget.
     // false if you are using a patched iscroll4 with different fix or to
@@ -488,7 +506,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
    //---------------------------
   _create_iscroll_object: function() {
     /*jslint newcap:true */
-  this.iscroll = new _iScrollIscrollview(this, this.$wrapper.get(0), this._create_iscroll_options());  // Ignore jshint warning
+    this.iscroll = new _iScroll(this, this.$wrapper.get(0), this._create_iscroll_options());  // Ignore jshint warning
   /* jslint newcap:false */
   },
 
