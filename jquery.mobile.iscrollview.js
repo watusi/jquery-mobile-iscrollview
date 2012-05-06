@@ -100,27 +100,25 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     }
 
   function _iScroll(iscrollview, scroller, options) {
-  
-  // Override width/height functions (if present in patched
-  // iScroll) with our own. These use jquery.actual to get the
-  // height/width while a page is loaded but hidden. So, refresh()
-  // will work at the time of construction at pagecreate
-  this._clientWidth  = function(ele) { 
-    return $(ele).actual("innerWidth");  
-    };
-  this._clientHeight = function(ele) { 
-    return $(ele).actual("innerHeight"); 
-    };
-  this._offsetWidth  = function(ele) { 
-    return $(ele).actual("outerWidth");  
-    };
-  this._offsetHeight = function(ele) { 
-    return $(ele).actual("outerHeight"); 
+    // Override width/height functions (if present in patched
+    // iScroll) with our own. These use jquery.actual to get the
+    // height/width while a page is loaded but hidden. So, refresh()
+    // will work at the time of construction at pagecreate
+    this._clientWidth  = function(ele) { 
+      return $(ele).actual("innerWidth");  
+      };
+    this._clientHeight = function(ele) { 
+      return $(ele).actual("innerHeight"); 
+      };
+    this._offsetWidth  = function(ele) { 
+     return $(ele).actual("outerWidth");  
+      };
+    this._offsetHeight = function(ele) { 
+      return $(ele).actual("outerHeight"); 
     };    
-  
-  // Event proxies will use this
-  this.iscrollview = iscrollview;      // Ignore jslint/jshint warning 
-  iScroll.call(this, scroller, options); // Ignore jslint/jshint warning
+    // Event proxies will use this
+    this.iscrollview = iscrollview;        // Ignore jslint/jshint warning 
+    iScroll.call(this, scroller, options); // Ignore jslint/jshint warning
   }
 
   _subclass(_iScroll, iScroll);
@@ -202,6 +200,9 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     wrapperAdd: 0,      // Shouldn't be necessary, but in case user needs to fudge
                         // Can be + or -
 
+    // Timeout to allow page to render prior to refresh()
+    refreshDelay:  IsAndroid ? 200 : 50,   // Wild-ass guesses
+    
     //-------------------------------------------------------------
     // Widget events. These correspond to events defined for the
     // iscroll object, but follow widget naming conventions.
@@ -252,7 +253,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       "resizeEvents",
       "refreshOnPageBeforeShow",
       "fixInput",
-      "wrapperAdd"
+      "wrapperAdd",
+      "refreshDelay"
       ],
 
     //-----------------------------------------------------------------------
@@ -484,8 +486,11 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   //Refresh the iscroll object
   // Insure that refresh is called with proper timing
   //-------------------------------------------------
-  refresh: function(callback, context) {
-    // Let the browser complete rendering, then refresh the scroller
+  refresh: function(delay, callback, context) {
+  // Let the browser complete rendering, then refresh the scroller
+  //
+  // Optional delay parameter for timeout before actually calling iscroll.refresh().
+  // If missing (undefined) or null, use options.refreshDealy.
   //
   // Optional callback parameter is called if present after iScroll internal
   // refresh() is called. This permits caller to perform some action
@@ -493,12 +498,14 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // might bind to the refresh event, this is more convenient and avoids
   // any ambiguity over WHICH call to refresh has completed.
     var _this = this,
+        _delay = delay,
         _callback = callback,
         _context = context;
+    if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
     setTimeout(function() {
       _this.iscroll.refresh();
       if (_callback) { _callback(_context); }
-      }, IsAndroid ? 200 : 0);
+      }, _delay);
     },
 
    //---------------------------

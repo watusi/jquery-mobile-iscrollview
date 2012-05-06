@@ -264,15 +264,20 @@ a newer version, and this widget has not been updated yet.)
 Please see the iScroll documentation for details on using these
 methods.
 
-####refresh(callback, context)
+####refresh(timeout, callback, context)
 
 Note that this performs the proper timing for the iScroll `refresh()`
 function using `setTimeout`. If you want to call the iScroll `refresh()`
 method directly, please see "calling methods" above.
 
+If the timeout value is present, then the internal call of iScroll `refresh()` will be delayed
+by this value. If the value is `null` or `undefined`, then the value of the `refreshDelay`
+option will be used.
+
 If present, the optional callback function will be called (with the supplied optional context
 parameter) upon completion of the refresh, which is asynchronous, since it waits
-for the DOM update to complete first.
+for the DOM update to complete first. If you specify a callback function, then
+you MUST also specify a timeout.
 
 This permits the application to perform some action (such as scrolling the
 the scroller, say if positioned at the end of a list) after the iScroll refresh
@@ -513,6 +518,22 @@ negative value. This is an "escape hatch" in case the calculation of wrapper hei
 is not correct for some particular scenario.
 
 Default: 0
+
+####refreshDelay
+
+Number of mSec to permit browser to render before performing `refresh()`.
+
+When you call `refresh()`, the call to iScroll's internal `refresh()` is delayed by this amount,
+to allow the browser to complete any rendering, prior to refreshing the scroller. If this value
+is 0, then a `setTimeout()` call is still used. This causes the script to relinquish control
+to the renderer, and may be sufficient for many browsers.
+
+This value may need to be experimentally determined.
+
+Alternately, you can specify a timeout value when calling `refresh()`. This is useful in case you
+have done some update which you know will require a lengthy render.
+
+Default: `200` for Android, otherwise `50`
 
 ---
 
