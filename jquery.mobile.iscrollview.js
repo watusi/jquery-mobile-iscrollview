@@ -25,7 +25,7 @@
 
 /*jshint forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true,
          undef:true, curly:true, browser:true, jquery:true, indent:2, maxerr:50,
-         sloppy:true, white:false, nomen:false */
+         white:false, nomen:false */
 
 /*
 jquery.mobile.iscrollview.js
@@ -79,7 +79,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   var IsWebkit =  (/webkit/i).test(navigator.appVersion),
       IsAndroid = (/android/gi).test(navigator.appVersion),
       IsFirefox = (/firefox/i).test(navigator.userAgent),    
-      IScrollHasDimensionFunctions = iScroll.prototype._clientWidth != undefined;
+      IScrollHasDimensionFunctions = iScroll.prototype._clientWidth !== undefined;
 
   //===============================================================================
   // We need to add an iscrollview member to iScroll, so that we can efficiently
@@ -99,7 +99,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     constructor.prototype = prototypeObject;
     }
 
-  function _iScroll(iscrollview, scroller, options) {
+  function IScroll(iscrollview, scroller, options) {
     // Override width/height functions (if present in patched
     // iScroll) with our own. These use jquery.actual to get the
     // height/width while a page is loaded but hidden. So, refresh()
@@ -117,11 +117,11 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       return $(ele).actual("outerHeight"); 
     };    
     // Event proxies will use this
-    this.iscrollview = iscrollview;        // Ignore jslint/jshint warning 
-    iScroll.call(this, scroller, options); // Ignore jslint/jshint warning
+    this.iscrollview = iscrollview;    
+    iScroll.call(this, scroller, options);
   }
 
-  _subclass(_iScroll, iScroll);
+  _subclass(IScroll, iScroll);
   
   $.widget("mobile.iscrollview", $.mobile.widget, {
 
@@ -513,7 +513,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
    //---------------------------
   _create_iscroll_object: function() {
     /*jslint newcap:true */
-    this.iscroll = new _iScroll(this, this.$wrapper.get(0), this._create_iscroll_options());  // Ignore jshint warning
+    this.iscroll = new IScroll(this, this.$wrapper.get(0), this._create_iscroll_options());
   /* jslint newcap:false */
   },
 
@@ -724,7 +724,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
 })( jQuery, window, document );  // Ignore jslint warning
 
 // Self-init
-$(document).bind("pagecreate", function (e) {
+jQuery(document).bind("pagecreate", function (e) {
   "use strict";
   // In here, e.target refers to the page that was created (it's the target of the pagecreate event)
   // So, we can simply find elements on this page that match a selector of our choosing, and call 
