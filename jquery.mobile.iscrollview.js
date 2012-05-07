@@ -162,6 +162,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     pageClass:      "iscroll-page",      // Class to be applied to pages containing this widget
     wrapperClass:   "iscroll-wrapper",   // Class to be applied to wrapper containing this widget
     scrollerClass:  "iscroll-scroller",  // Class to be applied to scroller within wrapper
+    pullDownClass: "iscroll-pulldown",
+    pullUpClass:   "iscroll-pullup",    
 
     // true to adapt the page containing the widget. If false, the widget will not alter any
     // elements outside of the widget's container.
@@ -171,7 +173,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // Use iscroll-foreground class for arbitrary fixed-height elements other than
     // header/footer
     fixedHeightSelector: ":jqmData(role='header'), :jqmData(role='footer'), .iscroll-foreground",
-
+    
     // true to resize the wrapper to take all viewport space after fixed-height elements
     // (typically header/footer)
     // false to not change the size of the wrapper
@@ -247,6 +249,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       "pageClass",
       "wrapperClass",
       "scrollerClass",
+      "pullDownClass",
+      "pullUpClass",
       "adaptPage",
       "fixedHeightSelector",
       "resizeWrapper",
@@ -457,6 +461,17 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       }
     return adjust;
     },
+ 
+  //--------------------------------------------------------
+  // If there's a pull-down element, we need to set the
+  // topOffset to the height of that element. If user
+  // specified a topOffset option, use that instead, though.
+  //--------------------------------------------------------    
+  _setTopOffsetForPullDown: function() {
+    if (this.$pullDown && !this.options.topOffset) { 
+      this.options.topOffset = this.$pullDown.actual("height");  
+    }
+  },    
 
   //--------------------------------------------------------
   //Resize the wrapper for the scrolled region to fill the
@@ -481,7 +496,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   undoResizeWrapper: function() {
     if (this.origWrapperHeight !== undefined) { this.$wrapper.height(this._origWrapperHeight); }
   },
-
+  
   //-------------------------------------------------
   //Refresh the iscroll object
   // Insure that refresh is called with proper timing
@@ -527,11 +542,14 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // the widget was called via this.element
     // The options defined above can be accessed via
     // this.options
-    this.$wrapper = this.element;                            // JQuery object containing the element we are creating this widget for
+    this.$wrapper = this.element;                                 // JQuery object containing the element we are creating this widget for
     this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
     this.$scroller = this.$wrapper.children(":first");            // Get the first child of the wrapper, which is the
-                                                          //   element that we will scroll
-    if (!this.$scroller) { return; }                             // If there isn't one, nothing to do
+                                                                  //   element that we will scroll
+    if (!this.$scroller) { return; }                              // If there isn't one, nothing to do
+    
+    this.$pullDown = $("." + this.options.pullDownClass, this.$scroller);
+    this.$pullUp = $("." + this.options.pullUpClass, this.$scroller);
 
     // Merge options from data-iscroll, if present
     $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));
@@ -571,7 +589,9 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     if (this.options.refreshOnPageBeforeShow) {
       this.$page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
       }
-
+        
+    this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
+    
     // Resize the wrapper and refresh iScroll on resize
     // You might want to do this on orientationchange on mobile
     // devices, but, on iOS, at least, resize event works better,
@@ -590,8 +610,8 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       $(window).bind(this.options.resizeEvents, $.proxy(this._windowResizeFunc, this));
       }
 
-    this._create_iscroll_object();
-    this._merge_from_iscroll_options();     // Merge iscroll options into widget options
+    this._create_iscroll_object(); 
+    this._merge_from_iscroll_options();     // Merge iscroll options into widget options      
   },
 
   //----------------------------------------------------------

@@ -449,6 +449,23 @@ be scrolled.)
 
 Default: `"iscroll-scroller"`
 
+####pullDownClass
+
+A CSS class, or a space-separated list of classes, which (in a future widget version) will be 
+added to the pull-down element, if any.
+
+Currently, you need to add this class to your markup yourself.
+
+If this class is found within the scroller, and the `topOffset` option value is not set or is zero, 
+then the `topOffset` will be set to the height of the pull-down element.
+
+####pullUpClass
+
+A CSS class, or a space-separated list of classes, which (in a future widget version) will be added
+to the pull-up element, if any.
+
+Currently, this option is not used.
+
 ####adaptPage
 
 If true, necessary adaptations will be made to the page to accommodate iScroll. If false,
@@ -629,6 +646,17 @@ else yourself, you can target the last child of the wrapper, and so you don't ne
 `scrollbarClass` to identify the scrollbar. So, iScroll will still do all of it's usual
 initialization. By using the `!important` modifier, your CSS will override the top and
 bottom locations that iScroll itself sets.
+
+Pull to Refresh
+---------------
+This widget can support "pull to refresh" functionality. You need to add code and CSS for this.
+The widget has some internal support to help. Eventually, I expect the widget will support
+pull-to-refresh internally.
+
+Currently, support for "pull to refresh" is limited to setting the `topOffset` option for you.
+If your scroller contains a pull-down element (one marked with the `pullDownClass` option's
+class), then the `topOffset` will be set to the height of that element. This will make the
+pull-down initially hidden from view, above the top of the wrapper.
 
 Multiple Scrolling Areas
 ------------------------
