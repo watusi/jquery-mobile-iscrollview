@@ -235,12 +235,12 @@ If you want to do something more elaborate when a pull block enters each state, 
 provide a callback option or (recommended) bind or delegate to a jQuery event callback function. 
 The associated events are:
 
-* `iscroll_pulldownreset`
-* `iscroll_pulldownpulled`
-* `iscroll_pulldownloading`
-* `iscroll_pullupreset`
-* `iscroll_pulluppulled`
-* `iscroll_pulluploading`   
+* `iscroll_onpulldownreset`
+* `iscroll_onpulldownpulled`
+* `iscroll_onpulldownloading`
+* `iscroll_onpullupreset`
+* `iscroll_onpulluppulled`
+* `iscroll_onpulluploading`   
 
 #### Event and Callback Option Functions
 
@@ -252,8 +252,8 @@ The example code below is from the demo:
 
     $(document).delegate("div.pull-demo-page", "pageinit", function(event) {
         $(".iscroll-wrapper", this).bind( { 
-        "iscroll_pulldown" : onPullDown,    
-        "iscroll_pullup"   : onPullUp
+        "iscroll_onpulldown" : onPullDown,    
+        "iscroll_onpullup"   : onPullUp
         });
       }); 
    
@@ -264,7 +264,7 @@ Your callback function receives two parameters:
 ##### e
 
 This is the event object that originally gave rise to the callback. This is probably not very
-useful to you. This will always be an `iscroll_scrollend` event.
+useful to you.
 
 ##### d
 
@@ -403,7 +403,7 @@ This permits the application to perform some action (such as scrolling the
 the scroller, say if positioned at the end of a list) after the iScroll refresh
 function has completed and updated it's internal variables.
 
-While one might use a refresh event for this, the callback eliminates any
+While one might use an `iscroll_onrefresh` event for this, the callback eliminates any
 ambiguity as to *which* specific `refresh()` call has completed.
 
 ####scrollTo(x, y, time, relative)
@@ -809,18 +809,30 @@ Default: `"iscroll-pull-loading"`
 
 Events
 ------
-There are two ways to be notified when some event occurs in the widget.
-The widget exposes JQuery events that can be bound like any other event.
-The names are prepended with the string `iscroll_`. So, the `refresh`
-event for this widget is actually `iscroll_refresh`.
+There are two ways to be notified when some event occurs in the widget: by binding/delegating
+jQuery events, or by specifying a callback in the widget's `options` object.
 
-Alternately, you can add callback functions to the options object. They key
+When an event is triggered it will call the callback if defined in options, and, as well, trigger 
+any bound events.
+
+### jQuery Event Callbacks
+
+The widget exposes jQuery events that can be bound like any other event.
+The names are prepended with the string `iscroll_`. So, the `onrefresh`
+event for this widget is actually `iscroll_onrefresh`. (Note also that widget event names
+are different than iScroll event names. iScroll event names are in mixed case. Widget event
+names are in all lower case - this is a limitation of jQuery widgets.)
+
+
+### Option Callbacks
+
+Alternately, you can add callback functions to the widget's `options` object. The key
 of the option corresponds to the event name **without** the widget name
 prefix. So, you can add a callback function for the refresh event
-with the key `refresh`.
+with the key `onrefresh`.
 
-When an event is triggered it will call the callback if defined in options,
-and, as well, trigger any bound events.
+
+### Bound Callback parameters
 
 Bound event callbacks receive two parameters:
 
@@ -833,30 +845,30 @@ object that triggered the event. (e.g. the wrapper).
 
 ###Example event delegation:
 
-    $(document).delegate("div.my-content", "iscroll_refresh", function(event, data) {
+    $(document).delegate("div.my-content", "iscroll_onrefresh", function(event, data) {
         var v = data.iscrollview;  // In case we need to reference the iscrollview
-        console.write("iscroll_refresh occured");
+        console.write("iscroll_onrefresh occured");
         }
 
 ###Supported Events
 
-* `iscroll_refresh`
-* `iscroll_beforescrollstart`
-* `iscroll_scrollstart`
-* `iscroll_beforescrollmove`
-* `iscroll_scrollmove`
-* `iscroll_beforescrollend`
-* `iscroll_touchend`
-* `iscroll_destroy`
-* `iscroll_zoomstart`
-* `iscroll_zoom`
-* `iscroll_zoomend`
-* `iscroll_pulldown`
-* `iscroll_pulldownreset`
-* `iscroll_pulldownpulled`
-* `iscroll_pullup`
-* `iscrollpullupreset`
-* `iscroll_pulluppulled`
+* `iscroll_onrefresh`
+* `iscroll_onbeforescrollstart`
+* `iscroll_onscrollstart`
+* `iscroll_onbeforescrollmove`
+* `iscroll_onscrollmove`
+* `iscroll_onbeforescrollend`
+* `iscroll_ontouchend`
+* `iscroll_ondestroy`
+* `iscroll_onzoomstart`
+* `iscroll_onzoom`
+* `iscroll_onzoomend`
+* `iscroll_onpulldown`
+* `iscroll_onpulldownreset`
+* `iscroll_onpulldownpulled`
+* `iscroll_onpullup`
+* `iscroll_onpullupreset`
+* `iscroll_onpulluppulled`
 
 ---
 

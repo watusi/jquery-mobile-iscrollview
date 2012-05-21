@@ -87,9 +87,9 @@
         <div class="iscroll-pullup">
           <span class="iscroll-pull-icon"></span>
           <span 
-            data-iscroll-pulled-text="Custom pulled text (default: Pull up to refresh...)"
-            data-iscroll-loading-text="Custom loading text (default: Release to refresh...)"
-            class="iscroll-pull-label" >Custom reset text (default: Pull up to refresh...)</span>
+            data-iscroll-pulled-text="Custom pulled text"
+            data-iscroll-loading-text="Custom loading text"
+            class="iscroll-pull-label" >Custom reset text</span>
         </div>
                             
       </div>
@@ -115,8 +115,8 @@
   
     $(document).delegate("div.pull-demo-page", "pageinit", function(event) {
         $(".iscroll-wrapper", this).bind( { 
-        "iscroll_pulldown" : onPullDown,    
-        "iscroll_pullup"   : onPullUp
+        "iscroll_onpulldown" : onPullDown,    
+        "iscroll_onpullup"   : onPullUp
         });
       });  
 
@@ -148,10 +148,7 @@
           };
         $list.jqmData("listview").refresh();     
         iscrollview.refresh(null, function() {    // Scroll is delayed until refresh completed
-          if (iscrollview.scrollerH() > 
-              iscrollview.wrapperH()) - $(".iscroll-pullup-spacer", this).height()) {
-            iscrollview.scrollToElement(lastItemSelector, 400);  
-          }
+          iscrollview.scrollToElement(lastItemSelector, 400);  
           }, this); 
         }, 1500); 
       };

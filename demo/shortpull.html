@@ -21,7 +21,7 @@
     <div data-role="page" data-dom-cache="true" class="short-pull-demo-page">
 
       <div data-role="header" data-position="fixed">
-        <h1>PULL</h1>
+        <h1>SHORT PULL</h1>
       </div>
 
       <div data-role="content" data-iscroll>
@@ -68,8 +68,8 @@
   
     $(document).delegate("div.short-pull-demo-page", "pageinit", function(event) {
         $(".iscroll-wrapper", this).bind( { 
-        "iscroll_pulldown" : onPullDown,    
-        "iscroll_pullup"   : onPullUp
+        "iscroll_onpulldown" : onPullDown,    
+        "iscroll_onpullup"   : onPullUp
         });
       });  
 

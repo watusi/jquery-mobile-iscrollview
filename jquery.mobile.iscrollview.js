@@ -248,25 +248,25 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // iScroll4 instantiation, (only one I know about that might be
     // called is refresh) then you have to use a function option.
     //-------------------------------------------------------------
-    refresh:           null,
-    beforescrollstart: null,
-    scrollstart:       null,
-    beforescrollmove:  null,
-    scrollmove:        null,
-    beforescrollend:   null,
-    scrollend:         null,
-    touchend:          null,
-    destroy:           null,
-    zoomstart:         null,
-    zoom:              null,
-    zoomend:           null,
+    onrefresh:           null,
+    onbeforescrollstart: null,
+    onscrollstart:       null,
+    onbeforescrollmove:  null,
+    onscrollmove:        null,
+    onbeforescrollend:   null,
+    onscrollend:         null,
+    ontouchend:          null,
+    ondestroy:           null,
+    onzoomstart:         null,
+    onzoom:              null,
+    onzoomend:           null,
      
-    pulldownreset:     null,
-    pulldownpulled:    null,    
-    pulldown:          null,    
-    pullupreset:       null,
-    pulluppulled:      null,    
-    pullup:            null
+    onpulldownreset:     null,
+    onpulldownpulled:    null,    
+    onpulldown:          null,    
+    onpullupreset:       null,
+    onpulluppulled:      null,    
+    onpullup:            null
     },
 
     //---------------------------------------------------------------------------------------
@@ -314,18 +314,18 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Map of widget event names to corresponding iscroll4 object event names
     //-----------------------------------------------------------------------
     _event_map: {
-      refresh:           "onRefresh",
-      beforescrollstart: "onBeforeScrollStart",
-      scrollstart:       "onScrollStart",
-      beforescrollmove:  "onBeforeScrollMove",
-      scrollmove:        'onScrollMove',
-      beforescrollend:   'onBeforeScrollEnd',
-      scrollend:         "onScrollEnd",
-      touchend:          "onTouchEnd",
-      destroy:           "onDetroy",
-      zoomstart:         "onZoomStart",
-      zoom:              "onZoom",
-      zoomend:           "onZoomEnd"
+      onrefresh:           "onRefresh",
+      onbeforescrollstart: "onBeforeScrollStart",
+      onscrollstart:       "onScrollStart",
+      onbeforescrollmove:  "onBeforeScrollMove",
+      onscrollmove:        'onScrollMove',
+      onbeforescrollend:   'onBeforeScrollEnd',
+      onscrollend:         "onScrollEnd",
+      ontouchend:          "onTouchEnd",
+      ondestroy:           "onDetroy",
+      onzoomstart:         "onZoomStart",
+      onzoom:              "onZoom",
+      onzoomend:           "onZoomEnd"
       },
        
     // The following functions are called from the proxy event functions. These are things
@@ -375,54 +375,54 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       onRefresh: function(e) {
         this.iscrollview._emulateBottomOffset.call(this);
         this.iscrollview._pullOnRefresh.call(this.iscrollview);
-        this.iscrollview._trigger("refresh",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onrefresh",e,{"iscrollview":this.iscrollview});
         },
 
       onBeforeScrollStart: function(e) {
         this.iscrollview._fixInput.call(this, e);     
-        this.iscrollview._trigger("beforescrollstart",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onbeforescrollstart",e,{"iscrollview":this.iscrollview});
         },
 
       onScrollStart: function(e) {
-        this.iscrollview._trigger("scrollstart",e,{"iscrollview":this.iscrollview });
+        this.iscrollview._trigger("onscrollstart",e,{"iscrollview":this.iscrollview });
         },
         
       onBeforeScrollMove:  function(e) {
-        this.iscrollview._trigger("beforescrollmove",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onbeforescrollmove",e,{"iscrollview":this.iscrollview});
         },
 
       onScrollMove: function(e) {
         this.iscrollview._pullOnScrollMove.call(this.iscrollview); 
-        this.iscrollview._trigger("scrollmove",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onscrollmove",e,{"iscrollview":this.iscrollview});
         },
 
       onBeforeScrollEnd:   function(e) {
-        this.iscrollview._trigger("beforescrollend",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onbeforescrollend",e,{"iscrollview":this.iscrollview});
         },
      
       onScrollEnd: function(e) {
         this.iscrollview._pullOnScrollEnd.call(this.iscrollview, e);
-        this.iscrollview._trigger("scrollend",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onscrollend",e,{"iscrollview":this.iscrollview});
         },
         
       onTouchEnd:          function(e) {
-        this.iscrollview._trigger("touchend",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("ontouchend",e,{"iscrollview":this.iscrollview});
         },
         
       onDestroy:           function(e) {
-        this.iscrollview._trigger("destroy",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("ondestroy",e,{"iscrollview":this.iscrollview});
         },
         
       onZoomStart:         function(e) {
-        this.iscrollview._trigger("zoomstart",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onzoomstart",e,{"iscrollview":this.iscrollview});
         },
         
       onZoom:              function(e) {
-        this.iscrollview._trigger("zoom",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onzoom",e,{"iscrollview":this.iscrollview});
         },
         
       onZoomEnd:           function(e) {
-        this.iscrollview._trigger("zoomend",e,{"iscrollview":this.iscrollview});
+        this.iscrollview._trigger("onzoomend",e,{"iscrollview":this.iscrollview});
         }
         
       },
@@ -1131,12 +1131,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       
     _pullDownSetStateReset: function(e) {
       this._pullSetStateReset(this.$pullDown, this.options.pullDownResetText);
-      this._trigger("pulldownreset", e, {"iscrollview":this} );      
+      this._trigger("onpulldownreset", e, {"iscrollview":this} );      
       },      
       
     _pullUpSetStateReset: function(e) {
       this._pullSetStateReset(this.$pullUp, this.options.pullUpResetText);
-      this._trigger("pullupreset", e, {"iscrollview":this} );       
+      this._trigger("onpullupreset", e, {"iscrollview":this} );       
       },
       
     // Set a pull block to pulled state
@@ -1147,12 +1147,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       
     _pullDownSetStatePulled: function(e) {
       this._pullSetStatePulled(this.$pullDown, this.options.pullDownPulledText);
-      this._trigger("pulldownpulled", e, {"iscrollview":this} );       
+      this._trigger("onpulldownpulled", e, {"iscrollview":this} );       
       },
     
     _pullUpSetStatePulled: function (e) {
       this._pullSetStatePulled(this.$pullUp, this.options.pullUpPulledText);
-      this._trigger("pulluppulled", e, {"iscrollview":this} );       
+      this._trigger("onpulluppulled", e, {"iscrollview":this} );       
       },
 
     // Set a pull block to the loading state
@@ -1163,12 +1163,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     
     _pullDownSetStateLoading: function (e) {
       this._pullSetStateLoading(this.$pullDown, this.options.pullDownLoadingText);
-      this._trigger("pulldownloading", e, {"iscrollview":this} );         
+      this._trigger("onpulldownloading", e, {"iscrollview":this} );         
       },
     
     _pullUpSetStateLoading: function(e) {
       this._pullSetStateLoading(this.$pullUp, this.options.pullUpLoadingText); 
-      this._trigger("pulluploading", e, {"iscrollview":this} );          
+      this._trigger("onpulluploading", e, {"iscrollview":this} );          
      },
   
     _pullOnRefresh: function (e) {
@@ -1226,11 +1226,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     _pullOnScrollEnd: function (e) {
       if (this._pullDownIsPulled(e)) { 
         this._pullDownSetStateLoading(e);
-        this._trigger("pulldown", e, {"iscrollview":this} );    
+        this._trigger("onpulldown", e, {"iscrollview":this} );    
         }
       else if (this._pullUpIsPulled(e)) { 
         this._pullUpSetStateLoading(e); 
-        this._trigger("pullup", e, {"iscrollview":this} );    
+        this._trigger("onpullup", e, {"iscrollview":this} );    
         }
       }  
     
