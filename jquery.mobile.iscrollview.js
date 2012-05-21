@@ -61,11 +61,11 @@ Author: @scottjehl
 Further changes: @addyosmani
 Licensed under the MIT license
 
-dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
+dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
+             iScroll fork https://github.com/watusi/iscroll (watusi branch) preferably
              jquery.actual 1.0.6 https://github.com/dreamerslab/jquery.actual
              jQuery 1.6.4  (JQM 1.0.1) or 1.7.1 (JQM 1.1)
              JQuery Mobile = 1.0.1 or 1.1
-
 */
 
 ;   // Ignore jslint/jshint warning - for safety - terminate previous file if unterminated
@@ -104,26 +104,19 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // iScroll) with our own. These use jquery.actual to get the
     // height/width while a page is loaded but hidden. So, refresh()
     // will work at the time of construction at pagecreate
-    this._clientWidth  = function(ele) { 
-      return $(ele).actual("innerWidth");  
-      };
-    this._clientHeight = function(ele) { 
-      return $(ele).actual("innerHeight"); 
-      };
-    this._offsetWidth  = function(ele) { 
-     return $(ele).actual("outerWidth");  
-      };
-    this._offsetHeight = function(ele) { 
-      return $(ele).actual("outerHeight"); 
-    };    
+    this._clientWidth  = function(ele) { return $(ele).actual("innerWidth"); };
+    this._clientHeight = function(ele) { return $(ele).actual("innerHeight"); };
+    this._offsetWidth  = function(ele) { return $(ele).actual("outerWidth"); };
+    this._offsetHeight = function(ele) { return $(ele).actual("outerHeight"); };    
     // Event proxies will use this
     this.iscrollview = iscrollview;    
     iScroll.call(this, scroller, options);
-  }
+    }
 
   _subclass(IScroll, iScroll);
-  
   $.widget("mobile.iscrollview", $.mobile.widget, {
+  
+  widgetEventPrefix: "iscroll_",
 
   //=========================================================
   // All instance variables are declared here. This is not
@@ -134,18 +127,13 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   iscroll:     null,  // The underlying iScroll object
   $wrapper:    null,  // The wrapper element
   $scroller:   null,  // The scroller element (first child of wrapper)
+  $pullDown:   null,  // The pull-down element (if any)
+  $pullUp:     null,  // The pull-up element (if any)
   $page:       null,  // The page element that contains the wrapper
 
   _firstResize:     true,    // True on first resize, so we can capture original wrapper height
 
   _barsHeight:       null,   // Total height of headers, footers, etc.
-
-  // These are all the original values of CSS attributes before this widget
-  // modifies them. We store these here so that they can be restored on _destroy()
-  _origPageOverflow:     null,
-  _origWrapperHeight:    null,
-  _origWrapperZindex:    null,
-  _origWrapperOverflow:  null,
 
   //----------------------------------------------------
   // Options to be used as defaults
@@ -156,14 +144,24 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // iscroll4 defaults.
     hScroll:    false,   // iScroll4 default is true
     hScrollbar: false,   // iScroll4 default is true
+  
     // Additional iScroll4 options will be back-filled from iscroll4
 
     // iscrollview widget options
-    pageClass:      "iscroll-page",      // Class to be applied to pages containing this widget
-    wrapperClass:   "iscroll-wrapper",   // Class to be applied to wrapper containing this widget
-    scrollerClass:  "iscroll-scroller",  // Class to be applied to scroller within wrapper
-    pullDownClass: "iscroll-pulldown",
-    pullUpClass:   "iscroll-pullup",    
+    
+    // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
+    // there.
+    bottomOffset: 0,  
+    emulateBottomOffset: true,
+    
+    pageClass:       "iscroll-page",        // Class to be applied to pages containing this widget
+    wrapperClass:    "iscroll-wrapper",     // Class to be applied to wrapper containing this widget
+    scrollerClass:   "iscroll-scroller",    // Class to be applied to scroller within wrapper
+    pullDownClass:   "iscroll-pulldown",    // Class for pulldown element (if any)
+    pullUpClass:     "iscroll-pullup",      // Class for pullup element (if any)
+    pullLabelClass:  "iscroll-pull-label",  // Class for pull element label span
+    pullUpSpacerClass: "iscroll-pullup-spacer", // Class added to generated pullup spacer
+    scrollerContentClass: "iscroll-scroller-content", // Real content of scroller, not including pull-up, pull-down
 
     // true to adapt the page containing the widget. If false, the widget will not alter any
     // elements outside of the widget's container.
@@ -205,31 +203,53 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // Timeout to allow page to render prior to refresh()
     refreshDelay:  IsAndroid ? 200 : 50,   // Wild-ass guesses
     
+    // true to set the minimum height of scroller content (not including
+    // any pull-down or pull-up) to the height of the wrapper.. This allows 
+    // scrolling empty content e.g. if using pull down to refresh. As well, 
+    // this will displace any pull up to refresh so that it is not initially 
+    // visible. 
+    expandScrollerToFillWrapper: true,
+ 
+    // Normally, we need the wrapper to have no padding. Otherwise, the result will look awkward,
+    // you won't be able to grab the padded area to scroll, etc. 
+    removeWrapperPadding: true,
+    
+    // But we want to add that padding back inside the scroller. We add a div around the content
+    // inside any pull-down/pull-up to replace the padding removed from the wrapper.
+    addScrollerPadding: true,
+    
+    // iScroll scrolls the first child of the wrapper. I don't see a use case for having more
+    // than one child. What kind of mess is going to be shown in that case? So, by default, we 
+    // just wrap ALL of the children of the wrapper with a new <div> that will be the scroller. 
+    // This way you don't need to worry about wrapping all the elements to be scrolled if there 
+    // is more than one. If there is only one child, we create this <div> unnecessarily, but - 
+    // big deal. If, for some reason, you want to create the markup for the scroller yourself, 
+    // set this to false. 
+    createScroller: true,
+    
+    pullDownResetText   : "Pull down to refresh...",
+    pullDownPulledText  : "Release to refresh...",
+    pullDownLoadingText : "Loading...",
+    pullUpResetText     : "Pull up to refresh...",
+    pullUpPulledText    : "Release to refresh...",
+    pullUpLoadingText   : "Loading...",
+    
+    pullPulledClass     : "iscroll-pull-pulled",
+    pullLoadingClass    : "iscroll-pull-loading",
+    
     //-------------------------------------------------------------
-    // Widget events. These correspond to events defined for the
-    // iscroll object, but follow widget naming conventions.
-    // These will be copied to the corresponding iscroll object
-    // options, which follow different naming conventions, and
-    // removed from the options passed to iscroll to avoid
-    // pollution of the iscroll options object.
+    // For better or worse, widgets have two mechanisms for dealing
+    // with events. The needs to be a set of options that correspond
+    // to each event. If present, the option is a function. As
+    // well, the widget prepends the widget event prefix ("iscroll_")
+    // to each event name and triggers a jQuery event by that name.
+    // BOTH mechanisms can be used simultaneously, though not sure
+    // why you'd want to. If you need to handle an event during
+    // iScroll4 instantiation, (only one I know about that might be
+    // called is refresh) then you have to use a function option.
     //-------------------------------------------------------------
     refresh:           null,
-
-    // iscroll4 requires that the user's onBeforeScrollStart function call preventDefault().
-    // Additionally, form input can be fixed in this callback, and we do so if the
-    // associated option is set. If you overwrite the callback make sure to save
-    // the function reference and call after your code.
-    beforescrollstart: function(e) {
-      if ($(this).iscrollview("option", "fixInput")) {  // note we are not in iscrollview object context
-        var tagName,
-            target = e.target;
-        while (target.nodeType !== 1) { target = target.parentNode; }
-        tagName = target.tagName.toLowerCase();
-        if (tagName === "select" || tagName === "input" || tagName === "textarea") { return; }
-        }
-      e.preventDefault();
-      },
-
+    beforescrollstart: null,
     scrollstart:       null,
     beforescrollmove:  null,
     scrollmove:        null,
@@ -239,18 +259,29 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     destroy:           null,
     zoomstart:         null,
     zoom:              null,
-    zoomend:           null
+    zoomend:           null,
+     
+    pulldownreset:     null,
+    pulldownpulled:    null,    
+    pulldown:          null,    
+    pullupreset:       null,
+    pulluppulled:      null,    
+    pullup:            null
     },
 
     //---------------------------------------------------------------------------------------
     // Array of keys of options that are widget-only options (not options in iscroll4 object)
     //---------------------------------------------------------------------------------------
     _widget_only_options: [
+      "emulateBottomoffset",       
       "pageClass",
       "wrapperClass",
       "scrollerClass",
       "pullDownClass",
-      "pullUpClass",
+      "pullUpClass",  
+      "scrollerContentClass",
+      "pullUpLabelClass",
+      "pullUpSpacerClass",
       "adaptPage",
       "fixedHeightSelector",
       "resizeWrapper",
@@ -258,7 +289,25 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       "refreshOnPageBeforeShow",
       "fixInput",
       "wrapperAdd",
-      "refreshDelay"
+      "refreshDelay",
+      "expandScrollerToFillWrapper",
+      "removeWrapperPadding",
+      "addScrollerPadding",
+      "createScroller",   
+      "pullDownResetText",
+      "pullDownPulledText",
+      "pullDownLoadingText",
+      "pullUpResetText",
+      "pullUpPulledText",
+      "pullUpLoadingText",      
+      "pullPulledClass",
+      "pullLoadingClass",     
+      "pulldownreset",
+      "pulldownpulled",
+      "pulldown",
+      "pullupreset",
+      "pulluppulled",
+      "pullup"
       ],
 
     //-----------------------------------------------------------------------
@@ -278,6 +327,32 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
       zoom:              "onZoom",
       zoomend:           "onZoomEnd"
       },
+       
+    // The following functions are called from the proxy event functions. These are things
+    // we always want to do on certain iScroll4 events. "this" is not this iscrollview object!
+    // It's the iScroll4 context. 
+     
+    // Emulate bottomOffset functionality in case iScroll doesn't have patch for bottomOffset     
+    _emulateBottomOffset: function() {
+      if (this.iscrollview.options.emulateBottomOffset) {
+        this.maxScrollY = this.wrapperH - this.scrollerH + this.minScrollY + 
+          this.iscrollview.options.bottomOffset; 
+        }       
+    },
+    
+    // Allow events through to input elements
+    _fixInput: function(e) {
+     if (this.iscrollview.options.fixInput ) { 
+       var tagName,
+           target = e.target;
+       while (target.nodeType !== 1) { target = target.parentNode; }
+         tagName = target.tagName.toLowerCase();
+         if (tagName === "select" || tagName === "input" || tagName === "textarea") { 
+           return; 
+         }
+       }
+      e.preventDefault();     
+    },  
 
     //------------------------------------------------------------------------------
     // Functions that adapt iscroll callbacks to Widget Factory conventions.
@@ -296,18 +371,60 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     //        iscrollview : The iscrollview object
     //------------------------------------------------------------------------------
     _proxy_event_funcs: {
-      onRefresh:           function(e) {this.iscrollview._trigger("refresh",           e, {"iscrollview": this.iscrollview });},
-      onBeforeScrollStart: function(e) {this.iscrollview._trigger("beforescrollstart", e, {"iscrollview": this.iscrollview });},
-      onScrollStart:       function(e) {this.iscrollview._trigger("scrollstart",       e, {"iscrollview": this.iscrollview });},
-      onBeforeScrollMove:  function(e) {this.iscrollview._trigger("beforescrollmove",  e, {"iscrollview": this.iscrollview });},
-      onScrollMove:        function(e) {this.iscrollview._trigger("scrollmove",        e, {"iscrollview": this.iscrollview });},
-      onBeforeScrollEnd:   function(e) {this.iscrollview._trigger("beforescrollend",   e, {"iscrollview": this.iscrollview });},
-      onScrollEnd:         function(e) {this.iscrollview._trigger("scrollend",         e, {"iscrollview": this.iscrollview });},
-      onTouchEnd:          function(e) {this.iscrollview._trigger("touchend",          e, {"iscrollview": this.iscrollview });},
-      onDestroy:           function(e) {this.iscrollview._trigger("destroy",           e, {"iscrollview": this.iscrollview });},
-      onZoomStart:         function(e) {this.iscrollview._trigger("zoomstart",         e, {"iscrollview": this.iscrollview });},
-      onZoom:              function(e) {this.iscrollview._trigger("zoom",              e, {"iscrollview": this.iscrollview });},
-      onZoomEnd:           function(e) {this.iscrollview._trigger("zoomend",           e, {"iscrollview": this.iscrollview });}
+    
+      onRefresh: function(e) {
+        this.iscrollview._emulateBottomOffset.call(this);
+        this.iscrollview._pullOnRefresh.call(this.iscrollview);
+        this.iscrollview._trigger("refresh",e,{"iscrollview":this.iscrollview});
+        },
+
+      onBeforeScrollStart: function(e) {
+        this.iscrollview._fixInput.call(this, e);     
+        this.iscrollview._trigger("beforescrollstart",e,{"iscrollview":this.iscrollview});
+        },
+
+      onScrollStart: function(e) {
+        this.iscrollview._trigger("scrollstart",e,{"iscrollview":this.iscrollview });
+        },
+        
+      onBeforeScrollMove:  function(e) {
+        this.iscrollview._trigger("beforescrollmove",e,{"iscrollview":this.iscrollview});
+        },
+
+      onScrollMove: function(e) {
+        this.iscrollview._pullOnScrollMove.call(this.iscrollview); 
+        this.iscrollview._trigger("scrollmove",e,{"iscrollview":this.iscrollview});
+        },
+
+      onBeforeScrollEnd:   function(e) {
+        this.iscrollview._trigger("beforescrollend",e,{"iscrollview":this.iscrollview});
+        },
+     
+      onScrollEnd: function(e) {
+        this.iscrollview._pullOnScrollEnd.call(this.iscrollview, e);
+        this.iscrollview._trigger("scrollend",e,{"iscrollview":this.iscrollview});
+        },
+        
+      onTouchEnd:          function(e) {
+        this.iscrollview._trigger("touchend",e,{"iscrollview":this.iscrollview});
+        },
+        
+      onDestroy:           function(e) {
+        this.iscrollview._trigger("destroy",e,{"iscrollview":this.iscrollview});
+        },
+        
+      onZoomStart:         function(e) {
+        this.iscrollview._trigger("zoomstart",e,{"iscrollview":this.iscrollview});
+        },
+        
+      onZoom:              function(e) {
+        this.iscrollview._trigger("zoom",e,{"iscrollview":this.iscrollview});
+        },
+        
+      onZoomEnd:           function(e) {
+        this.iscrollview._trigger("zoomend",e,{"iscrollview":this.iscrollview});
+        }
+        
       },
 
   // Merge options from the iscroll object into the widget options
@@ -318,6 +435,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     var options = $.extend(true, {}, this.iscroll.options);
     // Delete event options from the temp options
     $.each(this._proxy_event_funcs, function(k,v) {delete options[k];});
+    if (this.options.emulateBottomOffset) { delete options.bottomOffset; }
     $.extend(this.options, options);   // Merge result into widget options
     },
 
@@ -331,10 +449,10 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     $.each(this._widget_only_options, function(i,v) {delete options[v];});
     // Remove widget event options
     $.each(this._event_map, function(k,v) {delete options[k];});
+    if (this.options.emulateBottomOffset) { delete options.bottomOffset; }  
     // Add proxy event functions
     return $.extend(options, this._proxy_event_funcs);
     },
-
 
   //------------------------------------------------------------------------------
   // Functions that we bind to. They are declared as named members rather than as
@@ -359,17 +477,17 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   //----------------------------
   _raiseFixedHeightElements: function() {
     this.$page.find(this.options.fixedHeightSelector).each(function() {
-      $(this).jqmData("iscrollviewOrigZindex", $(this).css("z-index"));
+      $(this).jqmData("iscrollviewOrigStyle", $(this).attr("style"));
       $(this).css("z-index", 1000);
-     });
-  },
+       });
+    },
 
   _undoRaiseFixedHeightElements: function() {
     this.$page.find(this.options.fixedHeightSelector).each(function() {
-      var zIndex = $(this).jqmData("iscrollviewOrigZindex");
-      if (zIndex !== null) { $(this).css("z-index", zIndex); }
-    });
-  },
+      $(this).attr("style", $(this).jqmData("iscrollviewOrigStyle"));
+      $(this).jqmRemoveData("iscrollviewOrigStyle");      
+      });
+    },
 
   //----------------------------------
   // Adapt the page for this widget
@@ -377,26 +495,27 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   // iscrollview widget per page.
   //----------------------------------
   _adaptPage: function() {
+    if (!this.options.adaptPage) { return; }
     this.$page.addClass(this.options.pageClass);
 
     // XXX: fix crumbled css in transition changePage
     // for jquery mobile 1.0a3 in jquery.mobile.navigation.js changePage
     //  in loadComplete in removeContainerClasses in .removeClass(pageContainerClasses.join(" "));
-    this._origPageOverflow = this.$page.css("overflow");  // Save for later restore
+    this._origPageStyle = this.$page.attr("style");  // Save for later restore
     this.$page.css({overflow: "hidden"});
     this._raiseFixedHeightElements();
 
     // Prevent moving the page with touch. Should be optional?
     // (Maybe you want a scrollview within a scrollable page)
     this.$page.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
-  },
+    },
 
   _undoAdaptPage: function() {
     this.$page.unbind("touchmove", this._preventDefaultFunc);
     this._undoRaiseFixedHeightElements();
-    if (this._origPageOverflow !== undefined) { this.$page.css("overflow", this._origPageOverflow); }
+    this.$page.attr("style", this._origPageStyle); 
     this.$page.removeClass(this.options.pageClass);
-  },
+    },
 
   //--------------------------------------------------------
   // Calculate total bar heights.
@@ -407,7 +526,7 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
         barsHeight += $(this).actual( "outerHeight", { includeMargin : true } );
         });
     this._barsHeight = barsHeight;
-  },
+    },
 
   //-----------------------------------------------------------------------
   // Determine the box-sizing model of an element
@@ -469,16 +588,123 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   //--------------------------------------------------------    
   _setTopOffsetForPullDown: function() {
     if (this.$pullDown && !this.options.topOffset) { 
-      this.options.topOffset = this.$pullDown.actual("height");  
+      this.options.topOffset = this.$pullDown.actual("outerHeight",{includeMargin:true});  
+      }
+    }, 
+    
+  //--------------------------------------------------------
+  // If there's a pull-up element, we need to set the
+  // bottomOffset to the height of that element. If user
+  // specified a bottomOffset option, use that instead, though.
+  //--------------------------------------------------------    
+  _setBottomOffsetForPullUp: function() {
+    if (this.$pullUp && !this.options.bottomOffset) { 
+      this.options.bottomOffset = this.$pullUp.actual("outerHeight",{includeMargin:true});  
+      }
+    }, 
+   
+  //---------------------------------------------------------
+  // Correct the wrapper CSS position in case it is static.
+  // We need relative or absolute for proper positioning of
+  // the scrollbar. Either relative or absolute on the wrapper
+  // will cause the abosolute positioning of the scrollbar in
+  // iScroll to be relative to the wrapper. iScroll examples
+  // all work because they happen to use position:fixed on the
+  // wrapper. Rather than force the user to set wrapper 
+  // positioning, just force it to relative if it is static
+  // (which is CSS default.)
+  // 
+  // Hopefully, user won't  set it to fixed, I dunno what 
+  // they'd be trying to do then!
+  //---------------------------------------------------------  
+  _correctWrapperPosition: function() {            
+    if (this.$wrapper.css("position") === "static") {
+      this.$wrapper.css("position", "relative");
+      }    
+    },
+    
+   _removeWrapperPadding: function() {
+     var $wrapper = this.$wrapper;
+     if (this.options.removeWrapperPadding) { 
+       // Save padding so we can re-apply it to the iscroll-scroller-content div that we create
+       this._origWrapperPaddingLeft   = $wrapper.css("padding-left");
+       this._origWrapperPaddingRight  = $wrapper.css("padding-right");
+       this._origWrapperPaddingTop    = $wrapper.css("padding-top");
+       this._origWrapperPaddingBottom = $wrapper.css("padding-bottom");
+       this.$wrapper.css("padding", 0); 
+       }
+   },
+  
+  //---------------------------------------------------------
+  // Modify some wrapper CSS
+  //---------------------------------------------------------  
+  _modifyWrapperCSS: function() {
+    this._origWrapperStyle = this.$wrapper.attr("style");            
+    this.$wrapper.css({ 
+                        "z-index"  : 1,         // Lower the wrapper
+                        "overflow" : "hidden"   // hide overflow
+                        }); 
+    this._removeWrapperPadding();
+    this._correctWrapperPosition();
+    },
+  
+  _undoModifyWrapperCSS: function() {
+    this.$wrapper.attr("style", this._origWrapperStyle);                 
+    },
+       
+  //---------------------------------------------------------
+  // Adds padding around scrolled content (not including
+  // any pull-down or pull-up) using a div with padding
+  // removed from wrapper.     
+  //---------------------------------------------------------
+  _addScrollerPadding: function () {
+  if (this.options.removeWrapperPadding && this.options.addScrollerPadding) {
+    // We do not store $scrollerContent in the object, because elements might be added/deleted
+    // after instantiation. When we undo, we need the CURRENT children in order to unwrap
+    var $scrollerContent = this.$scroller.children()
+                                         .not("." + this.options.pullDownClass)
+                                         .not("." + this.options.pullUpClass)
+                                         .not("." + this.options.pullUpSpacerClass),
+        $scrollerContentWrapper;
+    $scrollerContent.wrapAll("<div/>");
+    
+    $scrollerContentWrapper = $scrollerContent.parent().addClass(this.options.scrollerContentClass);
+    $scrollerContentWrapper.css({
+      "padding-left"   : this._origWrapperPaddingLeft,
+      "padding-right"  : this._origWrapperPaddingRight,
+      "padding-top"    : this._origWrapperPaddingTop,
+      "padding-bottom" : this._origWrapperPaddingBottom
+      });
     }
-  },    
-
+  },
+  
+  _undoAddScrollerPadding: function () {
+    if (this.options.removeWrapperPadding && this.options.addScrollerPadding) {   
+      $("." + this.options.scrollerContentClass, this.$scroller).children().unWrap();
+      }  
+    },
+  
+  //---------------------------------------------------------
+  // Add some convenient classes in case user wants to style 
+  // wrappers/scrollers that use iscroll.  
+  //---------------------------------------------------------
+  _addWrapperClasses: function() {
+    this.$wrapper.addClass(this.options.wrapperClass);
+    this.$scroller.addClass(this.options.scrollerClass);  
+    },
+  
+  _undoAddWrapperClasses: function() {
+    this.$scroller.removeClass(this.options.scrollerClass);    
+    this.$wrapper.removeClass(this.options.wrapperClass);
+    },
+  
   //--------------------------------------------------------
   //Resize the wrapper for the scrolled region to fill the
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   resizeWrapper: function() {
-  var adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
+  if (!this.options.resizeWrapper) { return; }
+    var adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
     this.$wrapper.height(
       $(window).actual("height") - // Height of the window
       this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
@@ -495,8 +721,143 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
 
   undoResizeWrapper: function() {
     if (this.origWrapperHeight !== undefined) { this.$wrapper.height(this._origWrapperHeight); }
-  },
+    },  
+
+  //---------------------------------------------------------
+  // Make various modifications to the wrapper
+  //---------------------------------------------------------  
+  _modifyWrapper: function() {
+    this._addWrapperClasses();
+    this._modifyWrapperCSS();
   
+    // Resize the wrapper and refresh iScroll on resize
+    // You might want to do this on orientationchange on mobile
+    // devices, but, on iOS, at least, resize event works better,
+    // because orientationchange event happens too late and you will
+    // see footer(s) being pushed down after the rotation
+    //
+    // iscroll4 has event handling for resize and orientation change,
+    // but doesn't seem to work with JQuery Mobile, probably because
+    // of it's page structure for AJAX loading. So, we have to do this
+    // in the widget code. As well, we need to resize the wrapper in any
+    // case.
+    //
+    // TODO: Consider using jquery-resize.js to rate-limit resize events
+    if (this.options.resizeWrapper) {
+      this.resizeWrapper();   // Resize wrapper to take remaining space after bars
+      $(window).bind(this.options.resizeEvents, $.proxy(this._windowResizeFunc, this));
+      }     
+    },
+ 
+  _undoModifyWrapper: function() {
+    this.undoResizeWrapper(); 
+    this._undoModifyWrapperCSS();
+    this._undoAddWrapperClasses();
+    },
+
+  //--------------------------------------------------------  
+  // Modify the pull-down (if any) with reset text
+  // Also, read data-iscroll-release and data-iscroll-loading 
+  // values (if present ) into the corresponding options.  
+  //--------------------------------------------------------  
+  _modifyPullDown: function () {
+    var $pullDownLabel, pulledText, loadingText;
+    if (!this.$pullDown) { return; }
+    $pullDownLabel = $("." + this.options.pullLabelClass, this.$pullDown);
+    if ($pullDownLabel) {
+      this._origPullDownLabelText = $pullDownLabel.text();
+      if (this._origPullDownLabelText) { this.options.pullDownResetText = this._origPullDownLabelText; }
+      else { $pullDownLabel.text(this.options.pullDownResetText); }       
+      pulledText = $pullDownLabel.jqmData("iscroll-pulled-text");
+      if (pulledText) { this.options.pullDownPulledText = pulledText; }     
+      loadingText = $pullDownLabel.jqmData("iscroll-loading-text");
+      if (loadingText) { this.options.pullDownLoadingText = loadingText; }  
+      }       
+    },
+  
+  _undoModifyPullDown: function () {
+    if (!this.$pullDown) { return; }
+    var $pullDownLabel = $("." + this.options.pullLabelClass, this.$pullDown);
+    if (!$pullDownLabel) { return; }    
+    $pullDownLabel.text(this._origPullDownLabelText);    
+  },
+
+  //--------------------------------------------------------
+  // Modify the pullup element (if any) to prevent visual
+  // glitching. Position at the bottom of the scroller.
+  //
+  // Modify the pull-up (if any) with reset text
+  // Also, read data-iscroll-release and data-iscroll-loading 
+  // values (if present ) into the corresponding options.  
+  //--------------------------------------------------------    
+  _modifyPullUp: function () {
+    var $pullUpLabel, pulledText, loadingText;
+  
+    if (!this.$pullUp) { return; }
+    
+    // Since we are positioning the pullUp element absolutely, it is pulled out of the
+    // document flow. We need to add a dummy <div> with the same height as the pullUp.
+    $("<div></div>").insertBefore(this.$pullUp).css(
+      "height", this.$pullUp.actual("outerHeight",{includeMargin:true}) );
+    this.$pullUp.prev().addClass(this.options.pullUpSpacerClass);
+      
+    // We need to position the pullup absolutely at the bottom of the scroller.
+    // The scroller is position:relative, so the pullUp is positioned here relative
+    // to the scroller, not the page. If we don't do this, the pullUp will initially appear
+    // briefly at the bottom of content if content is shorter than the wrapper. 
+    this._origPullUpStyle = this.$pullUp.attr("style");
+    this.$pullUp.css({
+      "position": "absolute", 
+      "bottom": 0,
+      "width": "100%"
+      });     
+    
+    $pullUpLabel = $("." + this.options.pullLabelClass, this.$pullUp);
+    if ($pullUpLabel) {
+      this._origPullUpLabelText = $pullUpLabel.text();
+      if (this._origPullUpLabelText) { this.options.pullUpResetText = this._origPullUpLabelText; } 
+      else { $pullUpLabel.text(this.options.pullUpResetText); } 
+      pulledText = $pullUpLabel.jqmData("iscroll-pulled-text");
+      if (pulledText) { this.options.pullUpPulledText = pulledText; }   
+      loadingText = $pullUpLabel.jqmData("iscroll-loading-text");
+      if (loadingText) { this.options.pullUpLoadingText = loadingText; }
+      }
+             
+    },
+    
+  _undoModifyPullup: function () {
+    this.$pullUp.attr("style", this._origPullUpStyle);   
+    this.$pullUp.prev().remove();  // Remove the dummy div
+    if (this._origPullUpLabelText) {
+      $("." + this.options.pullLabelClass, this.$pullUp).text(this._origPullUpLabelText); 
+      }    
+  },
+
+  //--------------------------------------------------------
+  // Expands the scroller to fill the wrapper. This permits 
+  // dragging an empty scroller, or one that is shorter than 
+  // the wrapper. Otherwise, you could never do pull to
+  // refresh if some content wasn't initially present. As 
+  // well, this pushes any pull-up element down so that it 
+  // will not be visible until the user pulls up.
+  //-------------------------------------------------------- 
+  _expandScrollerToFillWrapper: function() {
+    if (this.options.expandScrollerToFillWrapper) {
+      this._origScrollerStyle = this.$scroller.attr("style");
+      this.$scroller.css("min-height", 
+        this.$wrapper.actual("height") + 
+        this.$pullDown.actual("outerHeight",{includeMargin:true}) + 
+        this.$pullUp.actual("outerHeight",{includeMargin:true})
+        );  
+      } 
+    },
+  
+  _undoExpandScrollerToFillWrapper: function() {
+    if (this._origScrollerStyle !== undefined) {
+      this.$scroller.attr("style", this._origScrollerStyle);
+      } 
+    },  
+
   //-------------------------------------------------
   //Refresh the iscroll object
   // Insure that refresh is called with proper timing
@@ -529,31 +890,47 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
   _create_iscroll_object: function() {
     /*jslint newcap:true */
     this.iscroll = new IScroll(this, this.$wrapper.get(0), this._create_iscroll_options());
-  /* jslint newcap:false */
-  },
-
-  //-------------------------------
-  // _create()
-  //-------------------------------
-  _create: function() {
-    // _create will automatically run the first time this
-    // widget is called. Put the initial widget set-up code
-    // here, then you can access the element on which
-    // the widget was called via this.element
-    // The options defined above can be accessed via
-    // this.options
-    this.$wrapper = this.element;                                 // JQuery object containing the element we are creating this widget for
-    this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
-    this.$scroller = this.$wrapper.children(":first");            // Get the first child of the wrapper, which is the
-                                                                  //   element that we will scroll
-    if (!this.$scroller) { return; }                              // If there isn't one, nothing to do
+    /* jslint newcap:false */
+    },
     
+  //-----------------------------------------
+  // Create scroller
+  //-----------------------------------------
+  _createScroller: function() {
+    if (this.options.createScroller) {
+    this.$wrapper.children().wrapAll("<div/>"); 
+    }
+  },
+  
+  _undoCreateScroller: function() {
+    if (this.options.createScroller) {
+      this.$scroller.children().unWrap();
+    }
+  },
+      
+  //-----------------------------------------
+  // Automatically called on page creation
+  //-----------------------------------------
+  _create: function() {
+    this.$wrapper = this.element;                                 // JQuery object containing the element we are creating this widget for
+    this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper                                                              
+    this._createScroller();
+    this.$scroller = this.$wrapper.children(":first");            // Get the first child of the wrapper, which is the
+                                                                  //   element that we will scroll  
+    if (!this.$scroller) { return; }                                                                     
+ 
+    // Find the scroller content elements. These are the direct descendants of the scroller
+    this.$scrollerContentElements = $("> *", this.$scroller);
+       
+    // Find pull elements, if present
     this.$pullDown = $("." + this.options.pullDownClass, this.$scroller);
-    this.$pullUp = $("." + this.options.pullUpClass, this.$scroller);
-
+    this.$pullUp = $("." + this.options.pullUpClass, this.$scroller);  
+    this._modifyPullDown();
+    this._modifyPullUp();  
+       
     // Merge options from data-iscroll, if present
     $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));
-
+     
     // Calculate height of headers, footers, etc.
     // We only do this at create time. If you change their height after creation,
     // please call calculateBarsHeight() yourself prior to calling resizeWrapper().
@@ -561,18 +938,10 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // Some desktop platforms (example, Safari) will report unreliable element
     // heights during resize.
     this.calculateBarsHeight();
-
-    // Add some convenient classes in case user wants to style pages/wrappers/scrollers
-    //  that use iscroll.
-    this.$wrapper.addClass(this.options.wrapperClass);
-    this.$scroller.addClass(this.options.scrollerClass);
-
-    if (this.options.adaptPage) { this._adaptPage(); }
-
-    this._origWrapperZindex = this.$wrapper.css("z-index");     // Save for un-do in destroy()
-    this._origWrapperOverflow = this.$wrapper.css("overflow");
-    this.$wrapper.css({ "z-index" : 1,            // Lower the wrapper
-                      "overflow" : "hidden" }); // hide overflow
+    
+    this._modifyWrapper();                 // Various changes to the wrapper
+    this._addScrollerPadding();            // Put back padding removed from wrapper
+    this._adaptPage();
 
     // Prevent moving the wrapper with touch
     this.$wrapper.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
@@ -586,33 +955,16 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     // changing content asynchronously. This is probably because we are
     // not able to determine fixed-height element heights prior to this,
     // even using jQuery.actual plugin.
-    if (this.options.refreshOnPageBeforeShow) {
+    if (this.options.pullUpReset) {
       this.$page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
       }
         
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
-    
-    // Resize the wrapper and refresh iScroll on resize
-    // You might want to do this on orientationchange on mobile
-    // devices, but, on iOS, at least, resize event works better,
-    // because orientationchange event happens too late and you will
-    // see footer(s) being pushed down after the rotation
-    //
-    // iscroll4 has event handling for resize and orientation change,
-    // but doesn't seem to work with JQuery Mobile, probably because
-    // of it's page structure for AJAX loading. So, we have to do this
-    // in the widget code. As well, we need to resize the wrapper in any
-    // case.
-    //
-    // TODO: Consider using jquery-resize.js to rate-limit resize events
-    if (this.options.resizeWrapper) {
-      this.resizeWrapper();   // Resize wrapper to take remaining space after bars
-      $(window).bind(this.options.resizeEvents, $.proxy(this._windowResizeFunc, this));
-      }
-
+    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset
+    this._expandScrollerToFillWrapper();      
     this._create_iscroll_object(); 
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options      
-  },
+    },
 
   //----------------------------------------------------------
   // Destroy an instantiated plugin and clean up modifications
@@ -622,23 +974,26 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     this.iscroll.destroy();
     this.iscroll = null;
 
-    if (this.options.adaptPage) { this._undoAdaptPage(); }
-
+    this._undoModifyPullDown();
+    this._undoModifyPullUp();
+    this._undoAdaptPage();
+    this._undoRemoveScrollerContentMargins();
+    this._undoAddScrollerPadding();    
+    this._undoModifyWrapper();
+    
     // Remove the classes we added, since no longer using iscroll at
     // this point.
     this.$wrapper.removeClass(this.options.wrapperClass);
     this.$scroller.removeClass(this.options.scrollerClass);
-
-    // Remove CSS modifications made to the DOM
-    if (this._origWrapperZindex !== undefined)   { this.$wrapper.css("z-index", this._origWrapperZindex); }
-    if (this._origWrapperOverflow !== undefined) { this.$wrapper.css("overflow", this._origWrapperOverflow); }
+    
+    this._undoCreateScroller();
 
     // Unbind events
     this.$wrapper.unbind("touchmove", this._preventDefaultFunc);
     this.$page.unbind("pagebeforeshow", this._pageBeforeShowFunc);
     $(window).unbind(this.options.resizeEvents, this._windowResizeFunc);
 
-    this.undoResizeWrapper();   // Resize wrapper back to original size
+    this._undoExpandScrollerToFillWrapper();
 
     // For UI 1.8, destroy must be invoked from the
     // base widget
@@ -737,8 +1092,148 @@ dependency:  iScroll 4.1.9 https://cubiq.org/iscroll
     minScrollX: function(val) { if (val !== undefined) { this.iscroll.minScrollX = val; } return this.iscroll.minScrollX; },
     minScrollY: function(val) { if (val !== undefined) { this.iscroll.minScrollY = val; } return this.iscroll.minScrollY; },
     maxScrollX: function(val) { if (val !== undefined) { this.iscroll.maxScrollX = val; } return this.iscroll.maxScrollX; },
-    maxScrollY: function(val) { if (val !== undefined) { this.iscroll.maxScrollY = val; } return this.iscroll.maxScrollY; }
+    maxScrollY: function(val) { if (val !== undefined) { this.iscroll.maxScrollY = val; } return this.iscroll.maxScrollY; },
+ 
+    //-----------------------------------------------------------------------------------
+    // Pull-down/Pull-up support
+    //-----------------------------------------------------------------------------------      
+    // Is pull-down in "pulled" state?
+    _pullDownIsPulled: function () {
+      return this.$pullDown.hasClass(this.options.pullPulledClass);    
+      },  
+ 
+    // Is pull-up in "pulled" state?  
+    _pullUpIsPulled: function () {
+      return this.$pullUp.hasClass(this.options.pullPulledClass);    
+      },     
 
+    // Replace the text in a pull block
+    _replacePullText: function ($pull, text) {
+      var $label;
+      if (text) {
+        $label = $("." + this.options.pullLabelClass, $pull);
+        if ($label) {
+          // On some browsers, the text will not be shown unless it is first hidden
+          // and then shown after it is changed.
+          $label.hide().text(text);
+          setTimeout(function() { $label.show(); }, 0);  // Give the browser time to think...
+          }
+        }
+      },
+  
+    // Reset a pull block to the initial state  
+    _pullSetStateReset: function ($pull, text) {
+      if ($pull.is("." + this.options.pullLoadingClass + ", ." + this.options.pullPulledClass)) {
+        $pull.removeClass(this.options.pullPulledClass + " " + this.options.pullLoadingClass);
+        this._replacePullText($pull, text);
+        }
+      }, 
+      
+    _pullDownSetStateReset: function(e) {
+      this._pullSetStateReset(this.$pullDown, this.options.pullDownResetText);
+      this._trigger("pulldownreset", e, {"iscrollview":this} );      
+      },      
+      
+    _pullUpSetStateReset: function(e) {
+      this._pullSetStateReset(this.$pullUp, this.options.pullUpResetText);
+      this._trigger("pullupreset", e, {"iscrollview":this} );       
+      },
+      
+    // Set a pull block to pulled state
+    _pullSetStatePulled: function($pull, text) {
+      $pull.removeClass(this.options.pullLoadingClass).addClass(this.options.pullPulledClass);
+      this._replacePullText($pull, text);	
+      },
+      
+    _pullDownSetStatePulled: function(e) {
+      this._pullSetStatePulled(this.$pullDown, this.options.pullDownPulledText);
+      this._trigger("pulldownpulled", e, {"iscrollview":this} );       
+      },
+    
+    _pullUpSetStatePulled: function (e) {
+      this._pullSetStatePulled(this.$pullUp, this.options.pullUpPulledText);
+      this._trigger("pulluppulled", e, {"iscrollview":this} );       
+      },
+
+    // Set a pull block to the loading state
+    _pullSetStateLoading: function($pull, text) {
+      $pull.removeClass(this.options.pullPulledClass).addClass(this.options.pullLoadingClass);
+      this._replacePullText($pull, text);
+      },
+    
+    _pullDownSetStateLoading: function (e) {
+      this._pullSetStateLoading(this.$pullDown, this.options.pullDownLoadingText);
+      this._trigger("pulldownloading", e, {"iscrollview":this} );         
+      },
+    
+    _pullUpSetStateLoading: function(e) {
+      this._pullSetStateLoading(this.$pullUp, this.options.pullUpLoadingText); 
+      this._trigger("pulluploading", e, {"iscrollview":this} );          
+     },
+  
+    _pullOnRefresh: function (e) {
+      // It's debatable if this is the right place to do this. On one hand, it might be best
+      // to do this in the pullup/down action function. We expect that we will always do a refresh
+      // after the action, though (unless the action doesn't actually update anything, in which
+      // case it can still call refresh().) On the other hand, it might be desirable to
+      // "reset" the pull if a refresh comes along for some other reason. If the content were
+      // updated because of something other than the user's pull action, then we consider the
+      // pull moot.
+  
+      // Reset pull blocks to their initial state
+      this._pullDownSetStateReset(e);
+      this._pullUpSetStateReset(e);
+      },
+
+    _pullOnScrollMove: function (e) {
+      var pullDownIsPulled = this._pullDownIsPulled(),
+          pullUpIsPulled = this._pullUpIsPulled(),
+          pullDownHeight = this.options.topOffset,
+          // User needs to pull down past the top edge of the pulldown element. To prevent false
+          // triggers from aggressive scrolling, they should have to pull down some additional 
+          // amount. Half the height of the pulldown seems reasonable, but adjust per preference.     
+          pullDownPast = pullDownHeight / 2,   
+          pullUpHeight = this.options.bottomOffset,
+          pullUpPast = pullUpHeight / 2,
+          y = this.y();
+  
+      // Set "pulled" state if not pulled and user has pulled past the pulldown element 
+      // by pullDownPast pixels
+      if (!pullDownIsPulled && y > pullDownPast ) {
+        this._pullDownSetStatePulled(e);
+        this.minScrollY(0);   // Circumvent top offset so pull-down element doesn't rubber-band
+        }
+
+      // Allow user to "oopsie", and scroll back to cancel and avoid pull-down action
+      // Cancel if pulled and user has scrolled back to top of pulldown element
+      else if (pullDownIsPulled && y <= 0) {
+        this._pullDownSetStateReset(e);
+        this.minScrollY(-pullDownHeight);  // Re-instate top offset
+        }
+  
+     // Repeat for pull-up
+     else if (!pullUpIsPulled && y < this.maxScrollY() - pullUpHeight - pullUpPast ) {
+       this._pullUpSetStatePulled(e);
+       this.maxScrollY(this.wrapperH() - this.scrollerH() + this.minScrollY());	
+       }
+ 
+      else if (pullUpIsPulled && y >= this.maxScrollY() ) {
+        this._pullUpSetStateReset(e);
+        this.maxScrollY(this.wrapperH() - this.scrollerH() + this.minScrollY() + pullUpHeight);		        
+        }
+      },
+
+    _pullOnScrollEnd: function (e) {
+      if (this._pullDownIsPulled(e)) { 
+        this._pullDownSetStateLoading(e);
+        this._trigger("pulldown", e, {"iscrollview":this} );    
+        }
+      else if (this._pullUpIsPulled(e)) { 
+        this._pullUpSetStateLoading(e); 
+        this._trigger("pullup", e, {"iscrollview":this} );    
+        }
+      }  
+    
     });
 
 })( jQuery, window, document );  // Ignore jslint warning

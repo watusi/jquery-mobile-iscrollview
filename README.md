@@ -10,19 +10,19 @@ widget implementation. It follows the *widget-factory-mobile*
 
 ---
 Using Patched iScroll
-=====================
+---------------------
 
 This widget works best with a special version of iScroll that has a small patch. This patch allows
 an external script (e.g. this one) to change how iScroll gets the dimensions of elements.
 
- Using standard DOM methods, it's not possible to easily get the dimensions of hidden elements. 
+Using standard DOM methods, it's not possible to easily get the dimensions of hidden elements. 
 jQuery mobile hides the content of pages when they are not the current page. Thus, the standard
 iScroll is not able to properly initialize prior to the jQuery Mobile `pageshow` event.
 
 The special version of iScroll allows this widget to override the dimension-getting functions
 in iScroll using calls to the `jQuery.actual` plugin, which is able to get the dimensions of
 hidden elements.
-
+ 
 This widget will work with the standard iScroll distribution, but it will not be optimal. You
 may see unwanted visual artifacts when the scroller is refreshed on the `pageshow` event.
 
@@ -30,21 +30,26 @@ The demo directory contains a copy of the special version of iScroll in `demo/is
 The demo uses this version of iScroll. The standard iScroll is also available in directory in 
 `demo/iscroll-cubiq.js`. This file may also in the future contain other changes made to iScroll 
 by WatusiWare Corporation.You can obtain a current copy of this version of iScroll from: 
-https://github.com/watusi/iscroll Please use the "watusi" branch (the default branch for this 
+`https://github.com/watusi/iscroll` Please use the `watusi` branch (the default branch for this 
 repository).
 
 You can use this special version of iScroll with other projects. If an external script does not
 override the dimension-getting functions in iScroll, it will act just like the standard iScroll.
 
+---
 
 Usage
 -----
 The most basic usage of this widget is simple: just add a `data-iscroll`
-attribute to a container. This is the iScroll wrapper. The first child of the
-wrapper will be scrolled.
+attribute to a container. All content inside this container will be scrolled.
 
-It does not use the typical JQuery Mobile `data-role="something"` attribute,
-because a common use case would be to use a `data-role="content"` div as the
+Note that iScroll scrolls only the first child of it's wrapper. However, by
+default, this widget automatically creates a protective `<div>` around all
+children of the wrapper. If, for some reason, you do not want the widget to create
+this protective container, set the `createScroller` option to `false`.
+
+The widget does not use the typical JQuery Mobile `data-role="something"` attribute,
+because a common use case would be to use a `data-role="content"` `<div>` as the
 container, and, of course, you can't have two `data-role` attributes on the
 same element.
 
@@ -61,15 +66,16 @@ data related to a scroller is stored in the scroller's container, not the page.
 Feel free to experiment with multiple scrollers - I just haven't had the
 need so haven't put the effort into testing and supporting that scenario.
 
-Make sure to use a `data-position="inline"` attribute for headers and
-footers, **not** `data-position="fixed"`. With `data-position="fixed"`, and
-some versions of JQuery Mobile, the headers/footers will fade in/out.
-Since this widget resizes the scrolling region, there is no need for
-fixed positioning of header/footer.
+
+You can use either `data-position="inline"` or `data-position="fixed"` for headers/footers.
+However, with `data-position="fixed"`, and some versions of JQuery Mobile on some browsers, 
+the headers/footers will fade in/out. Since this widget resizes the scrolling region, there is 
+no need for fixed positioning of header/footer.
 
 Additional fixed-height elements (which are not headers or footers)
 outside of the scrolling region should be given the `iscroll-foreground`
-class.
+class, if they would add to the height of the page. (Do not add the `iscroll-foreground` class
+to sidebars.)
 
 ---
 
@@ -83,7 +89,10 @@ Example
 
     <div data-role="content" class='example-wrapper' data-iscroll>
       <div>
-        some contents.
+        some content that will be scrolled.
+      </div>
+      <div> 
+        Some more content that will be scrolled.
       </div>
     </div>
 
@@ -104,57 +113,169 @@ Example
 
 ---
 
-Scrolling Inset Listviews
--------------------------
-When scrolling a listview with `data-inset=true`, you may have a problem
-reaching the bottom of the scrolling area. You will be able to scroll to
-the bottom, but the scroller will then "snap back". This will occur also,
-if you are scrolling a series of listviews in some wrapper - for example,
-this is common on Setup pages when emulating iOS native appearance.
+Padding Issues
+--------------
+Previous versions of this widget had some issues involving the way jQuery Mobile standard CSS
+applies padding and margin to content divs and listviews. The widget now handles this for you in
+the most common use cases.
 
-This appears to be due to the fact that iScroll either partially or completely
-ignores scroller margins.
+By default, the widget removes any padding from your wrapper. It then adds a `<div>` inside the
+scroller, around your content (exclusive of any pull-down/pull-up block) and adds the padding
+that was removed from the wrapper. This provides correct padding for both normal and inset
+listviews.
 
-You can correct this by wrapping your scroller with a `<div>` and adding some
-padding to the `<div>`. Because of the way iScroll works, you will only need
-to add padding to the *bottom* of this div. You should *double* the top
-or bottom margin of the inset listview being scrolled (since you are adding
-it all to the bottom.)
+The padding needs to be moved to *inside* the scroller (and to not include pull-down/pull-up)
+so that you will not see padding around the scroller itself.
 
-For example:
+There are two options that allow you to override this default behavior: `removeWrapperPadding`
+and `addScrollerPadding`. 
 
-  <div data-role="page" id="index">
+---
 
-    <div data-role="header" data-position="inline">
-      <h1>INDEX PAGE</h1>
-    </div>
+Pull-to-Refresh
+---------------
+This widget supports "pull-to-refresh" functionality. You can have a block of HTML that is 
+positioned above the top or below the bottom of the scroller that the user can pull down or pull up.
+These blocks can be revealed by scrolling, but the scroller will "snap back" after the user
+stops scrolling to again hide the block. If the user pulls past this block by a certain amount,
+(1/2 the height of the pull block) and then releases, some action that you specify will be 
+performed. That action can be anything, but typically will be to perform some AJAX action to 
+retrieve data from a server and refresh or add some content within the scroller.
 
-    <div data-role="content" class='example-wrapper' data-iscroll>
-      <div style="padding-bottom: 3em;">
-        <ul data-inset="true">
-          <li>Some content</li>
-          <li Some content</li>
-        </ul>
+In order to implement pull-to-refresh, you need to add a small amount of HTML markup to your page
+and either supply a function as an option value or else (recommended) bind or delegate to
+a jQuery event callback function. 
+
+You also need to include the file `iscroll-pull-css` in your
+<head>. Finally, `iscroll-pull.css` references an image file that contains an arrow icon and a
+spinner icon. You can replace this with your own image file. If you rename or move this file, make
+sure to edit `iscroll-pull.css`.
+
+### Pull Block
+
+To implement pull-up and/or pull-down, structure your HTML similar to the following:
+
+    <div data-role="content" data-iscroll>
+      <div class="iscroll-pulldown">
+        <span class="iscroll-pull-icon"></span>
+        <span class="iscroll-pull-label"></span>
+      </div> 
+      <ul data-role="listview">
+        <li>Item 1</li>
+        <li>Item 2</li>
+      </ul>
+      <div class="iscroll-pullup">
+        <span class="iscroll-pull-icon"></span>
+         span class="iscroll-pull-label"></span>
       </div>
     </div>
+    
+This is all you have to do to implement the pull-up and/or pull-down UI.
+The widget doesn't create the pull blocks for you, in order to provide you with the flexibility
+to format them as you please. The pull blocks can contain other elements, and the spans for
+the icon and/or label can be omitted.
 
-    <div data-role="footer" class="ui-bar" data-position="inline">
-      Some footer text.
-    </div>
+All of the class names used for pull-down and pull-up are configurable in options. The example
+above uses the default class names.
 
-  </div>
+Note: in order for correct pull-up appearance (with the pull-up block hidden, even for short
+content), make sure that the `expandScrollerToFillWrapper` option is set to `true` 
+(the default value).
 
-(Rather than using inline styles, it would be better to assign a class, and
-put the padding in a style sheet. The padding is shown inline above only for
-clarity.)
+### Pull States
 
-When scrolling a listview where `data-inset="false"` (the default), you do
-not need any additional padding, unless you wish to show padding around
-the listview. Generally, you will want padding around a `data-inset="true"`
-listview, both to allow it to scroll completely to the bottom, as well as to
-maintain the visual appearence of the inset. This is generally not needed or
-desired for `data-inset="false"` listviews.
+A pull block can be in one of three states:
 
+* `Reset` This is the initial state of the pull block
+* `Pulled` This is when the bock has been pulled, but not yet released
+* `Loading` This is when the block has been released, and some action is being performed
+
+If the user scrolls back (without lifing) while in the `Pulled` state, then the block
+returns to the `Reset` state.
+
+If the user pulls past the edge of the pull block (by 1/2 the height of the pull block), then
+the block will enter the Loading state.
+
+After the action has been performed, and the scroller is refreshed, then the block returns
+to the `Reset` state.
+
+### Pull Label Text
+
+The widget has default text values that are inserted into the pull label element when the
+block enters each state. Each of these text values is a configurable widget option. The
+applicable options, and their default values are:
+
+* pullDownResetText `"Pull down to refresh..."`
+* pullDownPulledText `"Release to refresh..."`
+* pullDownLoadingText `"Loading..."`
+* pullUpResetText `"Pull up to refresh..."`
+* pullUpPulledText `"Release to refresh..."`
+* pullUpLoadingText `"Loading..."`
+
+To change these options programatically, see the options documentation.
+
+Alternately, you can change the default values in your HTML. When you change the defaults
+in HTML, it changes the corresponding option value.
+
+To change the `Reset` text, simply insert it in the pull block's label `<span>`. 
+
+To change the `Pulled` text, use a `data-iscroll-pulled-text` attribute.
+
+To change the `Loading` test, use a `data-iscroll-loading-text` attribute. 
+
+Example:
+
+    <span data-iscroll-pulled-text="Now let er go, and we'll get some refresh action!"
+          data-iscroll-loading-text="Ye-haw! Waiting for the data to come through the pipes!"
+          class="iscroll-pull-label">Pull this here thing down to refresh!</span>
+
+### Fancier Pull States
+
+If you want to do something more elaborate when a pull block enters each state, you can either
+provide a callback option or (recommended) bind or delegate to a jQuery event callback function. 
+The associated events are:
+
+* `iscroll_pulldownreset`
+* `iscroll_pulldownpulled`
+* `iscroll_pulldownloading`
+* `iscroll_pullupreset`
+* `iscroll_pulluppulled`
+* `iscroll_pulluploading`   
+
+#### Event and Callback Option Functions
+
+In order to implement the pull-down and/or pull-up action, you need to supply a function. You
+can either supply this function as an option value or (recommended) bind or delegate to
+a jQuery event callback function.
+
+The example code below is from the demo:
+
+    $(document).delegate("div.pull-demo-page", "pageinit", function(event) {
+        $(".iscroll-wrapper", this).bind( { 
+        "iscroll_pulldown" : onPullDown,    
+        "iscroll_pullup"   : onPullUp
+        });
+      }); 
+   
+#### Callbacks
+
+Your callback function receives two parameters:
+
+##### e
+
+This is the event object that originally gave rise to the callback. This is probably not very
+useful to you. This will always be an `iscroll_scrollend` event.
+
+##### d
+
+This is map containing one member, `iscrollview`. This is a reference to the iscrollview object
+that made the callback.
+
+Your callback should take whatever action you want when the user activates the pull-up/pull-down.
+This might typically involve retrieving some data from a server and inserting it into the scroller
+content. See the demo for an example. 
+
+---
 
 Calling methods
 ---------------
@@ -240,18 +361,17 @@ if you have change the page structure and so need to resize the wrapper.
 This is also normally called for you when page orientation or page
 size changes.
 
-####calculateBarsHeight()
-
-This will re-calculate the height of header/footer etc. bars on the
-page. Call this prior to calling `resizeWrapper()`, if you change the
-height of header/footer etc. after the widget has been created.
-
 ####undoResizeWrapper()
 
 Undoes the resize of the wrapper. Note that this can only change the
 wrapper size to what it was initially, prior to the very first call
 to `resizeWrapper()`.
 
+####calculateBarsHeight()
+
+This will re-calculate the height of header/footer etc. bars on the
+page. Call this prior to calling `resizeWrapper()`, if you change the
+height of header/footer etc. after the widget has been created.
 
 ### iScroll Methods
 
@@ -385,8 +505,33 @@ Y position.
 
 This is useful when implementing pull-up-to-refresh.
 
+---
+
 Options
 -------
+
+### Overriding Option Defaults
+
+You can override the default options for new instances of this widget by setting the 
+prototype options in `$.mobile.iscrollview.prototype.options`.
+
+Any options that you set programatically or using `data-` attributes will override the defaults.
+
+Example: for all new instances of `$.mobile.iscrollview`, set the `refreshDelay` option to the
+value `100`.
+
+    $.mobile.iscrollview.prototype.options.refreshDelay = 100;
+    
+If you want to override options for all instances of the widget, a good place to do that is
+at the same time that you override any jQuery Mobile default options.
+
+    <script>
+      $(document).bind("mobileinit", function(){
+        $.mobile.defaultPageTransition = "slide";
+        $.mobile.iscrollview.prototype.options.refreshDelay = 100;
+      });
+    </script>    
+
 
 ### Programatic access
 
@@ -424,6 +569,22 @@ re-creating the object. It is unclear exactly which options these are, and
 so this widget does not attempt it. There is skeletal code in the source
 that is commented-out to do this if you wish to experiment.
 
+###Emulated Options
+
+The following options - which might be available in patched or newer versions of iScroll - are
+emulated by the widget:
+
+####bottomOffset
+
+Offset at the bottom of the scroller. Complementary to the iScroll `topOffset` option. The number
+of pixels specified by `bottomOffset` will apper below the bottom of the scroll range. You can
+scroll into this area, but then the scroller will snap back. (This is needed to support the
+pull-up funcitonality.)
+
+Also, see the `emulateBottomOffset` option.
+
+Default: `0`
+
 ###Widget Options
 
 The following options are available which affect the widget itself. These are
@@ -451,20 +612,38 @@ Default: `"iscroll-scroller"`
 
 ####pullDownClass
 
-A CSS class, or a space-separated list of classes, which (in a future widget version) will be 
-added to the pull-down element, if any.
-
-Currently, you need to add this class to your markup yourself.
-
 If this class is found within the scroller, and the `topOffset` option value is not set or is zero, 
-then the `topOffset` will be set to the height of the pull-down element.
+then the `topOffset` will be set to the height of the pull-down element. As well, the widget makes
+modifications to the pulldown element's CSS.
+
+Default: `"iscroll-pulldown"`
 
 ####pullUpClass
 
-A CSS class, or a space-separated list of classes, which (in a future widget version) will be added
-to the pull-up element, if any.
+If this class is found within the scroller, and the `bottomOffset` option value is not set or is 
+zero, then the `bottomOffset` will be set to the height of the pull-up element. As well, the widget 
+makes modifications to the pullup element's CSS.
 
-Currently, this option is not used.
+Default: `"iscroll-pullup"`
+
+####pullUpSpacerClass
+
+If you use a pull-up block, then the widget will create a special pull-up spacer, to insure
+that the pull-up appears hidden below the bottom of the scroller window until manually scrolled,
+even if the content is shorter than the height of the wrapper.
+
+In case you need to apply some CSS to this spacer, it's assigned a class.
+
+Default: `"iscroll-pullup-spacer`
+
+####scrollerContentClass
+
+Normally (unless override with `createScroll="false"`) the widget creates a protective `<div>`
+around your scroller content. It also wraps the pull-down and/or pull-up blocks, if present.
+This is so that you don't have to create this `<div>` in your HTML
+if you are scrolling multiple elements. The widget adds a class to this `<div>`.
+
+Default: `"iscroll-scroller-content"`
 
 ####adaptPage
 
@@ -481,7 +660,7 @@ A JQuery selector which selects the fixed-height elements on the page which are 
 of the scrolling area. The heights of these elements will be added-up, and subtracted
 from the total viewport height to arrive at the wrapper height.
 
-Default: `"[data-role='header'], [data-role='footer'], .iscroll-foreground"`
+Default: `":jqmData(role='header'), :jqmData(role='footer'), .iscroll-foreground"`
 
 ####resizeWrapper
 
@@ -503,7 +682,7 @@ Default: `"resize"`
 
 ####refreshOnPageBeforeShow
 
-If true, the scroller will be refreshed on every JQuery Mobile `pageshow` event.
+If true, the scroller will be refreshed on every JQuery Mobile `pagebeforeshow` event.
 This should be set to true if scroller content might have changed asynchronously while
 the page was loaded into the DOM but not shown, as might happen in some native
 application environment. As well, this is necessary if not using a version of iScroll with
@@ -511,7 +690,7 @@ overridable dimension-fetching functions, because it's not possible to determine
 of fixed-height elements prior to this event.
 
 I've forked iScroll to make it possible to override iScrolls fetching of element dimensions.
-If you are using my version of iScroll, it's not necessary to refresh on `pageshow`, since
+If you are using my version of iScroll, it's not necessary to refresh on `pagebeforeshow`, since
 this widget overrides this using jQuery.actual so that iScroll CAN get the dimensions
 of hidden elements. In this case, if you change page content while a page is hidden, you should
 be sure to call `refresh()` to insure that the scroll range and scrollbar(s) are updated.
@@ -552,14 +731,88 @@ have done some update which you know will require a lengthy render.
 
 Default: `200` for Android, otherwise `50`
 
+####expandScrollerToFillWrapper
+
+If true, the widget will set the minimum height of the scroller so that it fills the wrapper
+(exclusive of any pull-down/pull-up elements). This is necessary in order to be able to drag
+the scroller up/down to activate pull-down/pull-up in case the scroller content is either empty
+or shorter than the wrapper. 
+
+Default: `true`
+
+####emulateBottomOffset
+
+If true, the widget will emulate a `bottomOffset` iScroll option. This option is present in
+the Watusiware iScroll4 fork (`watusi` branch). This needs to be set `true` if using an 
+unmodified iScroll4 that doesn't have this option.
+
+There's really no need to disable this option.
+
+Default: `true`
+
+####removeWrapperPadding
+
+If true, the widget will remove any padding from the wrapper. Normally, there should be no
+padding on the wrapper element. If there is padding, then it isn't possible to drag within the
+padding, and pull-down/pull-up elements will not be 100% width.
+`
+Default `true'
+
+####addScrollerPadding
+
+If true, the widget will add any padding removed from the wrapper to the protective `<div>` it
+places around your scrolled content.
+
+Default: `true`
+
+####createScroller
+
+iScroll scrolls only the first child of the wrapper. So that you don't have to wrap multiple
+content elements with a `<div>` the widget does this for you. This `<div>` is always needed if you
+have a pull-up or pull-down block. 
+
+Default: `true`
+
+#### pullDownResetText
+
+Default: `"Pull down to refresh..."`
+
+#### pullDownPulledText
+
+Default: `"Release to refresh..."`
+
+#### pullDownLoadingText
+
+Default: `"Loading..."`
+
+#### pullUpResetText
+
+Default: `"Pull up to refresh..."`
+
+#### pullUpPulledText
+
+Default: `"Release to refresh..."`
+
+#### pullUpLoadingText
+
+default: `"Loading..."`
+     
+#### pullPulledClass
+
+Default: `"iscroll-pull-pulled"`
+
+#### pullLoadingClass
+
+Default: `"iscroll-pull-loading"`
+
 ---
 
 Events
 ------
 There are two ways to be notified when some event occurs in the widget.
 The widget exposes JQuery events that can be bound like any other event.
-The names are prepended with the name of the widget. So, the `refresh`
-event for this widget is actually `iscrollviewrefresh`.
+The names are prepended with the string `iscroll_`. So, the `refresh`
+event for this widget is actually `iscroll_refresh`.
 
 Alternately, you can add callback functions to the options object. They key
 of the option corresponds to the event name **without** the widget name
@@ -578,51 +831,59 @@ Bound event callbacks receive two parameters:
 As well, when a bound event callback is called, `this` will be the DOM
 object that triggered the event. (e.g. the wrapper).
 
-In the case of callbacks that are specified in the options hash,
-`this` will be the underlying iscroll object. In this case, you will
-not get the `event` and `iscrollview` parameters. In other words,
-callbacks specified in the options hash work exactly as documented
-in the iScroll documentation.
-
-In this case, you can still access the iscrollview easily, because
-the widget injects a reference to it into iScroll. I recommend that
-you don't use the option hash callbacks, though - it's much easier
-to use JQuery event binding.
-
 ###Example event delegation:
 
-    $(document).delegate("div.my-content", "iscrollviewrefresh", function(event, data) {
-        var iscrollview = data.iscrollview;  // In case we need to reference the iscrollview
-        console.write("iscrollviewrefresh occured");
+    $(document).delegate("div.my-content", "iscroll_refresh", function(event, data) {
+        var v = data.iscrollview;  // In case we need to reference the iscrollview
+        console.write("iscroll_refresh occured");
         }
 
 ###Supported Events
 
-* `iscrollviewrefresh`
-* `iscrollviewbeforescrollstart`
-* `iscrollviewscrollstart`
-* `iscrollviewbeforescrollmove`
-* `iscrollviewscrollmove`
-* `iscrollviewbeforescrollend`
-* `iscrollviewtouchend`
-* `iscrollviewdestroy`
-* `iscrollviewzoomstart`
-* `iscrollviewzoom`
-* `iscrollviewzoomend`
+* `iscroll_refresh`
+* `iscroll_beforescrollstart`
+* `iscroll_scrollstart`
+* `iscroll_beforescrollmove`
+* `iscroll_scrollmove`
+* `iscroll_beforescrollend`
+* `iscroll_touchend`
+* `iscroll_destroy`
+* `iscroll_zoomstart`
+* `iscroll_zoom`
+* `iscroll_zoomend`
+* `iscroll_pulldown`
+* `iscroll_pulldownreset`
+* `iscroll_pulldownpulled`
+* `iscroll_pullup`
+* `iscrollpullupreset`
+* `iscroll_pulluppulled`
 
 ---
 
 Scroll Bars
 -----------
-Note: I am still investinging why scroll bars are sometimes created the full height and at the right
-hand side of the browser window (rather than the height at at the right hand side of the wrapper)
-in some browsers. It is not clear if this is a bug in iScroll or in this widget. For example,
-the scrollbar is correctly created in Safari Mobile, but not in desktop Safari.
 
-In the mean time, this is a useful workaround, and can also be used if you want to customize
-the position of a scroll bar without fully-customizing it's appearance.
+### Wrapper Positioning Requirement
 
-iScroll gives you the ability to customize scroll bars. See the iscroll4 documentation
+iScroll requires that the wrapper be CSS-positioned either `absolute` or `relative`. If the
+wrapper is positioned `static` (the default, if positioning is not specified), then the 
+scroll bars will incorrectly be created relative to the page, rather than the wrapper. The
+symptom is that the scroll bar will be the full height of the window. (Though the widget
+will hide the scrollbar under any header/footer.)
+
+This widget will correct static positioning for you. If your wrapper is positioned either
+`absolute` or `relative` it will be unchanged. If it is positioned `static`, the widget
+will change the positioning to `relative`. This will have no effect on the wrapper position,
+assuming no position coordinates were given. (Which wouldn't make sense for static positioned
+content.) 
+
+Either `absolute` or `relative` positioning of the wrapper will cause elements inside the
+wrapper which themselves have `absolute` positioning to be positioned relative to the wrapper.
+iScroll depends on this behaviour for positioning of the scrollbar.
+
+### Customization of Position
+
+iScroll gives you the ability to customize scroll bars. See the iScroll4 documentation
 for full details. You can customize the height, width, position, color, etc. etc. of
 the scrollbar. To do so, you need to set the `scrollbarClass` option and then provide
 CSS to customize the scrollbar.
@@ -647,16 +908,7 @@ else yourself, you can target the last child of the wrapper, and so you don't ne
 initialization. By using the `!important` modifier, your CSS will override the top and
 bottom locations that iScroll itself sets.
 
-Pull to Refresh
----------------
-This widget can support "pull to refresh" functionality. You need to add code and CSS for this.
-The widget has some internal support to help. Eventually, I expect the widget will support
-pull-to-refresh internally.
-
-Currently, support for "pull to refresh" is limited to setting the `topOffset` option for you.
-If your scroller contains a pull-down element (one marked with the `pullDownClass` option's
-class), then the `topOffset` will be set to the height of that element. This will make the
-pull-down initially hidden from view, above the top of the wrapper.
+---
 
 Multiple Scrolling Areas
 ------------------------
@@ -680,6 +932,8 @@ scrollers for which you have set `resizeWrapper` to `false`.
 overlap. It will fail to scroll in all but one of the scrollers that
 have overlapping scrollbars. Please see the documentation on scrollbar
 customization, above.
+
+---
 
 Listviews With List Items That Are Buttons
 ------------------------------------------
@@ -731,6 +985,8 @@ between states.
     ul.ui-listview *.ui-btn-down-c a.ui-link-inherit,
     ul.ui-listview *.ui-btn-hover-c a.ui-link-inherit
       { color: #444; }
+      
+---
 
 Caching List Items
 ------------------
@@ -738,12 +994,16 @@ Webkit-based browsers can exhibit a "flicker" effect when initially scrolling. O
 you have scrolled down to the bottom of the list, the flicker will typically
 stop.
 
-This issue is discussed here:
-
-  http://cubiq.org/you-shall-not-flicker
+This issue is discussed here: http://cubiq.org/you-shall-not-flicker
 
 A work-around for this issue to to force list items to be pre-cached. See
-the above link for why this works.
+the above link for a discussion of why this works. Basically, the flicker occurs
+when each element is first encountered and hardware acceleration is enabled for
+the element. By pre-setting a null 3D transform (which triggers hardware accelation on WebKit
+browsers) on each element, the flicker is avoided, and the content is added to the hardware cache.
+
+However, this may cause bluring of text during transform on Android platforms. You will
+need to decide which of two evils you want to live with.
 
 You can implement this fix in your CSS like this:
 
@@ -752,22 +1012,28 @@ You can implement this fix in your CSS like this:
      .iscroll-scroller,
      .iscroll-scroller * {
        -webkit-transition-duration: 0;
-       -webkit-transform: translate3d(0,0,0);
+       -webkit-transform: translateZ(0);
        }
+       
+---
 
 Demo
 ----
-The demo directory contains a simple example of a JQuery Mobile page using
-a scrollview to scroll a long list of items. To demo, simply open the
-`index.html` file in your browser.
+The demo directory contains a simple example with three pages. You can switch between
+the pages using the tabbar at the bottom. The three tabs demonstrate scrolling a listview,
+an inset listview, and a listview with pull-down and pull-up blocks. To demo, simply open the
+`index.html` file in your browser. Note that the page transitions will not work with some
+browsers when loading from a local file - for those browsers, you will have to load the demo
+from a server. (It does work with local files for Safari and Firefox.)
 
-As a convenience, the demo directory is self-contained (except for the widget,
-which is expected to be found in the parent directory), and contains the
+As a convenience, the demo directory is self-contained (except for the widget, `iscroll-pull-js`
+and pull icon files, which are expected to be found in the parent directory), and contains the
 following additional components:
 
 * JQuery 1.6.4
 * JQuery Mobile 1.0.1
-* iscroll4, commit 712640b7de..., Apr. 10, 2012
+* iscroll4, commit 712640b7de..., Apr. 10, 2012 (iscroll-cubiq.js)
+$ iscroll4, WatusiWare Corporation fork, `watusi` branch, commit 54354b7d0c, May 12, 2012 (iscroll-watusi.js)
 * jquery.actual, commit 0530ce5c64..., Feb 22, 2012
 
 Please obtain these components independently for your projects, so that
@@ -794,7 +1060,7 @@ The source code code follows the following conventions:
 
 * Upper-case first letter: constant
 * $ first letter: variable contains a JQuery object
-* first letter: Private method
+* (underscore) first letter: Private method
 
 ---
 
@@ -803,6 +1069,8 @@ Bugs and Enhancements
 Please submit bug and enhancement requests via [jquery.mobile.iscrollview gitHub Issues](https://github.com/watusi/jquery-mobile-iscrollview/issues)
 If you have developed code that you would like to have incorporated in a future release
 of this widget, please submit it for consideration via a gitHub pull request.
+
+---
 
 License
 -------

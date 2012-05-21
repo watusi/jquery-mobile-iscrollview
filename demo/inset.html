@@ -18,14 +18,14 @@
   </head>
 
   <body>
-    <div data-role="page" data-dom-cache="true" class="list-demo-page">
+    <div data-role="page" data-dom-cache="true" class="inset-list-demo-page">
 
       <div data-role="header" data-position="inline">
-        <h1>LIST</h1>
+        <h1>INSET LIST</h1>
       </div>
 
-      <div data-role="content" data-iscroll>
-        <ol data-role="listview">
+      <div data-role="content" data-iscroll> 
+          <ol data-role="listview" data-inset="true">
             <li>row 1</li>
             <li>row 2</li>
             <li>row 3</li>
@@ -82,14 +82,14 @@
       <div data-role="footer" data-position="inline" data-id="my-persistent-footer">
         <div data-role="navbar">
           <ul>
-            <li><a href="index.html" data-prefetch class="ui-btn-active ui-state-persist" data-transition="slide">List</a></li>
-            <li><a href="inset.html" data-prefetch data-transition="slide">Inset List</a></li>
+            <li><a href="index.html" data-prefetch data-transition="slide">List</a></li>
+            <li><a href="inset.html" class="ui-btn-active ui-state-persist" data-prefetch data-transition="slide">Inset List</a></li>
             <li><a href="pull.html" data-prefetch data-transition="slide">Pull</a></li>
             <li><a href="shortpull.html" data-prefetch data-transition="slide"> Short Pull</a></li>            
           </ul>
         </div>
       </div>
-      
+
     </div>
 
   </body>
