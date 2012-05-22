@@ -468,6 +468,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _windowResizeFunc: function(e) {
+    $.mobile.silentScroll(0);
     this.resizeWrapper();
     this.refresh();
     },
