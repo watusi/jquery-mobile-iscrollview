@@ -141,7 +141,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   $pullUp:     null,  // The pull-up element (if any)
   $page:       null,  // The page element that contains the wrapper
 
-  _firstResize:     true,    // True on first resize, so we can capture original wrapper height
+  _firstWrapperResize:     true,    // True on first resize, so we can capture original wrapper height
+  _firstScrollerExpand:    true,    // True on first scroller expand, so we can capture original CSS
 
   _barsHeight:       null,   // Total height of headers, footers, etc.
 
@@ -488,6 +489,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
   _windowResizeFunc: function(e) {    
     this.resizeWrapper();
+    this._expandScrollerToFillWrapper();
     this.refresh();
     },
     
@@ -725,6 +727,34 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$scroller.removeClass(this.options.scrollerClass);    
     this.$wrapper.removeClass(this.options.wrapperClass);
     },
+    
+  //--------------------------------------------------------
+  // Expands the scroller to fill the wrapper. This permits 
+  // dragging an empty scroller, or one that is shorter than 
+  // the wrapper. Otherwise, you could never do pull to
+  // refresh if some content wasn't initially present. As 
+  // well, this pushes any pull-up element down so that it 
+  // will not be visible until the user pulls up.
+  //-------------------------------------------------------- 
+  _expandScrollerToFillWrapper: function() {
+    if (this.options.expandScrollerToFillWrapper) {
+      if (this._firstScrollerExpand) {
+        this._origScrollerStyle = this.$scroller.attr("style");
+        this._firstSCrollerExpand = false;
+        }
+      this.$scroller.css("min-height", 
+        this.$wrapper.actual("height") + 
+        this.$pullDown.actual("outerHeight",{includeMargin:true}) + 
+        this.$pullUp.actual("outerHeight",{includeMargin:true})
+        );  
+      } 
+    },
+  
+  _undoExpandScrollerToFillWrapper: function() {
+    if (this._origScrollerStyle !== undefined) {
+      this.$scroller.attr("style", this._origScrollerStyle);
+      } 
+    },     
   
   //--------------------------------------------------------
   //Resize the wrapper for the scrolled region to fill the
@@ -742,9 +772,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.options.wrapperAdd      // User-supplied fudge-factor if needed
     );
     // The first time we resize, save the size of the wrapper
-    if (this._firstResize) {
+    if (this._firstWrapperResize) {
       this._origWrapperHeight = this.$wrapper.height() - adjust;
-      this._firstResize = false;
+      this._firstWrapperResize = false;
       }          
     },
 
@@ -865,31 +895,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }    
   },
   
-  //--------------------------------------------------------
-  // Expands the scroller to fill the wrapper. This permits 
-  // dragging an empty scroller, or one that is shorter than 
-  // the wrapper. Otherwise, you could never do pull to
-  // refresh if some content wasn't initially present. As 
-  // well, this pushes any pull-up element down so that it 
-  // will not be visible until the user pulls up.
-  //-------------------------------------------------------- 
-  _expandScrollerToFillWrapper: function() {
-    if (this.options.expandScrollerToFillWrapper) {
-      this._origScrollerStyle = this.$scroller.attr("style");
-      this.$scroller.css("min-height", 
-        this.$wrapper.actual("height") + 
-        this.$pullDown.actual("outerHeight",{includeMargin:true}) + 
-        this.$pullUp.actual("outerHeight",{includeMargin:true})
-        );  
-      } 
-    },
-  
-  _undoExpandScrollerToFillWrapper: function() {
-    if (this._origScrollerStyle !== undefined) {
-      this.$scroller.attr("style", this._origScrollerStyle);
-      } 
-    },  
-
   //-------------------------------------------------
   //Refresh the iscroll object
   // Insure that refresh is called with proper timing
@@ -994,8 +999,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }
         
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
-    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset
-    this._expandScrollerToFillWrapper();      
+    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset 
+    this._expandScrollerToFillWrapper(); // Make empty scroller content draggable    
     this._create_iscroll_object(); 
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options      
     },
@@ -1008,6 +1013,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.iscroll.destroy();
     this.iscroll = null;
 
+    this._undoExpandScrollerToFillWrapper();
     this._undoModifyPullDown();
     this._undoModifyPullUp();
     this._undoAdaptPage();
@@ -1027,8 +1033,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$page.unbind("pagebeforeshow", this._pageBeforeShowFunc);
     $(window).unbind(this.options.resizeEvents, this._windowResizeFunc);
     $(window).unbind("orientationchange", this._orientationChangeFunc);
-
-    this._undoExpandScrollerToFillWrapper();
 
     // For UI 1.8, destroy must be invoked from the
     // base widget
