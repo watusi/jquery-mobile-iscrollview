@@ -15,8 +15,9 @@
     <script src="jquery.mobile-1.0.1.min.js"></script>
     <script src="iscroll-watusi.js"></script>
     <script src="../jquery.mobile.iscrollview.js"></script>
+    <script src="pull-example.js"></script>
   </head>
-
+  
   <body>
     <div data-role="page" data-dom-cache="true" class="pull-demo-page">
 
@@ -92,7 +93,7 @@
             class="iscroll-pull-label" >Custom reset text</span>
         </div>
                             
-      </div>
+      </div> <!--  content -->
 
       <div data-role="footer" data-position="inline" data-id="my-persistent-footer">
         <div data-role="navbar">
@@ -101,62 +102,11 @@
             <li><a href="inset.html" data-prefetch data-transition="slide">Inset List</a></li>
             <li><a href="pull.html" class="ui-btn-active ui-state-persist" data-transition="slide">Pull</a></li>
             <li><a href="shortpull.html" data-prefetch data-transition="slide"> Short Pull</a></li>
-
           </ul>
         </div>
       </div>
       
-  <script>
-  (function() {  // Self-invoking function to keep definitions local
-    var pullDownGeneratedCount = 0,
-        pullUpGeneratedCount = 0,
-        listSelector = "div.pull-demo-page ul.ui-listview",
-        lastItemSelector = listSelector + " > li:last-child";
-  
-    $(document).delegate("div.pull-demo-page", "pageinit", function(event) {
-        $(".iscroll-wrapper", this).bind( { 
-        "iscroll_onpulldown" : onPullDown,    
-        "iscroll_onpullup"   : onPullUp
-        });
-      });  
-
-    function onPullDown (e, d) {
-      // SetTimeout here is simulating some action to typically retrieve data from a remote server.
-      // Substitute call to .ajax(), etc. which will have a callback to handle the retrieved data.
-      // From that callback (simulated by the function called by setTimeout, insert the data into
-      // the scroller, then do any necessary jQuery Mobile refresh (as shown below for listview)
-      // and then call refresh() on the iscrollview object as well.
-      setTimeout(function() {  
-        var i, 
-            iscrollview = d.iscrollview,
-            $list = $(listSelector);
-        for (i=0; i<3; i++) {
-          $list.prepend("<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>");
-          };
-        $list.jqmData("listview").refresh();
-        iscrollview.refresh();   
-        }, 1500); // Simulate time to retrieve data from some server, etc.
-      };
-
-    function onPullUp (e, d) {
-      setTimeout(function() {   
-        var i, 
-            iscrollview = d.iscrollview
-            $list = $(listSelector);
-        for (i=0; i<3; i++) {
-          $list.append("<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>");
-          };
-        $list.jqmData("listview").refresh();     
-        iscrollview.refresh(null, function() {    // Scroll is delayed until refresh completed
-          iscrollview.scrollToElement(lastItemSelector, 400);  
-          }, this); 
-        }, 1500); 
-      };
-
-    })();  
-  </script>      
-
-    </div>
+    </div> <!-- page -->
      
   </body>
 </html>
