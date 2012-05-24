@@ -399,11 +399,11 @@ parameter) upon completion of the refresh, which is asynchronous, since it waits
 for the DOM update to complete first. If you specify a callback function, then
 you MUST also specify a timeout.
 
-This permits the application to perform some action (such as scrolling the
-the scroller, say if positioned at the end of a list) after the iScroll refresh
-function has completed and updated it's internal variables.
-
-While one might use an `iscroll_onrefresh` event for this, the callback eliminates any
+This permits the application to perform some action just before the iScroll `refresh()` function
+is called by the widget. This is useful if you have updated content inside the scroller, and
+need to refresh widgets inside the scroller (such as a listview) prior to iScroll refresh.
+ 
+While one might use an `iscroll_onbeforerefresh` event for this, the callback eliminates any
 ambiguity as to *which* specific `refresh()` call has completed.
 
 ####scrollTo(x, y, time, relative)
@@ -868,23 +868,112 @@ object that triggered the event. (e.g. the wrapper).
 
 ###Supported Events
 
-* `iscroll_onrefresh`
-* `iscroll_onbeforescrollstart`
-* `iscroll_onscrollstart`
-* `iscroll_onbeforescrollmove`
-* `iscroll_onscrollmove`
-* `iscroll_onbeforescrollend`
-* `iscroll_ontouchend`
-* `iscroll_ondestroy`
-* `iscroll_onzoomstart`
-* `iscroll_onzoom`
-* `iscroll_onzoomend`
-* `iscroll_onpulldown`
-* `iscroll_onpulldownreset`
-* `iscroll_onpulldownpulled`
-* `iscroll_onpullup`
-* `iscroll_onpullupreset`
-* `iscroll_onpulluppulled`
+####iscroll_onrefresh
+
+This event is triggered when iScroll's internal `refresh()` function is called. It is
+called after iScroll has calculated the scroll range, but before it has updated the scroll
+bar. As such, it is of dubious value to applications. The widget uses this internally to 
+support pull-down/pull-up.
+
+If you want to do some refresh of jQuery Mobile structures (such as listview) contained within
+the scroller prior to scroller refresh, see the `iscroll_onbeforerefresh` event and the optional
+callback parameter to the `refresh()` function.
+
+####iscroll_onbeforerefresh
+
+This event is triggered before the widget calls iScroll's `refresh()` function. It is useful
+if you need to do some refresh of jQuery Mobile widgets (such as `listview`) contained within
+the scroller. It is important to do this *before* iScroll's `refresh()` has been called. Do
+not use `iscroll_onrefresh()` for this.
+
+You can also use the optional callback parameter to the widget's `refresh()` function for this.
+
+####iscroll_onbeforescrollstart
+
+Triggered by iScroll's `onBeforeScrollStart` event.
+
+####iscroll_onscrollstart
+
+Triggered by iScroll's `onScrollStart` event.
+
+####iscroll_onbeforescrollmove
+
+Triggered by iScroll's `onBeforeScrollMove` event.
+
+####iscroll_onscrollmove
+
+Triggered by iScroll's `onScrollMove` event.
+
+####iscroll_onbeforescrollend
+
+Triggered by iScroll's onBeforeScrollEnd event.
+
+####iscroll_ontouchend
+
+Triggered by iScroll's `onTouchEnd` event.
+
+####iscroll_ondestroy
+
+Triggered by iScroll's `onDestroy` event.
+
+####iscroll_onzoomstart
+
+Triggered by iScroll's `onZoomStart` event.
+
+####iscroll_onzoom
+
+Triggered by iScroll's `onZoom` event.
+
+####iscroll_onzoomend
+
+Triggered by iScroll's `onZoomEnd` event.
+
+####iscroll_onpulldown
+
+This event is triggered when the user has completed a pull-down sequence. Your event callback
+should perform the pull-down action. (For example, getting data from a server in order to refresh
+text shown within the scroller.)
+
+You can also use this event for complex customization of pull-down feedback to the user. The
+UI should indicate that the pull-down action is being performed.
+
+####iscroll_onpulldownreset
+
+This event is triggered when the user has aborted a pull-down sequence by scrolling back up, or
+after completion of the pull-down action and `refresh()`. You can use this event for complex
+customization of pull-down feedback to the user. The UI should indicate that the user may
+initiate a pull-down sequence.
+
+####iscroll_onpulldownpulled
+
+This event is triggered when the user has completed the first half of a pull-down sequence.
+i.e. they have pulled-down, but not yet released. You can use this event for complex 
+customization of pull-down feedback to the user. The UI should indicate that the user may
+complete a pull-down sequence by releasing.
+
+####iscroll_onpullup
+
+This event is triggered when the user has completed a pull-up sequence. Your event callback
+should perform the pull-up action. (For example, getting data from a server in order to refresh
+text shown within the scroller.)
+
+You can also use this event for complex customization of pull-up feedback to the user. The
+UI should indicate that the pull-up action is being performed.
+
+####iscroll_onpullupreset
+
+This event is triggered when the user has aborted a pull-up sequence by scrolling back down, or
+after completion of the pull-up action and `refresh()`. You can use this event for complex
+customization of pull-up feedback to the user. The UI should indicate that the user may
+initiate a pull-up sequence.
+
+####iscroll_onpulluppulled
+
+This event is triggered when the user has completed the first half of a pull-up sequence.
+i.e. they have pulled-up, but not yet released. You can use this event for complex 
+customization of pull-up feedback to the user. The UI should indicate that the user may
+complete a pull-up sequence by releasing.
+
 
 ---
 
@@ -1083,14 +1172,32 @@ This is for functions that were queued using a SetTimeout. So, you can see how l
 function took to run, as well as the elapsed time from when the function was queued. Note
 that the latter may be greater than the timout that was specified (which might be 0).
 
-Currently, the widget logs timings for `refresh()` and `resizeWrapper()` calls. 
+### refresh
 
 In the case
 of `refresh()` there is an initial log entry when the `refresh()` is queued, which will also
 indicate the timeout value that was used. A second, separate, log entry shows the elapsed
-time that `refresh() ran as well as elapsed time from when it was queued. The time value shown
+time that `refresh()` ran as well as elapsed time from when it was queued. The time value shown
 lets you match-up the first and second entries. This will help you evaluate the impact of
 browser rendering time. (A 0mSec timeout will first allow all rendering to complete.)
+
+### onbeforerefresh
+
+Timing for `onbeforerefresh` events/callback is included in `refresh()` timing, and is reported 
+separately, as well.
+
+This allows you to see the time used by your `iscroll_onrefresh` event callback (if any),
+which might typically refresh jQuery Mobile widgets contained within the scroller.
+
+Time spent in iScroll's `onRefresh` callback is not separately reported (but is included in total
+`refresh` time) because it is not anticiapted that it will be a useful event for use by
+application code.
+
+### resizeWrapper
+
+This reports the time needed to resize the wrapper.
+
+---
 
 Testing
 -------

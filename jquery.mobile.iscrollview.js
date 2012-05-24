@@ -160,7 +160,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
-    debug: false,                          // Enable some messages to console
+    debug: true,                          // Enable some messages to console
     
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
@@ -288,7 +288,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     onpulldown:          null,    
     onpullupreset:       null,
     onpulluppulled:      null,    
-    onpullup:            null
+    onpullup:            null,
+    
+    onbeforerefresh:     null
     },
 
     //---------------------------------------------------------------------------------------
@@ -330,7 +332,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "onpulldown",
       "onpullupreset",
       "onpulluppulled",
-      "onpullup"
+      "onpullup",
+      "onbeforerefresh"
       ],
 
     //-----------------------------------------------------------------------
@@ -985,8 +988,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
     setTimeout(function() {
       var d2 = _this._startTiming();
+      if (_callback) { _callback(_context); }      
+      _this._trigger("onbeforerefresh",  null, {"iscrollview":_this});
+      _this._logTiming("onbeforerefresh", d2);     
       _this.iscroll.refresh();
-      if (_callback) { _callback(_context); }
+
       _this._logTiming2("refresh", d1, d2);
       }, _delay);
     this._log("refresh will occur after " + _delay + "mS");
