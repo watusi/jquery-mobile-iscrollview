@@ -192,7 +192,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // Space-separated list of events on which to resize/refresh iscroll4
     // On some mobile devices you may wish to add/substitute orientationchange event
-    resizeEvents: "resize",
+    // iOS 4.x will trigger resize twice then orientationchange
+    // iOS 5.x will trigger resize once then orientationchange
+    // Best performance on iOS is only orientationchange
+    // Refresh can be 200mSec on iPhone 4, so it's a significant performance difference
+    // Experimentation with other devices would be useful
+    resizeEvents: IsIDevice ? "orientationchange": "resize",
 
     // Refresh iscrollview on page show event. This should be true if content inside a
     // scrollview might change while the page is cached but not shown.
