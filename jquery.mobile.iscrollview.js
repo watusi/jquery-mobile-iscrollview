@@ -325,12 +325,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "pullUpLoadingText",      
       "pullPulledClass",
       "pullLoadingClass",     
-      "pulldownreset",
-      "pulldownpulled",
-      "pulldown",
-      "pullupreset",
-      "pulluppulled",
-      "pullup"
+      "onpulldownreset",
+      "onpulldownpulled",
+      "onpulldown",
+      "onpullupreset",
+      "onpulluppulled",
+      "onpullup"
       ],
 
     //-----------------------------------------------------------------------
