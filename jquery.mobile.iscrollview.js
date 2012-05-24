@@ -78,7 +78,17 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //----------------------------------
   var IsWebkit =  (/webkit/i).test(navigator.appVersion),
       IsAndroid = (/android/gi).test(navigator.appVersion),
-      IsFirefox = (/firefox/i).test(navigator.userAgent),    
+      IsFirefox = (/firefox/i).test(navigator.userAgent),
+         
+      IsIDevice = (/(iPhone|iPad|iPod).*AppleWebKit/).test(navigator.appVersion),
+      IsIPad = (/iPad.*AppleWebKit.*Safari/).test(navigator.appVersion),      
+      // IDevice running Mobile Safari - not embedded UIWebKit or Standalone (= saved to desktop)
+      IsMobileSafari = (/(iPhone|iPad|iPod).*AppleWebKit.*Safari/).test(navigator.appVersion),
+      // IDevice native app using embedded UIWebView
+      IsUIWebView = (/(iPhone|iPad|iPod).*AppleWebKit.(?!.*Safari)/).test(navigator.appVersion),
+      // Standalone is when running a website saved to the desktop (SpringBoard)
+      IsIDeviceStandalone = IsIDevice && window.navigator.Standalone,       
+              
       IScrollHasDimensionFunctions = iScroll.prototype._clientWidth !== undefined;
 
   //===============================================================================
@@ -148,7 +158,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Additional iScroll4 options will be back-filled from iscroll4
 
     // iscrollview widget options
-    
+        
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
     bottomOffset: 0,  
@@ -182,8 +192,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // Space-separated list of events on which to resize/refresh iscroll4
     // On some mobile devices you may wish to add/substitute orientationchange event
-    // For iOS devices, resize works better, because the orientationchange event
-    // occurs too late resulting is visual distraction.
     resizeEvents: "resize",
 
     // Refresh iscrollview on page show event. This should be true if content inside a
@@ -201,7 +209,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
                         // Can be + or -
 
     // Timeout to allow page to render prior to refresh()
-    refreshDelay:  IsAndroid ? 200 : 50,   // Wild-ass guesses
+    refreshDelay:  IsAndroid ? 200 : 0,   // Wild-ass guesses
     
     // true to set the minimum height of scroller content (not including
     // any pull-down or pull-up) to the height of the wrapper.. This allows 
@@ -217,6 +225,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // But we want to add that padding back inside the scroller. We add a div around the content
     // inside any pull-down/pull-up to replace the padding removed from the wrapper.
     addScrollerPadding: true,
+    
+    // On some platforms (iOS, for example) we need to scroll to top after orientation change,
+    // because the address bar pushed the window down. jQuery Mobile handles this for page links,
+    // but doesn't for orientationchange
+    // If you have multiple scrollers, only enable this for one of them
+    scrollTopOnOrientationChange: true,
     
     // iScroll scrolls the first child of the wrapper. I don't see a use case for having more
     // than one child. What kind of mess is going to be shown in that case? So, by default, we 
@@ -453,7 +467,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Add proxy event functions
     return $.extend(options, this._proxy_event_funcs);
     },
-
+    
   //------------------------------------------------------------------------------
   // Functions that we bind to. They are declared as named members rather than as
   // inline closures so we can properly unbind them.
@@ -467,9 +481,18 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.refresh();
     },
 
-  _windowResizeFunc: function(e) {
+  _windowResizeFunc: function(e) {    
     this.resizeWrapper();
     this.refresh();
+    },
+    
+  // On some platforms (iOS, for example) you need to scroll back to top after orientation change,
+  // because the address bar pushed the window down. jQuery Mobile handles this for page links,
+  // but doesn't for orientationchange  
+  _orientationChangeFunc: function(e) {
+    if (this.options.scrollTopOnOrientationChange) {
+      $.mobile.silentScroll(0);
+      }
     },
 
   //----------------------------
@@ -488,7 +511,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       $(this).jqmRemoveData("iscrollviewOrigStyle");      
       });
     },
-
+    
   //----------------------------------
   // Adapt the page for this widget
   // This should only be done for one
@@ -703,20 +726,21 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   resizeWrapper: function() {
-  if (!this.options.resizeWrapper) { return; }
-    var adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
+    var adjust;
+    if (!this.options.resizeWrapper) { return; }
+    adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
     this.$wrapper.height(
-      $(window).actual("height") - // Height of the window
-      this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
-      adjust +                     // Make adjustment based on content-box model
-      this.options.wrapperAdd   // User-supplied fudge-factor if needed
-      );
-
+    $(window).actual("height") - // Height of the window
+    this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
+    adjust +                     // Make adjustment based on content-box model
+    (IsMobileSafari && !IsIPad ? 60 : 0) +  // Add 60px for space recovered from Mobile Safari address bar
+    this.options.wrapperAdd      // User-supplied fudge-factor if needed
+    );
     // The first time we resize, save the size of the wrapper
     if (this._firstResize) {
       this._origWrapperHeight = this.$wrapper.height() - adjust;
       this._firstResize = false;
-      }
+      }          
     },
 
   undoResizeWrapper: function() {
@@ -746,6 +770,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (this.options.resizeWrapper) {
       this.resizeWrapper();   // Resize wrapper to take remaining space after bars
       $(window).bind(this.options.resizeEvents, $.proxy(this._windowResizeFunc, this));
+      if (this.options.scrollTopOnOrientationChange) {
+        $(window).bind("orientationchange", $.proxy(this._orientationChangeFunc, this));
+        }
       }     
     },
  
@@ -992,6 +1019,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$wrapper.unbind("touchmove", this._preventDefaultFunc);
     this.$page.unbind("pagebeforeshow", this._pageBeforeShowFunc);
     $(window).unbind(this.options.resizeEvents, this._windowResizeFunc);
+    $(window).unbind("orientationchange", this._orientationChangeFunc);
 
     this._undoExpandScrollerToFillWrapper();
 
@@ -1142,7 +1170,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Set a pull block to pulled state
     _pullSetStatePulled: function($pull, text) {
       $pull.removeClass(this.options.pullLoadingClass).addClass(this.options.pullPulledClass);
-      this._replacePullText($pull, text);	
+      this._replacePullText($pull, text);
       },
       
     _pullDownSetStatePulled: function(e) {
@@ -1214,12 +1242,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
      // Repeat for pull-up
      else if (!pullUpIsPulled && y < this.maxScrollY() - pullUpHeight - pullUpPast ) {
        this._pullUpSetStatePulled(e);
-       this.maxScrollY(this.wrapperH() - this.scrollerH() + this.minScrollY());	
+       this.maxScrollY(this.wrapperH() - this.scrollerH() + this.minScrollY()); 
        }
  
       else if (pullUpIsPulled && y >= this.maxScrollY() ) {
         this._pullUpSetStateReset(e);
-        this.maxScrollY(this.wrapperH() - this.scrollerH() + this.minScrollY() + pullUpHeight);		        
+        this.maxScrollY(this.wrapperH() - this.scrollerH() + this.minScrollY() + pullUpHeight);             
         }
       },
 

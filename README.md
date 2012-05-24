@@ -773,6 +773,16 @@ have a pull-up or pull-down block.
 
 Default: `true`
 
+####scrollTopOnOrientationChange
+
+On some platforms (for example, iOS) when orientation is changed, the address bar pushes the
+page down. jQuery Mobile scroll the pgae back up on hash changes, but doesn't do so for 
+orientation changes. So, the page is left scrolled-down.
+
+If you have multiple scrollers on the same page, only enable this option for one of them.
+
+Default: `true`
+
 #### pullDownResetText
 
 Default: `"Pull down to refresh..."`
