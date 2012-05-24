@@ -160,6 +160,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
+    debug: false,                          // Enable some messages to console
+    
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
     bottomOffset: 0,  
@@ -475,6 +477,53 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     return $.extend(options, this._proxy_event_funcs);
     },
     
+  // Formats number with fixed digits
+  _pad: function(num, digits, char) {
+    var str = "" + num,
+        padChar = char ? char : "0";
+    while (str.length < digits) {
+      str = padChar + str;
+      }
+    return str;
+  },  
+    
+  // Format time for logging
+  _toTime: function(date) {
+    return this._pad(date.getHours(), 2) + ":" + 
+           this._pad(date.getMinutes(), 2) + ":" +
+           this._pad(date.getSeconds(), 2) + "." +
+           this._pad(date.getMilliseconds(), 3);   
+  },
+  
+  // Log a message to console  
+  _log: function(text) {
+    if (!this.options.debug) { return; }
+    console.log(this._toTime(new Date()) + " " + 
+                $.mobile.path.parseUrl(this.$page.jqmData("url")).filename + " " +
+                text );
+  },
+    
+  // Log elapsed time from d1 to present
+  _logTiming: function(text, d1) {
+    if (!this.options.debug) { return; }
+    var d2 = new Date();
+    this._log(text + " " + (d2 - d1) + "mS from " + this._toTime(d1) );        
+    }, 
+    
+  // Log elapsed time from d1 to present and d2 to present  
+  _logTiming2: function(text, d1, d2) {
+    if (!this.options.debug) { return; }
+    var d3 = new Date();
+    this._log(text + " " + 
+              (d3 - d2) + "mS from " + this._toTime(d2) + 
+              " (" + (d3 - d1) + "mS from " + this._toTime(d1) + ")" );
+    }, 
+    
+  _startTiming: function() {
+    if (!this.options.debug) { return null; }
+    return new Date();
+    }, 
+
   //------------------------------------------------------------------------------
   // Functions that we bind to. They are declared as named members rather than as
   // inline closures so we can properly unbind them.
@@ -762,7 +811,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   resizeWrapper: function() {
-    var adjust;
+    var adjust, 
+        d1 = this._startTiming();   
     if (!this.options.resizeWrapper) { return; }
     adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
     this.$wrapper.height(
@@ -777,6 +827,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this._origWrapperHeight = this.$wrapper.height() - adjust;
       this._firstWrapperResize = false;
       }          
+    this._logTiming("resizeWrapper", d1);      
     },
 
   undoResizeWrapper: function() {
@@ -914,12 +965,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     var _this = this,
         _delay = delay,
         _callback = callback,
-        _context = context;
+        _context = context,
+        d1 = this._startTiming();
     if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
     setTimeout(function() {
+      var d2 = _this._startTiming();
       _this.iscroll.refresh();
       if (_callback) { _callback(_context); }
+      _this._logTiming2("refresh", d1, d2);
       }, _delay);
+    this._log("refresh will occur after " + _delay + "mS");
     },
 
    //---------------------------

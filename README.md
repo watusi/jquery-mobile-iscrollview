@@ -590,6 +590,12 @@ Default: `0`
 The following options are available which affect the widget itself. These are
 not iScroll options.
 
+####debug
+
+Enables performance logged. Please see the documentation section on performance logging.
+
+Default: `false`
+
 ####pageClass
 A CSS class, or a space-separated list of classes, which will be added to the page
 containing the wrapper.
@@ -1063,6 +1069,28 @@ you can be sure of what version you are getting, and avail yourself
 of any updates/improvements.
 
 ---
+
+Performance Logging
+-------------------
+This widget performs some minimal logging of performance data when the `debug` option is
+set to `true`.
+
+The log shows the time, file name, function name, elapsed mSec that the function ran, and
+the time at start of function.
+
+For some functions, a second set of elapsed mSec and start time are logged (in parenthesis).
+This is for functions that were queued using a SetTimeout. So, you can see how long the
+function took to run, as well as the elapsed time from when the function was queued. Note
+that the latter may be greater than the timout that was specified (which might be 0).
+
+Currently, the widget logs timings for `refresh()` and `resizeWrapper()` calls. 
+
+In the case
+of `refresh()` there is an initial log entry when the `refresh()` is queued, which will also
+indicate the timeout value that was used. A second, separate, log entry shows the elapsed
+time that `refresh() ran as well as elapsed time from when it was queued. The time value shown
+lets you match-up the first and second entries. This will help you evaluate the impact of
+browser rendering time. (A 0mSec timeout will first allow all rendering to complete.)
 
 Testing
 -------
