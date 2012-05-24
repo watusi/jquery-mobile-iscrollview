@@ -864,7 +864,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       $("." + this.options.pullLabelClass, this.$pullUp).text(this._origPullUpLabelText); 
       }    
   },
-
+  
   //--------------------------------------------------------
   // Expands the scroller to fill the wrapper. This permits 
   // dragging an empty scroller, or one that is shorter than 
@@ -978,16 +978,18 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Prevent moving the wrapper with touch
     this.$wrapper.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
 
-    //Refresh the iscroll object when the page is shown, in case content was changed
-    // asynchronously while it was hidden. Applicable to mobile native app environments
-    // such as PhoneGap, Rhodes, etc./We assume that fixed-height headers/footers
-    // were not changed
+    // Should only be needed if unpatched iScroll is being used. In that case, while the
+    // widget uses jquery.actual to determine dimensions while the page is still hidden,
+    // iScroll itself does not.
     //
-    // This also seems necessary for some desktop browsers even when not
-    // changing content asynchronously. This is probably because we are
-    // not able to determine fixed-height element heights prior to this,
-    // even using jQuery.actual plugin.
-    if (this.options.pullUpReset) {
+    // This might also be used with native apps with a WebView, such as PhoneGap,
+    // if content might have changed asynchronously while the page was hidden.
+    //
+    // TODO: Possibly defer potentially multiple calls made to refresh() while page is hidden to
+    // pagebeforeshow. However, it would be better for an application to do this itself, since
+    // it may also be refreshing listviews, etc. So, the app should do the defer itself.
+    
+    if (this.options.refreshOnPageBeforeShow) {
       this.$page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
       }
         
