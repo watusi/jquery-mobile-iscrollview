@@ -141,10 +141,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   $pullUp:     null,  // The pull-up element (if any)
   $page:       null,  // The page element that contains the wrapper
 
-  _firstWrapperResize:     true,    // True on first resize, so we can capture original wrapper height
-  _firstScrollerExpand:    true,    // True on first scroller expand, so we can capture original CSS
+  _firstWrapperResize:     true,  // True on first resize, so we can capture original wrapper height
+  _firstScrollerExpand:    true,  // True on first scroller expand, so we can capture original CSS
 
   _barsHeight:       null,   // Total height of headers, footers, etc.
+  
+  // True if this scroller is "dirty" - i.e. needs refresh because refresh
+  // was deferred when the page was not the active page.  
+  _dirty:         false,     
+  _dirtyCallback: null,
+  _dirtyContext:  null,
 
   //----------------------------------------------------
   // Options to be used as defaults
@@ -248,6 +254,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // big deal. If, for some reason, you want to create the markup for the scroller yourself, 
     // set this to false. 
     createScroller: true,
+    
+    // True to defer refresh() on non-active pages until pagebeforeshow. This avoids 
+    // unnecessary refresh in case of resize/orientation change when pages are cached,
+    // as well as unnecessary refresh when pages are updated when they are not the active
+    // page.
+    deferNonActiveRefresh: true,
     
     pullDownResetText   : "Pull down to refresh...",
     pullDownPulledText  : "Release to refresh...",
@@ -543,6 +555,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (!this.options.debug) { return null; }
     return new Date();
     }, 
+    
+  //-------------------------------------------------------------------
+  // Returns status of dirty flag, indicating that refresh() was called
+  // while the page was not active, and refresh will be deferred until
+  // pagebeforeshow.
+  //-------------------------------------------------------------------  
+  isDirty: function() {
+    return this._dirty;
+    },
 
   //------------------------------------------------------------------------------
   // Functions that we bind to. They are declared as named members rather than as
@@ -554,8 +575,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _pageBeforeShowFunc: function(e) {
-    this.refresh();
-    },
+    if (this.options.refreshOnPageBeforeShow) {
+      this.refresh();
+      }
+   else if (this._dirty) {
+     this.refresh(0, this._dirty_callback, this._dirty_context, true);
+     this._dirty = false;
+     this._dirty_callback = null;
+     this._dirty_context = null;  
+     }    
+   },
 
   _windowResizeFunc: function(e) {    
     this.resizeWrapper();
@@ -971,7 +1000,21 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //Refresh the iscroll object
   // Insure that refresh is called with proper timing
   //-------------------------------------------------
-  refresh: function(delay, callback, context) {
+  refresh: function(delay, callback, context, force) {
+  
+    // If non-active-page refresh is deferred, make a note of it.
+    // Note that each call to refresh() overwrites the callback and context variables.
+    // Our expectation is that callback and context will be identical for all such refresh
+    // calls. In any case, only the last callback and context will be used. This allows
+    // refresh of jQuery Mobile widgets within the scroller to be deferred, as well.
+    if (!force && this.options.deferNonActiveRefresh && !this.$page.hasClass("ui-page-active")) {
+      this._dirty = true;
+      this._dirtyCallback = callback;
+      this._dirtyContext = context;
+      this._log("refresh deferred (not active page)");
+      return;
+    }
+  
   // Let the browser complete rendering, then refresh the scroller
   //
   // Optional delay parameter for timeout before actually calling iscroll.refresh().
@@ -986,6 +1029,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         _delay = delay,
         _callback = callback,
         _context = context,
+        _force = force,
         d1 = this._startTiming();
     if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
     setTimeout(function() {
@@ -995,7 +1039,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       _this._logTiming("onbeforerefresh", d2);     
       _this.iscroll.refresh();
 
-      _this._logTiming2("refresh", d1, d2);
+      _this._logTiming2("refresh" + (_force ? " (dirty)" : ""), d1, d2);
       }, _delay);
     this._log("refresh will occur after " + _delay + "mS");
     },
@@ -1062,20 +1106,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Prevent moving the wrapper with touch
     this.$wrapper.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
 
-    // Should only be needed if unpatched iScroll is being used. In that case, while the
-    // widget uses jquery.actual to determine dimensions while the page is still hidden,
-    // iScroll itself does not.
-    //
-    // This might also be used with native apps with a WebView, such as PhoneGap,
-    // if content might have changed asynchronously while the page was hidden.
-    //
-    // TODO: Possibly defer potentially multiple calls made to refresh() while page is hidden to
-    // pagebeforeshow. However, it would be better for an application to do this itself, since
-    // it may also be refreshing listviews, etc. So, the app should do the defer itself.
-    
-    if (this.options.refreshOnPageBeforeShow) {
+    //if (this.options.refreshOnPageBeforeShow) {
       this.$page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
-      }
+   //   }
         
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
     this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset 

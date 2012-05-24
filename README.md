@@ -406,6 +406,11 @@ need to refresh widgets inside the scroller (such as a listview) prior to iScrol
 While one might use an `iscroll_onbeforerefresh` event for this, the callback eliminates any
 ambiguity as to *which* specific `refresh()` call has completed.
 
+Calls made to `refresh()` while a cached page is not the active page are normally (depending on
+the value of the `deferNonActiveRefresh` option) deferred until the next `iscroll_onbeforepagerefresh`
+event. This avoids unnecessary refreshes. Note that if the `refreshOnPageBeforeChange` option
+is true, then the scroller will *always* be refreshed on `iscroll_pagebeforefresh()`.
+
 ####scrollTo(x, y, time, relative)
 
 ####scrollToElement(el, time)
@@ -786,6 +791,14 @@ page down. jQuery Mobile scroll the pgae back up on hash changes, but doesn't do
 orientation changes. So, the page is left scrolled-down.
 
 If you have multiple scrollers on the same page, only enable this option for one of them.
+
+Default: `true`
+
+deferNonActiveRefresh
+
+If this options is set to `true`, then calls to `refresh()` for pages that are not the
+active page will be deferred to the next `pagebeforeshow` event for the page. This avoids
+unnecessary refreshes when the browser window is resized or device orientation is changed.
 
 Default: `true`
 
@@ -1174,12 +1187,16 @@ that the latter may be greater than the timout that was specified (which might b
 
 ### refresh
 
-In the case
-of `refresh()` there is an initial log entry when the `refresh()` is queued, which will also
-indicate the timeout value that was used. A second, separate, log entry shows the elapsed
+In the case of `refresh()` there is an initial log entry when the `refresh()` is queued, which 
+will also indicate the timeout value that was used. A second, separate, log entry shows the elapsed
 time that `refresh()` ran as well as elapsed time from when it was queued. The time value shown
 lets you match-up the first and second entries. This will help you evaluate the impact of
 browser rendering time. (A 0mSec timeout will first allow all rendering to complete.)
+
+If a refresh is occuring on an `iscroll_onpagebeforerefresh` event because a page is "dirty"
+the log entry will indicate "(dirty)". "Dirty" pages are pages that have had `refresh()` called
+while they were not the active page. Normally (depending on the `DeferNonActiveRefresh` option)
+such pages have their `refresh()` deferred until the page is about to be shown.
 
 ### onbeforerefresh
 
