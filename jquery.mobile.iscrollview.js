@@ -352,20 +352,23 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       },
        
     // The following functions are called from the proxy event functions. These are things
-    // we always want to do on certain iScroll4 events. "this" is not this iscrollview object!
-    // It's the iScroll4 context. 
+    // we always want to do on certain iScroll4 events. 
      
-    // Emulate bottomOffset functionality in case iScroll doesn't have patch for bottomOffset     
-    _emulateBottomOffset: function() {
-      if (this.iscrollview.options.emulateBottomOffset) {
+    // Emulate bottomOffset functionality in case iScroll doesn't have patch for bottomOffset 
+    // Note that this is first called in the context of iscroll, because it is called during
+    // instantiation of iscroll.  So, the widget doesn't have a reference to the iscroll
+    // yet - it is still null.  
+    _emulateBottomOffset: function(e) {
+      var that = this.iscrollview;
+      if (that.options.emulateBottomOffset) {
         this.maxScrollY = this.wrapperH - this.scrollerH + this.minScrollY + 
-          this.iscrollview.options.bottomOffset; 
+          that.options.bottomOffset; 
         }       
     },
     
     // Allow events through to input elements
     _fixInput: function(e) {
-     if (this.iscrollview.options.fixInput ) { 
+     if (this.options.fixInput ) { 
        var tagName,
            target = e.target;
        while (target.nodeType !== 1) { target = target.parentNode; }
@@ -396,56 +399,68 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     _proxy_event_funcs: {
     
       onRefresh: function(e) {
-        this.iscrollview._emulateBottomOffset.call(this);
-        this.iscrollview._pullOnRefresh.call(this.iscrollview);
-        this.iscrollview._trigger("onrefresh",e,{"iscrollview":this.iscrollview});
+        var that = this.iscrollview;
+        that._emulateBottomOffset.call(this);
+        that._pullOnRefresh.call(that, e);
+        that._trigger("onrefresh",e,{"iscrollview":that});
         },
 
       onBeforeScrollStart: function(e) {
-        this.iscrollview._fixInput.call(this, e);     
-        this.iscrollview._trigger("onbeforescrollstart",e,{"iscrollview":this.iscrollview});
+        var that = this.iscrollview;
+        that._fixInput.call(that, e);     
+        that._trigger("onbeforescrollstart",e,{"iscrollview":that});
         },
 
       onScrollStart: function(e) {
-        this.iscrollview._trigger("onscrollstart",e,{"iscrollview":this.iscrollview });
+        var that = this.iscrollview;
+        that._trigger("onscrollstart",e,{"iscrollview":that});
         },
         
       onBeforeScrollMove:  function(e) {
-        this.iscrollview._trigger("onbeforescrollmove",e,{"iscrollview":this.iscrollview});
+        var that = this.iscrollview;
+        that._trigger("onbeforescrollmove",e,{"iscrollview":that});
         },
 
       onScrollMove: function(e) {
-        this.iscrollview._pullOnScrollMove.call(this.iscrollview); 
-        this.iscrollview._trigger("onscrollmove",e,{"iscrollview":this.iscrollview});
+        var that = this.iscrollview;
+        that._pullOnScrollMove.call(that, e); 
+        that._trigger("onscrollmove",e,{"iscrollview":that});
         },
 
       onBeforeScrollEnd:   function(e) {
-        this.iscrollview._trigger("onbeforescrollend",e,{"iscrollview":this.iscrollview});
+        var that = this.iscrollview;
+        that._trigger("onbeforescrollend",e,{"iscrollview":that});
         },
      
       onScrollEnd: function(e) {
-        this.iscrollview._pullOnScrollEnd.call(this.iscrollview, e);
-        this.iscrollview._trigger("onscrollend",e,{"iscrollview":this.iscrollview});
+        var that = this.iscrollview;
+        that._pullOnScrollEnd.call(that, e);
+        this.iscrollview._trigger("onscrollend",e,{"iscrollview":that});
         },
         
       onTouchEnd:          function(e) {
-        this.iscrollview._trigger("ontouchend",e,{"iscrollview":this.iscrollview});
+        var that = this.iscrollview;
+        that._trigger("ontouchend",e,{"iscrollview":that});
         },
         
       onDestroy:           function(e) {
-        this.iscrollview._trigger("ondestroy",e,{"iscrollview":this.iscrollview});
+        var that = this.iscrollview;
+        that._trigger("ondestroy",e,{"iscrollview":that});
         },
         
       onZoomStart:         function(e) {
-        this.iscrollview._trigger("onzoomstart",e,{"iscrollview":this.iscrollview});
+        that = this.iscrollview;
+        that._trigger("onzoomstart",e,{"iscrollview":that});
         },
         
       onZoom:              function(e) {
-        this.iscrollview._trigger("onzoom",e,{"iscrollview":this.iscrollview});
+        that = this.iscrollview;
+        that._trigger("onzoom",e,{"iscrollview":that});
         },
         
       onZoomEnd:           function(e) {
-        this.iscrollview._trigger("onzoomend",e,{"iscrollview":this.iscrollview});
+        that = this.iscrollview;
+        that._trigger("onzoomend",e,{"iscrollview":that});
         }
         
       },
