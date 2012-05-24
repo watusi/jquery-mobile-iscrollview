@@ -516,8 +516,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Log a message to console  
   _log: function(text) {
     if (!this.options.debug) { return; }
+    var id = this.$wrapper.attr("id");
+    var idStr = id ? "#" + id : ""; 
     console.log(this._toTime(new Date()) + " " + 
-                $.mobile.path.parseUrl(this.$page.jqmData("url")).filename + " " +
+                $.mobile.path.parseUrl(this.$page.jqmData("url")).filename + idStr + " " +
                 text );
   },
     
