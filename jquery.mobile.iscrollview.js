@@ -11,8 +11,8 @@
          JQuery Widget Factory private members
 *******************************************************************************/
 
-/*jslint browser: true, sloppy: true, white: true, nomen: true, maxerr: 50, indent: 2 */
-/*global jQuery:false, iScroll:false */
+/*jslint browser: true, sloppy: true, white: true, nomen: true, regexp: true, maxerr: 50, indent: 2 */
+/*global jQuery:false, iScroll:false, console:false*/
 
 /*******************************************************************************
   But instead, be kind to yourself, and use jshint.
@@ -148,10 +148,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   
   // True if this scroller is "dirty" - i.e. needs refresh because refresh
   // was deferred when the page was not the active page.  
-  _dirty:         false,     
-  _dirtyCallback: null,
-  _dirtyContext:  null,
-
+  _dirty:               false,   
+  _dirtyCallbackBefore: null,
+  _dirtyCallbackAfter:  null,
+  _dirtyContext:        null,
+  
+  _sizeDirty:     false,  // True if wrapper resize is needed  
+  
   //----------------------------------------------------
   // Options to be used as defaults
   //----------------------------------------------------
@@ -166,7 +169,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
-    debug: true,                          // Enable some messages to console
+    debug:false,                          // Enable some messages to console
     
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
@@ -261,6 +264,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // page.
     deferNonActiveRefresh: true,
     
+    // Same deal, for re-sizing the wrapper
+    deferNonActiveResize: true,
+    
     pullDownResetText   : "Pull down to refresh...",
     pullDownPulledText  : "Release to refresh...",
     pullDownLoadingText : "Loading...",
@@ -302,7 +308,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     onpulluppulled:      null,    
     onpullup:            null,
     
-    onbeforerefresh:     null
+    onbeforerefresh:     null,
+    onafterrefresh:      null
     },
 
     //---------------------------------------------------------------------------------------
@@ -345,7 +352,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "onpullupreset",
       "onpulluppulled",
       "onpullup",
-      "onbeforerefresh"
+      "onbeforerefresh",
+      "onafterrefresh"
       ],
 
     //-----------------------------------------------------------------------
@@ -464,17 +472,17 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         },
         
       onZoomStart:         function(e) {
-        that = this.iscrollview;
+        var that = this.iscrollview;
         that._trigger("onzoomstart",e,{"iscrollview":that});
         },
         
       onZoom:              function(e) {
-        that = this.iscrollview;
+        var that = this.iscrollview;
         that._trigger("onzoom",e,{"iscrollview":that});
         },
         
       onZoomEnd:           function(e) {
-        that = this.iscrollview;
+        var that = this.iscrollview;
         that._trigger("onzoomend",e,{"iscrollview":that});
         }
         
@@ -509,8 +517,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     
   // Formats number with fixed digits
   _pad: function(num, digits, char) {
-    var str = "" + num,
-        padChar = char ? char : "0";
+    var str = num.toString(),
+        padChar = char || "0";
     while (str.length < digits) {
       str = padChar + str;
       }
@@ -528,27 +536,27 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Log a message to console  
   _log: function(text) {
     if (!this.options.debug) { return; }
-    var id = this.$wrapper.attr("id");
-    var idStr = id ? "#" + id : ""; 
+    var id = this.$wrapper.attr("id"),
+        idStr = id ? "#" + id : ""; 
     console.log(this._toTime(new Date()) + " " + 
                 $.mobile.path.parseUrl(this.$page.jqmData("url")).filename + idStr + " " +
                 text );
   },
     
-  // Log elapsed time from d1 to present
-  _logTiming: function(text, d1) {
+  // Log elapsed time from then to now
+  _logTiming: function(text, then) {
     if (!this.options.debug) { return; }
-    var d2 = new Date();
-    this._log(text + " " + (d2 - d1) + "mS from " + this._toTime(d1) );        
+    var now = new Date();
+    this._log(text + " " + (now - then) + "mS from " + this._toTime(then) );        
     }, 
     
-  // Log elapsed time from d1 to present and d2 to present  
-  _logTiming2: function(text, d1, d2) {
+  // Log elapsed time from then to now and later to now 
+  _logTiming2: function(text, then, later) {
     if (!this.options.debug) { return; }
-    var d3 = new Date();
+    var now = new Date();
     this._log(text + " " + 
-              (d3 - d2) + "mS from " + this._toTime(d2) + 
-              " (" + (d3 - d1) + "mS from " + this._toTime(d1) + ")" );
+              (now - later) + "mS from " + this._toTime(later) + 
+              " (" + (now - then) + "mS from " + this._toTime(then) + ")" );
     }, 
     
   _startTiming: function() {
@@ -575,20 +583,33 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _pageBeforeShowFunc: function(e) {
-    if (this.options.refreshOnPageBeforeShow) {
-      this.refresh();
-      }
-   else if (this._dirty) {
-     this.refresh(0, this._dirty_callback, this._dirty_context, true);
+   if (this._sizeDirty) {
+     this.resizeWrapper();
+     this.expandScrollerToFillWrapper();
+     this._sizeDirty = false;   
+      }      
+   if (this._dirty) {
+     this.refresh(0, this._dirtyCallbackBefore, this._dirtyCallbackAfter, this._dirtyContext, true);
      this._dirty = false;
-     this._dirty_callback = null;
-     this._dirty_context = null;  
-     }    
+     this._dirtyCallbackBefore = null;
+     this._dirtyCallbackAfter = null;
+     this._dirtyContext = null;  
+     }   
+   else if (this.options.refreshOnPageBeforeShow) {
+      this.refresh();
+      } 
    },
 
-  _windowResizeFunc: function(e) {    
-    this.resizeWrapper();
-    this._expandScrollerToFillWrapper();
+  // Called on resize events
+  _windowResizeFunc: function(e) { 
+    if (this.options.deferNonActiveResize && !this.$page.hasClass("ui-page-active"))  {
+      this._sizeDirty = true;
+      this._log("resizeWrapper (deferred)");
+      }
+    else {     
+      this.resizeWrapper();
+      this.expandScrollerToFillWrapper();
+      }
     this.refresh();
     },
     
@@ -736,7 +757,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Correct the wrapper CSS position in case it is static.
   // We need relative or absolute for proper positioning of
   // the scrollbar. Either relative or absolute on the wrapper
-  // will cause the abosolute positioning of the scrollbar in
+  // will cause the absolute positioning of the scrollbar in
   // iScroll to be relative to the wrapper. iScroll examples
   // all work because they happen to use position:fixed on the
   // wrapper. Rather than force the user to set wrapper 
@@ -809,7 +830,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   
   _undoAddScrollerPadding: function () {
     if (this.options.removeWrapperPadding && this.options.addScrollerPadding) {   
-      $("." + this.options.scrollerContentClass, this.$scroller).children().unWrap();
+      $("." + this.options.scrollerContentClass, this.$scroller).children().unwrap();
       }  
     },
   
@@ -835,11 +856,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // well, this pushes any pull-up element down so that it 
   // will not be visible until the user pulls up.
   //-------------------------------------------------------- 
-  _expandScrollerToFillWrapper: function() {
+  expandScrollerToFillWrapper: function() {
     if (this.options.expandScrollerToFillWrapper) {
       if (this._firstScrollerExpand) {
         this._origScrollerStyle = this.$scroller.attr("style");
-        this._firstSCrollerExpand = false;
+        this._firstScrollerExpand = false;
         }
       this.$scroller.css("min-height", 
         this.$wrapper.actual("height") + 
@@ -861,11 +882,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //--------------------------------------------------------
   resizeWrapper: function() {
     var adjust, 
-        d1 = this._startTiming();   
+        then;   
     if (!this.options.resizeWrapper) { return; }
+    then = this._startTiming();    
     adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
     this.$wrapper.height(
-    $(window).actual("height") - // Height of the window
+    $(window).height() -         // Height of the window
     this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
     adjust +                     // Make adjustment based on content-box model
     (IsMobileSafari && !IsIPad ? 60 : 0) +  // Add 60px for space recovered from Mobile Safari address bar
@@ -876,10 +898,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this._origWrapperHeight = this.$wrapper.height() - adjust;
       this._firstWrapperResize = false;
       }          
-    this._logTiming("resizeWrapper", d1);      
+    this._logTiming("resizeWrapper" + (this._sizeDirty ? " (dirty)" : ""), then);      
     },
 
-  undoResizeWrapper: function() {
+  _undoResizeWrapper: function() {
     if (this.origWrapperHeight !== undefined) { this.$wrapper.height(this._origWrapperHeight); }
     },  
 
@@ -913,7 +935,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
  
   _undoModifyWrapper: function() {
-    this.undoResizeWrapper(); 
+    this._undoResizeWrapper(); 
     this._undoModifyWrapperCSS();
     this._undoAddWrapperClasses();
     },
@@ -988,7 +1010,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
              
     },
     
-  _undoModifyPullup: function () {
+  _undoModifyPullUp: function () {
     this.$pullUp.attr("style", this._origPullUpStyle);   
     this.$pullUp.prev().remove();  // Remove the dummy div
     if (this._origPullUpLabelText) {
@@ -996,51 +1018,63 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }    
   },
   
-  //-------------------------------------------------
-  //Refresh the iscroll object
-  // Insure that refresh is called with proper timing
-  //-------------------------------------------------
-  refresh: function(delay, callback, context, force) {
+  //----------------------------------------------------------------------
+  // Refresh the iscroll object. Insure that refresh is called with proper 
+  // timing. Call optional before and after refresh callbacks and trigger
+  // before and after refresh events.
+  //-----------------------------------------------------------------------
+  refresh: function(delay, callbackBefore, callbackAfter, context, noDefer) {
+  
+    var _this, _delay, _callbackBefore, _callbackAfter, _context, _noDefer, then, later, latest;
   
     // If non-active-page refresh is deferred, make a note of it.
     // Note that each call to refresh() overwrites the callback and context variables.
     // Our expectation is that callback and context will be identical for all such refresh
     // calls. In any case, only the last callback and context will be used. This allows
     // refresh of jQuery Mobile widgets within the scroller to be deferred, as well.
-    if (!force && this.options.deferNonActiveRefresh && !this.$page.hasClass("ui-page-active")) {
+    if (!noDefer && this.options.deferNonActiveRefresh && !this.$page.hasClass("ui-page-active")) {
       this._dirty = true;
-      this._dirtyCallback = callback;
+      this._dirtyCallbackBefore = callbackBefore;
+      this._dirtyCallbackAfter = callbackAfter;
       this._dirtyContext = context;
-      this._log("refresh deferred (not active page)");
+      this._log("refresh (deferred)");
       return;
     }
   
   // Let the browser complete rendering, then refresh the scroller
   //
   // Optional delay parameter for timeout before actually calling iscroll.refresh().
-  // If missing (undefined) or null, use options.refreshDealy.
+  // If missing (undefined) or null, use options.refreshDelay.
   //
-  // Optional callback parameter is called if present after iScroll internal
-  // refresh() is called. This permits caller to perform some action
-  // guranteed to occur after the refresh has occured. While the caller
-  // might bind to the refresh event, this is more convenient and avoids
-  // any ambiguity over WHICH call to refresh has completed.
-    var _this = this,
-        _delay = delay,
-        _callback = callback,
-        _context = context,
-        _force = force,
-        d1 = this._startTiming();
+  // Optional callback parameters are called if present before and after iScroll internal
+  // refresh() is called.  While the caller might bind to the before or after refresh events, 
+  // this can be more convenient and avoids any ambiguity over WHICH call to refresh is involved.
+    _this = this;
+    _delay = delay;
+    _callbackBefore = callbackBefore;
+    _callbackAfter = callbackAfter;
+    _context = context;
+    _noDefer = noDefer;
+    then = this._startTiming();
     if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
     setTimeout(function() {
-      var d2 = _this._startTiming();
-      if (_callback) { _callback(_context); }      
+      var later = _this._startTiming(),
+          latest;
+          
+      if (_callbackBefore) { _callbackBefore(_context); }      
       _this._trigger("onbeforerefresh",  null, {"iscrollview":_this});
-      _this._logTiming("onbeforerefresh", d2);     
+      _this._logTiming("onbeforerefresh", later);     
+      
       _this.iscroll.refresh();
+      
+      latest = _this._startTiming();
+      if (_callbackAfter) { _callbackAfter(_context); }
+      _this._trigger("onafterrefresh", null, {"iscrollview":_this});
+      _this._logTiming("onafterrefresh", latest);
 
-      _this._logTiming2("refresh" + (_force ? " (dirty)" : ""), d1, d2);
+      _this._logTiming2("refresh" + (_noDefer ? " (dirty)" : ""), then, later);
       }, _delay);
+      
     this._log("refresh will occur after " + _delay + "mS");
     },
 
@@ -1064,7 +1098,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   
   _undoCreateScroller: function() {
     if (this.options.createScroller) {
-      this.$scroller.children().unWrap();
+      this.$scroller.children().unwrap();  
     }
   },
       
@@ -1112,7 +1146,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
     this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset 
-    this._expandScrollerToFillWrapper(); // Make empty scroller content draggable    
+    this.expandScrollerToFillWrapper(); // Make empty scroller content draggable    
     this._create_iscroll_object(); 
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options      
     },
@@ -1129,7 +1163,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._undoModifyPullDown();
     this._undoModifyPullUp();
     this._undoAdaptPage();
-    this._undoRemoveScrollerContentMargins();
     this._undoAddScrollerPadding();    
     this._undoModifyWrapper();
     
@@ -1387,7 +1420,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     
     });
 
-})( jQuery, window, document );  // Ignore jslint warning
+}( jQuery, window, document ));
 
 // Self-init
 jQuery(document).bind("pagecreate", function (e) {

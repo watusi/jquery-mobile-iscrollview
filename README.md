@@ -81,6 +81,7 @@ to sidebars.)
 
 Example
 -------
+```html
   <div data-role="page" id="index">
 
     <div data-role="header" data-position="inline">
@@ -109,7 +110,7 @@ Example
     </div>
 
   </div>
-
+```
 
 ---
 
@@ -155,6 +156,7 @@ sure to edit `iscroll-pull.css`.
 
 To implement pull-up and/or pull-down, structure your HTML similar to the following:
 
+```html
     <div data-role="content" data-iscroll>
       <div class="iscroll-pulldown">
         <span class="iscroll-pull-icon"></span>
@@ -169,6 +171,7 @@ To implement pull-up and/or pull-down, structure your HTML similar to the follow
          span class="iscroll-pull-label"></span>
       </div>
     </div>
+```
     
 This is all you have to do to implement the pull-up and/or pull-down UI.
 The widget doesn't create the pull blocks for you, in order to provide you with the flexibility
@@ -225,9 +228,11 @@ To change the `Loading` test, use a `data-iscroll-loading-text` attribute.
 
 Example:
 
+```html
     <span data-iscroll-pulled-text="Now let er go, and we'll get some refresh action!"
           data-iscroll-loading-text="Ye-haw! Waiting for the data to come through the pipes!"
           class="iscroll-pull-label">Pull this here thing down to refresh!</span>
+```
 
 ### Fancier Pull States
 
@@ -250,12 +255,14 @@ a jQuery event callback function.
 
 The example code below is from the demo:
 
+```javascript
     $(document).delegate("div.pull-demo-page", "pageinit", function(event) {
         $(".iscroll-wrapper", this).bind( { 
         "iscroll_onpulldown" : onPullDown,    
         "iscroll_onpullup"   : onPullUp
         });
-      }); 
+      });
+``` 
    
 #### Callbacks
 
@@ -285,24 +292,32 @@ should follow.
 
 For example, to call the `refresh` method:
 
-      $(".example-wrapper").iscrollview("refresh")
+```javascript
+    $(".example-wrapper").iscrollview("refresh");
+```
 
 The widget factory allows you to access widget methods directly, by
 accessing a data variable stored in the widget's element:
 
-      $(".example-wrapper").jqmData('iscrollview').refresh();
+```javascript
+    $(".example-wrapper").jqmData('iscrollview').refresh();
+```
 
 While this is a bit awkward, it is also more conventional. It is
 handy in case you need to make a series of calls to different widget
 methods. You can first get the instance into a variable:
 
-      var myView = $(".example-wrapper").jqmData("iscrollview");
-      myView.refresh();
+```javascript
+    var myView = $(".example-wrapper").jqmData("iscrollview");
+    myView.refresh();
+```
 
 This means, as well, you can easily call any underlying iScroll method
 through the exposed `iscroll` member variable. For example,
 
-      $(".example-wrapper").jqmData('iscrollview').iscroll.scrollTo(0,10,200,true);
+```javascript
+    $(".example-wrapper").jqmData('iscrollview').iscroll.scrollTo(0,10,200,true);
+```
 
 So, if you replace iscroll.js with a newer version that has new methods,
 or if you need to call iScroll private methods,  or access iScroll
@@ -311,7 +326,9 @@ member variables, you can call them without any need to modify this widget.
 This widget wraps all current iScroll public methods,
 so the above example can also be called like this:
 
-      $(".example-wrapper").iscrollview("scrollTo", 0, 10, 200, true);
+```javascript
+    $(".example-wrapper").iscrollview("scrollTo", 0, 10, 200, true);
+```
 
 The exceptions are the `destroy`, `refresh`, `enable`, and `disable` methods.
 
@@ -361,17 +378,17 @@ if you have change the page structure and so need to resize the wrapper.
 This is also normally called for you when page orientation or page
 size changes.
 
-####undoResizeWrapper()
-
-Undoes the resize of the wrapper. Note that this can only change the
-wrapper size to what it was initially, prior to the very first call
-to `resizeWrapper()`.
-
 ####calculateBarsHeight()
 
 This will re-calculate the height of header/footer etc. bars on the
 page. Call this prior to calling `resizeWrapper()`, if you change the
 height of header/footer etc. after the widget has been created.
+
+
+####expandScrollerToFillWrapper()
+
+This will expand the size of the scroller to fill the wrapper. Call this after calling
+`resizeWrapper()`, or if you manually resize the wrapper after instantiation.
 
 ### iScroll Methods
 
@@ -384,7 +401,7 @@ a newer version, and this widget has not been updated yet.)
 Please see the iScroll documentation for details on using these
 methods.
 
-####refresh(timeout, callback, context)
+####refresh(timeout, beforeCallback, afterCallback, context, noDefer)
 
 Note that this performs the proper timing for the iScroll `refresh()`
 function using `setTimeout`. If you want to call the iScroll `refresh()`
@@ -394,26 +411,74 @@ If the timeout value is present, then the internal call of iScroll `refresh()` w
 by this value. If the value is `null` or `undefined`, then the value of the `refreshDelay`
 option will be used.
 
-If present, the optional callback function will be called (with the supplied optional context
-parameter) upon completion of the refresh, which is asynchronous, since it waits
-for the DOM update to complete first. If you specify a callback function, then
-you MUST also specify a timeout.
+If present, the optional `beforeCallback` function will be called (with the supplied optional context
+parameter) just prior to refreshing iScroll. This is useful if you have updated content inside the 
+scroller, and need to refresh widgets inside the scroller (such as a listview) prior to iScroll 
+refresh. While this is similar to the `iscroll_onbeforerefresh`, the callback is specific to 
+a particular call to `refresh()`.
 
-This permits the application to perform some action just before the iScroll `refresh()` function
-is called by the widget. This is useful if you have updated content inside the scroller, and
-need to refresh widgets inside the scroller (such as a listview) prior to iScroll refresh.
- 
-While one might use an `iscroll_onbeforerefresh` event for this, the callback eliminates any
-ambiguity as to *which* specific `refresh()` call has completed.
+If present, the  optional `afterCallback` function will be called (with the supplied optional context
+parameter) just after refreshing iScroll. This is useful if you want to perform some action on
+the scroller after updating content. For example, this might be used to scroll to a particular
+position or element within the scroller after updating content. This is particularly useful
+when adding content to the *end* of the scroller, when you might like to scroll the new content
+into view.
 
-Calls made to `refresh()` while a cached page is not the active page are normally (depending on
-the value of the `deferNonActiveRefresh` option) deferred until the next `iscroll_onbeforepagerefresh`
-event. This avoids unnecessary refreshes. Note that if the `refreshOnPageBeforeChange` option
-is true, then the scroller will *always* be refreshed on `iscroll_pagebeforefresh()`.
+Calls made to `refresh()` for an iscrollview which is on a cached page that is not the active page 
+are normally (depending on the value of the `deferNonActiveRefresh` option) deferred until the 
+next `iscroll_onbeforepagerefresh` event for the page. This avoids unnecessary refreshes. Note 
+that if the `refreshOnPageBeforeChange` option is true, then the scroller will *always* be 
+refreshed on `iscroll_pagebeforefresh()`.
+
+The `context` parameter is passed to any callbacks that you provide. You might pass a reference
+to some object of yours, or you might pass a convenient reference to the iscrollview, so that
+the callback doesn't have to fish it out of the DOM with a selector and `jqmData()`.
+
+Each deferred call to `refresh()` overwrites the callback and context values from any previous
+deferred `refresh()` call for the same iscrollview. This means that you should not use refresh
+callbacks to modify content, because there is no guarantee that any particular callback will
+be called - only that the callbacks for the *last* deferred `refresh()` will be called.
+
+Deferred calls only occur when the scroller being refreshed is *not* the active page. You
+might do this if you are caching pages, and some data arrives that you want to update on
+a page that is not currently the active page. 
+
+This is particularly useful in environments such
+as PhoneGap, Titanium, or Rhodes, where a controller is able to update pages asynchronously.
+
+Deferring `refresh()` calls avoids a cascade of unnecessary refreshes when the document is
+resized in a desktop environment, or when a mobile device's orientation is changed. The refreshes
+for those pages that are cached in the DOM but not the active page are deferred until the next time
+they become the active page, and then only a single refresh will be performed.
+
+As well, if content is updated while a page is not the active page, then deferring `refresh()`
+avoids unnecessary duplicate refreshes. If content were to be updated several times while the
+page is not active, only a single refresh will be performed.
+
+If you want to force a refresh to a scroller on a non-active page to be performed immediately,
+you can set the `noDefer` parameter to `true`.
+
+You can disable deferred refreshes completely by setting the `deferNonActiveRefresh` widget
+option to `false`.
 
 ####scrollTo(x, y, time, relative)
 
+Scroll to a particular `x`, `y` pixel position within the scroller.
+
+The `time` parameter is the time in milliseconds over which to perform a smooth scroll. If omitted,
+the scroll is immediate.
+
+The `relative` parameter is `true`, then the `x`, `y` position is relative to the current scroll
+position. 
+
 ####scrollToElement(el, time)
+
+Scroll to a particular element within the scroller. The `el` parameter can be either a reference
+to a DOM node object (*not* a jQuery object) or a CSS3 selector. jQuery selector extensions
+cannot be used here.
+
+The `time` parameter is the time in milliseconds over which to perform a smooth scroll. If omitted,
+the scroll is immediate.
 
 ####scrollToPage(pageX, pageY, time)
 
@@ -493,9 +558,6 @@ The minimum Y scroll position. This defines the top-most position of the scroll.
 user can scroll past the minimum Y, but then the scroller will snap-back to the minimum
 Y position.
 
-Note that this variable is preset to -`topOffset` option value, and is useful
-when implementing pull-down-to-refresh.
-
 #### maxScrollX(val)
 
 The maximum X scroll position. This defines the right-most position of scroll. The user
@@ -507,8 +569,6 @@ position.
 The maximum Y scroll position. This defines the bottom-most position of the scroll. The
 user can drag past the maximum Y, but then the scroller will snap-back to the maximum
 Y position.
-
-This is useful when implementing pull-up-to-refresh.
 
 ---
 
@@ -530,13 +590,14 @@ value `100`.
 If you want to override options for all instances of the widget, a good place to do that is
 at the same time that you override any jQuery Mobile default options.
 
+```html
     <script>
       $(document).bind("mobileinit", function(){
         $.mobile.defaultPageTransition = "slide";
         $.mobile.iscrollview.prototype.options.refreshDelay = 100;
       });
-    </script>    
-
+    </script>  
+```  
 
 ### Programatic access
 
@@ -561,7 +622,9 @@ boolean values should **not** be enclosed in quotation marks.
 
 #### Example:
 
+```html
     <div data-role="content" data-iscroll='{"hScroll":true,"vScroll":false,"resizeEvents":"orientationchange"}' data-theme="c">
+```
 
 ### Modifying options after instantiation
 
@@ -597,7 +660,7 @@ not iScroll options.
 
 ####debug
 
-Enables performance logged. Please see the documentation section on performance logging.
+Enables performance logging. Please see the documentation section on performance logging.
 
 Default: `false`
 
@@ -645,7 +708,7 @@ even if the content is shorter than the height of the wrapper.
 
 In case you need to apply some CSS to this spacer, it's assigned a class.
 
-Default: `"iscroll-pullup-spacer`
+Default: `"iscroll-pullup-spacer`"
 
 ####scrollerContentClass
 
@@ -684,19 +747,19 @@ Default: `true`
 
 A space-separated list of events which will cause a resize of the wrapper.
 
-In some mobile environments, it may be desirable to either substitute or add
-the `orientationchange` event. For iOS, however, the `resize` event works better,
-because the `orientationchange` event occurs to late too be useful, resulting
-in undesirable visual artifacts.
+Note: This defaults to `"orientationchange"` for iDevices. If you have the `Safari/Advanced/Debug
+Console` system Settings option set, you may wish to change this to `"resize orientationchange"`.
 
-Default: `"resize"`
+Default: `"orientationchange"` for iDevices, `resize` for others
 
 ####refreshOnPageBeforeShow
 
 If true, the scroller will be refreshed on every JQuery Mobile `pagebeforeshow` event.
 This should be set to true if scroller content might have changed asynchronously while
 the page was loaded into the DOM but not shown, as might happen in some native
-application environment. As well, this is necessary if not using a version of iScroll with
+application environment. *This usage is obsoleted by the widget's deferred `refresh()` feature.*
+
+ As well, this is necessary if not using a version of iScroll with
 overridable dimension-fetching functions, because it's not possible to determine the height 
 of fixed-height elements prior to this event.
 
@@ -713,8 +776,8 @@ Default: `true` if iScroll does not have overridable dimension-fetching function
 
 If true, applies a fix to allow input elements to work within a scroller. This is optional
 because there is an alternative fix that patches iScroll itself. You should disable this
-option if you are using the patched verison of iScroll, or in case it causes some sort
-of trouble.
+option if you are using a patched verison of iScroll that has a input-element fix incorporated, 
+or in case it causes some sort of trouble.
 
 Default: `false`
 
@@ -740,7 +803,7 @@ This value may need to be experimentally determined.
 Alternately, you can specify a timeout value when calling `refresh()`. This is useful in case you
 have done some update which you know will require a lengthy render.
 
-Default: `200` for Android, otherwise `50`
+Default: `200` for Android, otherwise `0`
 
 ####expandScrollerToFillWrapper
 
@@ -794,11 +857,27 @@ If you have multiple scrollers on the same page, only enable this option for one
 
 Default: `true`
 
-deferNonActiveRefresh
+####deferNonActiveRefresh
 
 If this options is set to `true`, then calls to `refresh()` for pages that are not the
 active page will be deferred to the next `pagebeforeshow` event for the page. This avoids
 unnecessary refreshes when the browser window is resized or device orientation is changed.
+As well, it avoids unnecessary refreshes when multiple updates are made to content in a scroller
+on a non-active page.
+
+Please see the discussion in the documentation on the `refresh()` function for further details.
+
+Default: `true`
+
+####deferNonActiveResize
+
+If this option is set to `true`, then calls to `resizeWrapper()` for pages that are not the
+active page will be deferred to the next `pagebeforeshow` event for the page. This avoids
+unnecessary resizing when the browser window is resized or device orientation is changed.
+
+Default: `true`
+
+
 
 Default: `true`
 
@@ -874,10 +953,12 @@ object that triggered the event. (e.g. the wrapper).
 
 ###Example event delegation:
 
+```javascript
     $(document).delegate("div.my-content", "iscroll_onrefresh", function(event, data) {
         var v = data.iscrollview;  // In case we need to reference the iscrollview
         console.write("iscroll_onrefresh occured");
         }
+```
 
 ###Supported Events
 
@@ -885,12 +966,15 @@ object that triggered the event. (e.g. the wrapper).
 
 This event is triggered when iScroll's internal `refresh()` function is called. It is
 called after iScroll has calculated the scroll range, but before it has updated the scroll
-bar. As such, it is of dubious value to applications. The widget uses this internally to 
-support pull-down/pull-up.
+bar. 
+
+*This event is of dubious value to applications. The widget uses this internally to 
+support pull-down/pull-up. (It seems it was put just where it is just for that purpose -
+to support pull-up/pull-down.)*
 
 If you want to do some refresh of jQuery Mobile structures (such as listview) contained within
 the scroller prior to scroller refresh, see the `iscroll_onbeforerefresh` event and the optional
-callback parameter to the `refresh()` function.
+`callbackBefore` parameter to the `refresh()` function.
 
 ####iscroll_onbeforerefresh
 
@@ -899,7 +983,17 @@ if you need to do some refresh of jQuery Mobile widgets (such as `listview`) con
 the scroller. It is important to do this *before* iScroll's `refresh()` has been called. Do
 not use `iscroll_onrefresh()` for this.
 
-You can also use the optional callback parameter to the widget's `refresh()` function for this.
+You can also use the optional `callbackBefore` callback parameter to the widget's `refresh()` 
+function for this.
+
+####iscroll_onafterrefresh
+
+This event is triggered after the widget calls iScroll's `refresh()` function. It is useful
+if you want to perform some action, such as scrolling, after changing content in the scroller.
+This has to be done *after* the scroller is refreshed.
+
+You can also use the optional `callbackAfter` callback parameter to the widget's `refresh()` 
+function for this.
 
 ####iscroll_onbeforescrollstart
 
@@ -1027,10 +1121,12 @@ are required to supply a considerable amount of CSS.
 
 Instead, you can usually use a CSS rule similar to this:
 
+```css
     div.my-iscroll-wrapper > div:last-child {
       top: 46px !important;
       bottom: 22px !important;
     }
+```
 
 iScroll appends the scrollbar to the end of your wrapper. Unless you have appended something
 else yourself, you can target the last child of the wrapper, and so you don't need the
@@ -1091,6 +1187,7 @@ You will need to modify this CSS to match your theme. The important thing is tha
 the up, down, and hover states must have identical CSS, so that there is no transition
 between states.
 
+```css
     /*
       Sane overrides for buttons in lists
 
@@ -1115,6 +1212,7 @@ between states.
     ul.ui-listview *.ui-btn-down-c a.ui-link-inherit,
     ul.ui-listview *.ui-btn-hover-c a.ui-link-inherit
       { color: #444; }
+```
       
 ---
 
@@ -1137,6 +1235,7 @@ need to decide which of two evils you want to live with.
 
 You can implement this fix in your CSS like this:
 
+```css
     /* Force list items to be cached
        See: cubiq.org/you-shall-not-flicker */
      .iscroll-scroller,
@@ -1144,7 +1243,7 @@ You can implement this fix in your CSS like this:
        -webkit-transition-duration: 0;
        -webkit-transform: translateZ(0);
        }
-       
+```       
 ---
 
 Demo
