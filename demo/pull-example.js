@@ -30,7 +30,8 @@
   
   function gotPullUpData(e,d) {
     var i,
-        $list = $(listSelector);
+        $list = $(listSelector),
+        v = d.iscrollview;
     for (i=0; i<3; i+=1) { 
       $list.append("<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>");
       }
@@ -57,10 +58,11 @@
     
     // Refresh the iscrollview. After refresh, scroll to the end of the list using callback
     // 400mSec scroll to last list element for nice visual effect
-    d.iscrollview.refresh(
-      null,                                                                  // Optional delay value
-      function() { $list.listview("refresh"); },                             // Pre-refresh
-      function() { d.iscrollview.scrollToElement(lastItemSelector, 400);} ); // Post-refresh  
+    v.refresh(
+      null,                                                      // Optional delay value
+      function(v) { $list.listview("refresh"); },                // Pre-refresh
+      function(v) { v.scrollToElement(lastItemSelector, 400); }, // Post-refresh
+      v);                                                        // Context  
     }
   
   // This is the callback that is called when the user has completed the pull-down gesture.
@@ -97,25 +99,28 @@
       
   function gotPullDownData(e,d) {
     var i,
-        $list = $(listSelector);
+        $list = $(listSelector),
+        v = d.iscrollview;
     for (i=0; i<3; i+=1) {
       $list.prepend("<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>");
       }
     $list.listview("refresh");
-    d.iscrollview.refresh();
+    v.refresh();
     }
 
   function gotPullUpData(e,d) {
     var i,
-        $list = $(listSelector);
+        $list = $(listSelector),
+        v = d.iscrollview;
     for (i=0; i<3; i+=1) {
       $list.append("<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>");
       }
     $list.listview("refresh");          
     d.iscrollview.refresh(
       null, 
-      function() { $list.listview("refresh"); },
-      function() {d.iscrollview.scrollToElement(lastItemSelector, 400);} );
+      function(v) { $list.listview("refresh"); },
+      function(v) { v.scrollToElement(lastItemSelector, 400);},
+      v );
     }
   
   function onPullDown (e,d) { setTimeout(function() { gotPullDownData(e,d); }, 1500); }   
