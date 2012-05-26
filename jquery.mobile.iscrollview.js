@@ -163,12 +163,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // of instance variables.
   //=========================================================
 
-  iscroll:     null,  // The underlying iScroll object
-  $wrapper:    null,  // The wrapper element
-  $scroller:   null,  // The scroller element (first child of wrapper)
-  $pullDown:   null,  // The pull-down element (if any)
-  $pullUp:     null,  // The pull-up element (if any)
-  $page:       null,  // The page element that contains the wrapper
+  iscroll:            null,  // The underlying iScroll object
+  $wrapper:           null,  // The wrapper element
+  $scroller:          null,  // The scroller element (first child of wrapper)
+  $pullDown:          null,  // The pull-down element (if any)
+  $pullUp:            null,  // The pull-up element (if any)
+  $page:              null,  // The page element that contains the wrapper
+  _wrapperHeightAdjustForBoxModel: 0,  // This is set in _create
 
   _firstWrapperResize:     true,  // True on first resize, so we can capture original wrapper height
   _firstScrollerExpand:    true,  // True on first scroller expand, so we can capture original CSS
@@ -198,7 +199,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
-    debug:false,                          // Enable some messages to console
+    debug:true,                          // Enable some messages to console
     
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
@@ -927,21 +928,19 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   resizeWrapper: function() {
-    var adjust, 
-        then;   
+    var then;       
     if (!this.options.resizeWrapper) { return; }
     then = this._startTiming();    
-    adjust = this._getHeightAdjustForBoxModel(this.$wrapper) ;
     this.$wrapper.height(
     $(window).height() -         // Height of the window
     this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
-    adjust +                     // Make adjustment based on content-box model
+    this._wrapperHeightAdjustForBoxModel +   // Make adjustment based on content-box model
     (IsMobileSafari && !IsIPad ? 60 : 0) +  // Add 60px for space recovered from Mobile Safari address bar
     this.options.wrapperAdd      // User-supplied fudge-factor if needed
     );
     // The first time we resize, save the size of the wrapper
     if (this._firstWrapperResize) {
-      this._origWrapperHeight = this.$wrapper.height() - adjust;
+      this._origWrapperHeight = this.$wrapper.height() - this._wrapperHeightAdjustForBoxModel;
       this._firstWrapperResize = false;
       }          
     this._logTiming("resizeWrapper" + (this._sizeDirty ? " (dirty)" : ""), then);      
@@ -957,6 +956,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _modifyWrapper: function() {
     this._addWrapperClasses();
     this._modifyWrapperCSS();
+    
+    this._wrapperHeightAdjustForBoxModel = this._getHeightAdjustForBoxModel(this.$wrapper);
   
     // Resize the wrapper and refresh iScroll on resize
     // You might want to do this on orientationchange on mobile
@@ -1152,11 +1153,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Automatically called on page creation
   //-----------------------------------------
   _create: function() {
-    this.$wrapper = this.element;                                 // JQuery object containing the element we are creating this widget for
+    this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
     this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper                                                              
     this._createScroller();
-    this.$scroller = this.$wrapper.children(":first");            // Get the first child of the wrapper, which is the
-                                                                  //   element that we will scroll  
+    this.$scroller = this.$wrapper.children(":first");   // Get the first child of the wrapper, which is the
+                                                         //   element that we will scroll  
     if (!this.$scroller) { return; }                                                                     
  
     // Find the scroller content elements. These are the direct descendants of the scroller
