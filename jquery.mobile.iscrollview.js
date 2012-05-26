@@ -169,7 +169,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
-    debug:false,                          // Enable some messages to console
+    debug:true,                          // Enable some messages to console
     
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
@@ -573,6 +573,25 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     return this._dirty;
     },
 
+  //-----------------------------------------------------------------------------    
+  // Restore an element's styles to original
+    
+  // If the style was never modified by the widget, the value passed in 
+  // originalStyle will be undefined. 
+  //
+  //If there originally was no style attribute, but styles were added by the 
+  // widget, the value passed in originalStyle will be null.
+  //
+  // If there originally was a style attribute, but the widget modified it 
+  // (actually, set some CSS, which changes the style, the value is a string in 
+  // originalStyle.
+  //-----------------------------------------------------------------------------    
+  _restoreStyle: function($ele, originalStyle) {
+    if (originalStyle === undefined) { return; }
+    if (originalStyle === null)      { $ele.removeAttr("style"); }
+    else                             { $ele.setAttr("style", originalStyle); }
+    },
+
   //------------------------------------------------------------------------------
   // Functions that we bind to. They are declared as named members rather than as
   // inline closures so we can properly unbind them.
@@ -651,7 +670,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // XXX: fix crumbled css in transition changePage
     // for jquery mobile 1.0a3 in jquery.mobile.navigation.js changePage
     //  in loadComplete in removeContainerClasses in .removeClass(pageContainerClasses.join(" "));
-    this._origPageStyle = this.$page.attr("style");  // Save for later restore
+    this._origPageStyle = this.$page.attr("style") || null;  // Save for later restore
     this.$page.css({overflow: "hidden"});
     this._raiseFixedHeightElements();
 
@@ -663,7 +682,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _undoAdaptPage: function() {
     this.$page.unbind("touchmove", this._preventDefaultFunc);
     this._undoRaiseFixedHeightElements();
-    this.$page.attr("style", this._origPageStyle); 
+    this._restoreStyle(this.$page, this._origPageStyle); 
     this.$page.removeClass(this.options.pageClass);
     },
 
@@ -789,7 +808,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Modify some wrapper CSS
   //---------------------------------------------------------  
   _modifyWrapperCSS: function() {
-    this._origWrapperStyle = this.$wrapper.attr("style");            
+    this._origWrapperStyle = this.$wrapper.attr("style") || null;            
     this.$wrapper.css({ 
                         "z-index"  : 1,         // Lower the wrapper
                         "overflow" : "hidden"   // hide overflow
@@ -798,8 +817,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._correctWrapperPosition();
     },
   
-  _undoModifyWrapperCSS: function() {
-    this.$wrapper.attr("style", this._origWrapperStyle);                 
+  _undoModifyWrapperCSS: function() {     
+    this._restoreStyle(this.$wrapper, this._origWrapperStyle);            
     },
        
   //---------------------------------------------------------
@@ -859,7 +878,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   expandScrollerToFillWrapper: function() {
     if (this.options.expandScrollerToFillWrapper) {
       if (this._firstScrollerExpand) {
-        this._origScrollerStyle = this.$scroller.attr("style");
+        this._origScrollerStyle = this.$scroller.attr("style") || null;
         this._firstScrollerExpand = false;
         }
       this.$scroller.css("min-height", 
@@ -871,9 +890,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
   
   _undoExpandScrollerToFillWrapper: function() {
-    if (this._origScrollerStyle !== undefined) {
-      this.$scroller.attr("style", this._origScrollerStyle);
-      } 
+    this._restoreStyle(this.$scroller, this._origScrollerStyle);
     },     
   
   //--------------------------------------------------------
@@ -990,7 +1007,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // The scroller is position:relative, so the pullUp is positioned here relative
     // to the scroller, not the page. If we don't do this, the pullUp will initially appear
     // briefly at the bottom of content if content is shorter than the wrapper. 
-    this._origPullUpStyle = this.$pullUp.attr("style");
+    this._origPullUpStyle = this.$pullUp.attr("style") || null;
     this.$pullUp.css({
       "position": "absolute", 
       "bottom": 0,
@@ -1010,8 +1027,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
              
     },
     
-  _undoModifyPullUp: function () {
-    this.$pullUp.attr("style", this._origPullUpStyle);   
+  _undoModifyPullUp: function () {  
+    this._restoreStyle(this.$pullUp, this._origPullUpStyle);
     this.$pullUp.prev().remove();  // Remove the dummy div
     if (this._origPullUpLabelText) {
       $("." + this.options.pullLabelClass, this.$pullUp).text(this._origPullUpLabelText); 
