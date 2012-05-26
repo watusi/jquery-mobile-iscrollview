@@ -1140,9 +1140,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Prevent moving the wrapper with touch
     this.$wrapper.bind("touchmove", $.proxy(this._preventDefaultFunc, this));
 
-    //if (this.options.refreshOnPageBeforeShow) {
-      this.$page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
-   //   }
+    // Need this for deferred refresh processing
+    this.$page.bind("pagebeforeshow", $.proxy(this._pageBeforeShowFunc, this));
         
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
     this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset 
