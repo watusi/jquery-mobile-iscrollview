@@ -110,14 +110,43 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     }
 
   function IScroll(iscrollview, scroller, options) {
-    // Override width/height functions (if present in patched
-    // iScroll) with our own. These use jquery.actual to get the
-    // height/width while a page is loaded but hidden. So, refresh()
-    // will work at the time of construction at pagecreate
-    this._clientWidth  = function(ele) { return $(ele).actual("innerWidth"); };
-    this._clientHeight = function(ele) { return $(ele).actual("innerHeight"); };
-    this._offsetWidth  = function(ele) { return $(ele).actual("outerWidth"); };
-    this._offsetHeight = function(ele) { return $(ele).actual("outerHeight"); };    
+  
+    // Override width/height functions (if present in patched iScroll) with our own. These use 
+    // jquery.actual to get the height/width while a page is loaded but hidden. So, refresh()
+    // will work at the time of construction at pagecreate, or at pagebeforeshow.
+    //
+    // jquery.actual is considerably slower than the direct DOM dimension functions
+    // or jQuery's dimension functons, but this enables us to construct the iscrollview
+    // while the page is initially hidden, avoiding visual distraction.
+    //
+    // Using the WatisiWare fork of jqery.actual is considerably faster than the original
+    // jquery.actual. Originally, it saved and restored CSS properties of the element and
+    // it's parents (if hidden). However, it is much faster to save and restore
+    // the style attribute, as well as more proper.
+    //
+    // So, it is a reasonable tradeoff to use jquery.actual, while limiting it's use to
+    // situations where it is actually necessary.
+   
+    this._clientWidth  = function(ele) { 
+      if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("innerWidth"); }
+      else                                      { return ele.clientWidth; }
+      }
+    
+    this._clientHeight = function(ele) { 
+      if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("innerHeight"); }
+      else                                      { return ele.clientHeight; }
+      }
+    
+    this._offsetWidth  = function(ele) { 
+      if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("outerWidth"); }
+      else                                      { return ele.offsetWidth; }
+      }
+    
+    this._offsetHeight = function(ele) { 
+      if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("outerHeight"); }
+      else                                      { return ele.offsetHeight; }     
+    }  
+           
     // Event proxies will use this
     this.iscrollview = iscrollview;    
     iScroll.call(this, scroller, options);
@@ -169,7 +198,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
-    debug:true,                          // Enable some messages to console
+    debug:false,                          // Enable some messages to console
     
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
