@@ -199,7 +199,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
-    debug:true,                          // Enable some messages to console
+    debug: false,                          // Enable some messages to console
     
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
