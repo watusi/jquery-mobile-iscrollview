@@ -81,7 +81,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       IsFirefox = (/firefox/i).test(navigator.userAgent),
          
       IsIDevice = (/(iPhone|iPad|iPod).*AppleWebKit/).test(navigator.appVersion),
-      IsIPad = (/iPad.*AppleWebKit.*Safari/).test(navigator.appVersion),      
+      IsIPad = (/iPad.*AppleWebKit/).test(navigator.appVersion),      
       // IDevice running Mobile Safari - not embedded UIWebKit or Standalone (= saved to desktop)
       IsMobileSafari = (/(iPhone|iPad|iPod).*AppleWebKit.*Safari/).test(navigator.appVersion),
       // IDevice native app using embedded UIWebView
@@ -199,7 +199,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
-    debug: false,                          // Enable some messages to console
+    debug: true,                          // Enable some messages to console
     
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
