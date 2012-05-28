@@ -199,7 +199,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
         
-    debug: true,                          // Enable some messages to console
+    debug: false,                          // Enable some messages to console
     
     // bottomOffset is currently only in Watusi-patched iScroll. We emulate it in case it isn't
     // there.
@@ -236,10 +236,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // On some mobile devices you may wish to add/substitute orientationchange event
     // iOS 4.x will trigger resize twice then orientationchange
     // iOS 5.x will trigger resize once then orientationchange
-    // Best performance on iOS is only orientationchange
-    // Refresh can be 200mSec on iPhone 4, so it's a significant performance difference
     // Experimentation with other devices would be useful
-    resizeEvents: IsIDevice ? "orientationchange": "resize",
+    resizeEvents: "resize",
 
     // Refresh iscrollview on page show event. This should be true if content inside a
     // scrollview might change while the page is cached but not shown.
@@ -256,7 +254,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
                         // Can be + or -
 
     // Timeout to allow page to render prior to refresh()
-    refreshDelay:  IsAndroid ? 200 : 0,   // Wild-ass guesses
+    refreshDelay:  IsAndroid ? 200 : 50,   // Wild-ass guesses
     
     // true to set the minimum height of scroller content (not including
     // any pull-down or pull-up) to the height of the wrapper.. This allows 
