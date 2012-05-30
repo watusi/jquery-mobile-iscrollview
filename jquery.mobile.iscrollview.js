@@ -110,6 +110,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     }
 
   function IScroll(iscrollview, scroller, options) {
+    
+    // Override _resize function in iScroll, which calls refresh() and is only called on resize 
+    // and orientationchange events. We call refresh() when necessary, so these are redundant. 
+    // As well, some refreshes are deferred, and the user will need to refresh any jQuery Mobile
+    // widgets using a callbackBefore. So, it makes no sense to have iScroll do event-based 
+    // refresh.
+    this._resize = function() { },    
 
     // Override width/height functions (if present in patched iScroll) with our own. These use
     // jquery.actual to get the height/width while a page is loaded but hidden. So, refresh()
