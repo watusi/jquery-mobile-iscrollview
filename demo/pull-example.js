@@ -79,8 +79,8 @@
   // Set-up jQuery event callbacks
   $(document).delegate("div.pull-demo-page", "pageinit", function(e) {
       $(".iscroll-wrapper", this).bind( {
-      "iscroll_onpulldown" : onPullDown,
-      "iscroll_onpullup"   : onPullUp
+      iscroll_onpulldown : onPullDown,
+      iscroll_onpullup   : onPullUp
       });
     });  
 
@@ -128,8 +128,8 @@
   
   $(document).delegate("div.short-pull-demo-page", "pageinit", function(e) {
       $(".iscroll-wrapper", this).bind( {
-      "iscroll_onpulldown" : onPullDown,
-      "iscroll_onpullup"   : onPullUp
+      iscroll_onpulldown : onPullDown,
+      iscroll_onpullup   : onPullUp
       });
     });  
 
