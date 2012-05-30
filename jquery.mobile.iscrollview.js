@@ -940,6 +940,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     $(window).height() -         // Height of the window
     this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
     this._wrapperHeightAdjustForBoxModel +   // Make adjustment based on content-box model
+    // Note: the following will fail for Safari desktop with Develop/User Agent/iPhone
     (IsMobileSafari && !IsIPad ? 60 : 0) +  // Add 60px for space recovered from Mobile Safari address bar
     this.options.wrapperAdd      // User-supplied fudge-factor if needed
     );

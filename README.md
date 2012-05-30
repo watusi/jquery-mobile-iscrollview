@@ -877,7 +877,22 @@ unnecessary resizing when the browser window is resized or device orientation is
 
 Default: `true`
 
+    
+####preventMouseOverDuringScroll
 
+
+If `true`, prevent mouseover during scroll. I don't see any reason to set this to false,
+but just in case, this is a configurable option. 
+
+If this is `false`, you will get "piano keyboard" effect when scrolling
+due to mouseover events, which is both time-consuming and distracting.
+
+With this option set `true`, you will still get a hover effect
+    // (But you will still get "down" effect when a link is selected.) I tried setting a
+    // "isScrolling" flag during scroll, and just preventing mouseover events, but then you will
+    // still get the first mouseover, which will glitch the start of the scroll, preventing
+    // smooth scrolling action. It's best just to dispense with the hover effect altogether
+    // for scrolling windows.
 
 Default: `true`
 
@@ -1244,6 +1259,28 @@ You can implement this fix in your CSS like this:
        -webkit-transform: translateZ(0);
        }
 ```       
+---
+
+Mobile Safari Address Bar
+-------------------------
+The Mobile Safari address bar is a 60px area at the top of the browser. The address bar is fixed
+on iPad, but on iPhone and iPad, it can be made to scroll off-screen by scrolling content.
+jQuery Mobile normally does this, but the address bar is always present at the time that a page
+loads. jQuery Mobile then scrolls in order to push the address bar back up.
+
+It doesn't appear possible to consistently detect the real window height, though it is possible
+to consistently detect the window height assuming that the address bar is present. So, this
+widget adds 60px to page height in this situation. This addition is not applied for iPad, nor for 
+iPhone/iPod if running a native app in a  UIWebView, or when running in "full screen" mode 
+(web page saved to home screen).
+
+If you are testing using desktop Safari's `Develop` `User Agent` option, please note that this
+adaptation will fail. It depends on specific behaviour of the real Mobile Safari browser. If
+you want to use desktop Safari to test pages designed to run on iPhone, either use the standard
+Safari User Agent, or else use a custom User Agent. From the iPhone user agent setting, remove
+the string "Safari". This will fool the widget into thinking you are running in "full screen"
+mode, without the disappearing address bar.
+
 ---
 
 Demo
