@@ -130,22 +130,22 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._clientWidth  = function(ele) {
       if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("innerWidth"); }
       else                                      { return ele.clientWidth; }
-      }
+      };
 
     this._clientHeight = function(ele) {
       if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("innerHeight"); }
       else                                      { return ele.clientHeight; }
-      }
+      };
 
     this._offsetWidth  = function(ele) {
       if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("outerWidth"); }
       else                                      { return ele.offsetWidth; }
-      }
+      };
 
     this._offsetHeight = function(ele) {
       if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("outerHeight"); }
       else                                      { return ele.offsetHeight; }
-    }
+      };
 
     // Event proxies will use this
     this.iscrollview = iscrollview;
