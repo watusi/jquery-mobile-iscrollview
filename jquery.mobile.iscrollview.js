@@ -261,7 +261,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
                         // Can be + or -
 
     // Timeout to allow page to render prior to refresh()
-    refreshDelay:  IsAndroid ? 200 : 50,   // Wild-ass guesses
+    refreshDelay:  IsAndroid ? 200 : 0,   // Wild-ass guesses
 
     // true to set the minimum height of scroller content (not including
     // any pull-down or pull-up) to the height of the wrapper.. This allows
