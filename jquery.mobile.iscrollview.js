@@ -1348,12 +1348,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       var $label;
       if (text) {
         $label = $("." + this.options.pullLabelClass, $pull);
-        if ($label) {
-          // On some browsers, the text will not be shown unless it is first hidden
-          // and then shown after it is changed.
-          $label.hide().text(text);
-          setTimeout(function() { $label.show(); }, 0);  // Give the browser time to think...
-          }
+        if ($label) { $label.text(text); }
         }
       },
 
