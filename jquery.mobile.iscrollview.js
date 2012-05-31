@@ -175,6 +175,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   $scroller:          null,  // The scroller element (first child of wrapper)
   $pullDown:          null,  // The pull-down element (if any)
   $pullUp:            null,  // The pull-up element (if any)
+  $pullUpSpacer:      null,
   $page:              null,  // The page element that contains the wrapper
   _wrapperHeightAdjustForBoxModel: 0,  // This is set in _create
 
@@ -865,11 +866,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   if (this.options.removeWrapperPadding && this.options.addScrollerPadding) {
     // We do not store $scrollerContent in the object, because elements might be added/deleted
     // after instantiation. When we undo, we need the CURRENT children in order to unwrap
-    var $scrollerContent = this.$scroller.children()
-                                         .not("." + this.options.pullDownClass)
-                                         .not("." + this.options.pullUpClass)
-                                         .not("." + this.options.pullUpSpacerClass),
-        $scrollerContentWrapper;
+    var $scrollerContentWrapper,
+        $scrollerChildren = this.$scroller.children(),
+        $scrollerContent = $scrollerChildren.not(this.$pullDown).not(this.$pullUp).not(this.$pullUpSpacer);
     $scrollerContent.wrapAll("<div/>");
 
     $scrollerContentWrapper = $scrollerContent.parent().addClass(this.options.scrollerContentClass);
