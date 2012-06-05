@@ -660,7 +660,9 @@ not iScroll options.
 
 ####debug
 
-Enables performance logging. Please see the documentation section on performance logging.
+Enables performance logging. Please see the documentation section on performance logging. There
+are a number of additional options which allow you to control what is logged. These are documented
+in the section on performance logging.
 
 Default: `false`
 
@@ -876,25 +878,31 @@ active page will be deferred to the next `pagebeforeshow` event for the page. Th
 unnecessary resizing when the browser window is resized or device orientation is changed.
 
 Default: `true`
+   
+####preventTouchHover
 
-    
-####preventMouseOverDuringScroll
+If `true`, prevent hover in scroller on touch devices. This is an experimental feature. 
 
+If this is `false`, you will get "piano keyboard" effect if using jQuery Mobile 1.0 or 1.0.1 
+when scrolling due to mouseover events, which is both time-consuming and distracting. (This
+is fixed in jQuery Mobile 1.1). If this is `true`, the piano-keyboard effect may be either
+partially or completely eliminated, depending on browser.
 
-If `true`, prevent mouseover during scroll. I don't see any reason to set this to false,
-but just in case, this is a configurable option. 
+One negative is that with the current implementation, you will never get a "hover" visual 
+effect within a scroller on touch devices, even when not scrolling. But you still will on desktop 
+browser with mouse, and you will still get "down" effect when a link is selected.
 
-If this is `false`, you will get "piano keyboard" effect when scrolling
-due to mouseover events, which is both time-consuming and distracting.
+Default: `false`
 
-With this option set `true`, you will still get a hover effect
-    // (But you will still get "down" effect when a link is selected.) I tried setting a
-    // "isScrolling" flag during scroll, and just preventing mouseover events, but then you will
-    // still get the first mouseover, which will glitch the start of the scroll, preventing
-    // smooth scrolling action. It's best just to dispense with the hover effect altogether
-    // for scrolling windows.
+####bindIscrollUsingJqueryEvents
 
-Default: `true`
+If `true`, iScroll will be bound using jQuery event binding, rather than using `addEventListener()`. 
+As well, iScroll will use jQuery `mouseleave` event instead of `mouseout`.
+
+This is an experimental feature, and is not yet completely functional. The code is present to
+permit further experimentation.
+
+Default: `false`
 
 #### pullDownResetText
 
@@ -1310,18 +1318,30 @@ of any updates/improvements.
 
 Performance Logging
 -------------------
-This widget performs some minimal logging of performance data when the `debug` option is
-set to `true`.
+This widget can log events and performance data to the Javascript console when the `debug` option 
+is set to `true`. A number of additional options control what is logged. Setting `debug` false will 
+disable all logging.
 
-The log shows the time, file name, function name, elapsed mSec that the function ran, and
-the time at start of function.
+These log entries are useful both to monitor performance and to understand the sequence of events
+that occur as the widget is used.
+
+There is a log entry at the start and end of each traced function, event, or callback. Each
+entry shows the time, file name, function, event, or callback name, and (at end) elapsed mSec that
+the operation took. 
 
 For some functions, a second set of elapsed mSec and start time are logged (in parenthesis).
-This is for functions that were queued using a SetTimeout. So, you can see how long the
-function took to run, as well as the elapsed time from when the function was queued. Note
-that the latter may be greater than the timout that was specified (which might be 0).
+This is for functions that were queued using a SetTimeout or that were initially triggered by
+some event. So, you can see how long the function took to run, as well as the elapsed time from when 
+the function was queued.
 
-### refresh
+The `debug` option must be `true` in order for any of the trace options to be enabled.
+
+Performance logging can generate a large amount of data. You can use trace options to narrow
+the logging to items of interest.
+
+### traceRefresh
+
+If this option option is `true`, calls to the widget's `refresh()` function are traced.
 
 In the case of `refresh()` there is an initial log entry when the `refresh()` is queued, which 
 will also indicate the timeout value that was used. A second, separate, log entry shows the elapsed
@@ -1334,21 +1354,54 @@ the log entry will indicate "(dirty)". "Dirty" pages are pages that have had `re
 while they were not the active page. Normally (depending on the `DeferNonActiveRefresh` option)
 such pages have their `refresh()` deferred until the page is about to be shown.
 
-### onbeforerefresh
+### traceResizeWrapper
 
-Timing for `onbeforerefresh` events/callback is included in `refresh()` timing, and is reported 
-separately, as well.
+If this option is `true`, calls to the widget's `resizeWrapper()` function
+are traced.
 
-This allows you to see the time used by your `iscroll_onrefresh` event callback (if any),
-which might typically refresh jQuery Mobile widgets contained within the scroller.
+### traceIscrollEvents
 
-Time spent in iScroll's `onRefresh` callback is not separately reported (but is included in total
-`refresh` time) because it is not anticiapted that it will be a useful event for use by
-application code.
+If this option is `true`, events handled by iScroll are traced.
 
-### resizeWrapper
+### tracedIscrollEvents
 
-This reports the time needed to resize the wrapper.
+This is a list of iScroll events to trace. If the list is empty, all iScroll events will be
+traced. List items are strings, example: `touchstart`.
+
+### traceWidgetEvents
+
+If this option is `true` events handled by the widget (not by iScroll) are traced.
+
+### tracedWidgetEvents
+
+This is a list of widget events to trace. If the list is empty, all widget events will be
+traced. List items are strings. Events that iScroll itself handles are *not* traced when this
+option is `true`.
+
+### traceIscrollCallbacks
+
+If this option is `true`, callbacks issued by iScroll are traced.
+
+### tracedIscrollCallbacks
+
+This is a list of iScroll callbacks to trace. If the list is empty, all iScroll callbacks will
+be traced. List items are strings. Example: `onRefresh`.
+
+### traceWidgetCallbacks
+
+If this option is `true`, callbacks issed by the widget are traced. This does not include
+callbacks issued by iScroll itself (which application code may also bind to.)
+
+### tracedWidgetCallbacks
+
+This is a list of widget callbacks to trace. If the list is empty, all widget callbacks will
+be traced. List items are strings. Do not include the `iscroll_` prefix. Example: `onpulldown`.
+
+
+
+
+
+
 
 ---
 
