@@ -413,16 +413,18 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // page.
     deferNonActiveRefresh: true,
 
-    // True to prevent hover in scroller touch devices. I don't see any reason to set this to 
-    // false, but just in case... If this is false, you will get "piano keyboard" effect when 
-    // scrolling due to hover, which is both time-consuming and distracting. The only negative
-    // is that with the current implementation, you will never get a "hover" visual effect within
-    // a scroller on touch devices, even when not scrolling. But you still will on desktop browser 
-    // with mouse, and you will still get "down" effect when a link is selected.
-    preventTouchHover: false,
-
     // Same deal, for re-sizing the wrapper
     deferNonActiveResize: true,
+    
+    // True to prevent hover in scroller touch devices.  If this is false, you will get
+    //  "piano keyboard" effect when scrolling due to hover, which is both time-consuming and 
+    // distracting. A negative is that with the current implementation, you will never get a "hover" 
+    // visual effect within a scroller on touch devices, even when not scrolling. But you still 
+    // will on desktop browser with mouse, and you will still get "down" effect when a link is 
+    // selected. This fails in some environments, so it is defaulted to false. For exmaple, on
+    // iOS Mobile Safari it works. On iOS native apps using UIWebView it will fail, and you can
+    // get "stuck" hovers. This really is a jQuery Mobile problem.
+    preventTouchHover: false,    
     
     // This is an experimental feature under development and DOES NOT WORK completely!
     // For one, it breaks mousewheel with jQuery Mobile 1.1 (because jQuery Mobile 1.1 breaks

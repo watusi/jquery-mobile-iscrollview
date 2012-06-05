@@ -886,7 +886,11 @@ If `true`, prevent hover in scroller on touch devices. This is an experimental f
 If this is `false`, you will get "piano keyboard" effect if using jQuery Mobile 1.0 or 1.0.1 
 when scrolling due to mouseover events, which is both time-consuming and distracting. (This
 is fixed in jQuery Mobile 1.1). If this is `true`, the piano-keyboard effect may be either
-partially or completely eliminated, depending on browser.
+partially or completely eliminated, depending on browser, or it may fail miserably. For example
+on iOS with Mobile Safari, the piano keyboard effect is eliminated. But on iOS native apps
+using a UIWebView, some hovers will get through, and you can get "stuck" hovers.
+
+This really is a jQuery Mobile problem with listviews, and is solved in jQuery Mobile 1.1.
 
 One negative is that with the current implementation, you will never get a "hover" visual 
 effect within a scroller on touch devices, even when not scrolling. But you still will on desktop 
