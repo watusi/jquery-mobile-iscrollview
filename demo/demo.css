@@ -1,0 +1,14 @@
+body {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -webkit-touch-callout: none;      // Shut off long touch on links for info
+  -webkit-user-select: none;        // Shut off text selection
+  }
+
+/* Force list items to be cached on WebKit
+   See: cubiq.org/you-shall-not-flicker */
+.iscroll-scroller,
+.iscroll-scroller * {
+  -webkit-transition-duration: 0;
+  -webkit-transform: translateZ(0);
+}

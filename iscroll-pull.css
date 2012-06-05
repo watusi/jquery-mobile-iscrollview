@@ -1,11 +1,3 @@
-/* Force list items to be cached on WebKit
-   See: cubiq.org/you-shall-not-flicker */
-.iscroll-scroller,
-.iscroll-scroller * {
-  -webkit-transition-duration: 0;
-  -webkit-transform: translateZ(0);
-}
-
 .iscroll-pulldown,
 .iscroll-pullup {
   background: #fff;
