@@ -916,7 +916,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _undoAdaptPage: function() {
-    this._unbind(this.$page, this._preventDefaultFunc, "$page");
+    this._unbind(this.$page, "touchmove", this._preventDefaultFunc, "$page");
     this._undoRaiseFixedHeightElements();
     this._restoreStyle(this.$page, this._origPageStyle);
     this.$page.removeClass(this.options.pageClass);
@@ -1265,6 +1265,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _undoModifyPullUp: function () {
+    if (!this.$pullUp) { return; }
     this._restoreStyle(this.$pullUp, this._origPullUpStyle);
     this.$pullUp.prev().remove();  // Remove the dummy div
     if (this._origPullUpLabelText) {
