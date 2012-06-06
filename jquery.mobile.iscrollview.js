@@ -89,7 +89,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // Standalone is when running a website saved to the desktop (SpringBoard)
       IsIDeviceStandalone = IsIDevice && window.navigator.Standalone,
 
-      IScrollHasDimensionFunctions = iScroll.prototype._clientWidth !== undefined;
+      IScrollHasDimensionFunctions = iScroll.prototype._clientWidth !== undefined,
+      
+      // Kludgey way to seeing if we have JQM 1.1 or higher, since there apparently is no
+      // way to access the version number!
+      JQMIsLT11 = !$.fn.jqmEnhanceable;
 
   //===============================================================================
   // This essentially subclasses iScroll. Originally, this was just so that we could
@@ -417,14 +421,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     deferNonActiveResize: true,
     
     // True to prevent hover in scroller touch devices.  If this is false, you will get
-    //  "piano keyboard" effect when scrolling due to hover, which is both time-consuming and 
-    // distracting. A negative is that with the current implementation, you will never get a "hover" 
-    // visual effect within a scroller on touch devices, even when not scrolling. But you still 
-    // will on desktop browser with mouse, and you will still get "down" effect when a link is 
-    // selected. This fails in some environments, so it is defaulted to false. For exmaple, on
-    // iOS Mobile Safari it works. On iOS native apps using UIWebView it will fail, and you can
-    // get "stuck" hovers. This really is a jQuery Mobile problem.
-    preventTouchHover: false,    
+    //  "piano keyboard" effect in JQM <1.1 when scrolling due to hover, which is both 
+    // time-consuming and distracting. A negative is that with the current implementation, you will 
+    // never get a "hover" visual effect within a scroller on touch devices, even when not scrolling. 
+    // But you still will on desktop browser with mouse, and you will still get "down" effect 
+    // when a link is selected. This really is a jQuery Mobile problem with listview, and is
+    // fixed in JQM 1.1.
+    preventTouchHover: JQMIsLT11,   // Enable is JQM version is < 1.1 
     
     // This is an experimental feature under development and DOES NOT WORK completely!
     // For one, it breaks mousewheel with jQuery Mobile 1.1 (because jQuery Mobile 1.1 breaks
