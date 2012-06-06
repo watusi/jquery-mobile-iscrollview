@@ -1,8 +1,12 @@
 body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  -webkit-touch-callout: none;      // Shut off long touch on links for info
-  -webkit-user-select: none;        // Shut off text selection
+  -webkit-touch-callout: none; /* Shut off long touch on links for info */
+  -webkit-user-select: none;   /* Shut off text selection, because it's really annoying when dragging */
+  -khtml-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
   }
 
 /* Force list items to be cached on WebKit
