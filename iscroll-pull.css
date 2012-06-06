@@ -2,7 +2,7 @@
 .iscroll-pullup {
   background: #fff;
   height: 40px;
-  line-height: 40px;    // Center text vertically
+  line-height: 40px;    /* Center text vertically */
   font-weight: bold;
   font-size: 14px;
   color: #888;
@@ -70,7 +70,7 @@
   -moz-animation: iscroll-pull-loading 2s infinite linear;
   -o-transform: rotate(0deg);
   -o-transition-duration: 0ms;
-  -o-animation: iscroll-pull-loading 2s infinite linear;   // Opera 12+ only
+  -o-animation: iscroll-pull-loading 2s infinite linear;   /* Opera 12+ only */
   transform: rotate(0deg) translateZ(0);
   transition: transform 0ms linear;
   animation: iscroll-pull-loading 2s infinite linear;        
