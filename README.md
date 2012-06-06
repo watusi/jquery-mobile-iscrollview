@@ -1306,11 +1306,12 @@ As a convenience, the demo directory is self-contained (except for the widget, `
 and pull icon files, which are expected to be found in the parent directory), and contains the
 following additional components:
 
-* JQuery 1.6.4
+* jQuery 1.6.4
+* jQuery 1.7.1
 * JQuery Mobile 1.0.1
-* iscroll4, commit 712640b7de..., Apr. 10, 2012 (iscroll-cubiq.js)
+* jQuery Mobile 1.1.0
 $ iscroll4, WatusiWare Corporation fork, `watusi` branch, commit 54354b7d0c, May 12, 2012 (iscroll-watusi.js)
-* jquery.actual, commit 0530ce5c64..., Feb 22, 2012
+* jquery.actual, WatusiWare Corporation fork, 'watusi' branch, commit 7795d2abd5..., June 6, 2012 (jquery.actual-watusi-min.js)
 
 Please obtain these components independently for your projects, so that
 you can be sure of what version you are getting, and avail yourself
