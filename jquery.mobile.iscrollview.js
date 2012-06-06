@@ -12,7 +12,7 @@
 *******************************************************************************/
 
 /*jslint browser: true, sloppy: true, white: true, nomen: true, regexp: true, maxerr: 50, indent: 2 */
-/*global jQuery:false, iScroll:false, console:false*/
+/*global jQuery:false, iScroll:false, console:false, Event:false*/
 
 /*******************************************************************************
   But instead, be kind to yourself, and use jshint.
@@ -90,7 +90,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       IsIDeviceStandalone = IsIDevice && window.navigator.Standalone,
 
       IScrollHasDimensionFunctions = iScroll.prototype._clientWidth !== undefined,
-      
+
       // Kludgey way to seeing if we have JQM 1.1 or higher, since there apparently is no
       // way to access the version number!
       JQMIsLT11 = !$.fn.jqmEnhanceable;
@@ -111,24 +111,24 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     }
 
   function IScroll(iscrollview, scroller, options) {
-    
+
     // We need to add an iscrollview member to iScroll, so that we can efficiently
     // pass the iscrollview when triggering jQuery events. Otherwise, we'd have to
     // make a call to $(wrapper).jqmData() on each event trigger, which could have an impact
-    // on performance for high-frequency events.    
-    this.iscrollview = iscrollview;  
-    
+    // on performance for high-frequency events.
+    this.iscrollview = iscrollview;
+
     // The following functions are called from the proxy event functions. These are things
-    // we want to do in certain iScroll4 events.    
-    
+    // we want to do in certain iScroll4 events.
+
     // Emulate bottomOffset functionality in case iScroll doesn't have patch for bottomOffset
     this._emulateBottomOffset =  function(e) {
       if (this.iscrollview.options.emulateBottomOffset) {
-        this.maxScrollY = this.wrapperH - this.scrollerH + 
+        this.maxScrollY = this.wrapperH - this.scrollerH +
           this.minScrollY + this.iscrollview.options.bottomOffset;
         }
-    };     
-    
+    };
+
     // Allow events through to input elements
     this._fixInput = function(e) {
      if (this.iscrollview.options.fixInput ) {
@@ -142,84 +142,84 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
        }
       if (this.iscrollview.options.preventTouchHover) { e.stopImmediatePropagation(); }
       else                                            { e.preventDefault(); }
-    }; 
-    
+    };
+
     // Perform an iScroll callback.
     this._doCallback = function(callbackName, e, f) {
       var v = this.iscrollview,
           then = v._logCallback(callbackName, e);
       if (f) { f.call(this, e); }                          // Perform passed function if present
-      v._trigger(callbackName.toLowerCase, e, {"iscrollview": v}); // Then trigger widget event 
-      v._logCallback(callbackName, e, then);      
-    };     
-    
+      v._trigger(callbackName.toLowerCase, e, {"iscrollview": v}); // Then trigger widget event
+      v._logCallback(callbackName, e, then);
+    };
+
     // Override _bind and _unbind functions in iScroll, so that we can monitor performance,
-    // gain control over events reaching/not reaching iScroll, and potentially use jQuery events 
+    // gain control over events reaching/not reaching iScroll, and potentially use jQuery events
     // instead of addEventListener().
     //
     // As of v1.2, using jQuery events is an experimental feature, and does not work in all
     // scenarios. For example, jQuery 1.7.1 breaks mousewheel support. This feature is left in
     // only to permit further experimentation.
     //
-    // If using jQuery events, we ignore bubble (really, useCapture) parameter. Fortunately, 
+    // If using jQuery events, we ignore bubble (really, useCapture) parameter. Fortunately,
     // iScroll never uses it.
     //
-    // If using jQuery events, we substitute jQuery's mouseleave for mouseout, to prevent iScroll 
-    // from getting a cascade of events when the mouse enters some inner element within the 
+    // If using jQuery events, we substitute jQuery's mouseleave for mouseout, to prevent iScroll
+    // from getting a cascade of events when the mouse enters some inner element within the
     // scroller. iScroll is only interested in the mouse leaving the scroller to the OUTSIDE.
     // While iScroll doesn't spend much time in the callback if moving to an inner element,
     // the cascade of events is annoying when monitoring performance with the debug option.
-    
-    this._bind = function (type, el, bubble) {  
+
+    this._bind = function (type, el, bubble) {
       var jqEvents = this.iscrollview.options.bindIscrollUsingJqueryEvents,
           _type =  jqEvents && type === "mouseout" ? "mouseleave" : type;
       // Ignore attempt to bind to orientationchange or resize, since the widget handles that
-      if (type === "orientationchange" || type == "resize") {
+      if (type === "orientationchange" || type === "resize") {
         this.iscrollview._logIscrollEvent("iScroll bind (ignored)", type);
         return;
       }
       this.iscrollview._logIscrollEvent("iScroll bind", type);
-      if (jqEvents) { (el ? $(el) : this.iscrollview.$scroller).bind(_type, $.proxy(this.handleEvent, this)); }        
+      if (jqEvents) { (el ? $(el) : this.iscrollview.$scroller).bind(_type, $.proxy(this.handleEvent, this)); }
       else          { (el || this.scroller).addEventListener(_type, this, !!bubble); }
-    },
+    };
 
     this._unbind = function(type, el, bubble) {
-      var jqEvents = this.iscrollview.options.bindIscrollUsingJqueryEvents,      
+      var jqEvents = this.iscrollview.options.bindIscrollUsingJqueryEvents,
           _type = jqEvents && type === "mouseout" ? "mouseleave" : type;
-      if (type === "orientationchange" || type == "resize") {
+      if (type === "orientationchange" || type === "resize") {
         this.iscrollview._logIscrollEvent("iScroll unbind (ignored)");
         return;
-      }      
+      }
       this.iscrollview._logIscrollEvent("iScroll unbind", type);
       if (jqEvents) { $(el || this.iscrollview.$scroller).unbind(_type, this.handleEvent); }
       else          {  (el || this.scroller).removeEventListener(_type, this, !!bubble); }
-    },
-    
+    };
+
     // Save a reference to the original handleEvent in iScroll. We'll need to call it from our
     // override.
     this._origHandleEvent = iScroll.prototype.handleEvent;
-   
+
     // Shim around iScroll.handleEvent, allows us to trace
     this.handleEvent = function(e) {
       var jqEvents = this.iscrollview.options.bindIscrollUsingJqueryEvents,
           then;
-      then = this.iscrollview._logIscrollEvent("iScroll.handleEvent", e);         
+      then = this.iscrollview._logIscrollEvent("iScroll.handleEvent", e);
       // If jQuery mouseleave, make iScroll think we are handling a mouseout event
-      if (jqEvents && e.type === "mouseleave") { 
+      if (jqEvents && e.type === "mouseleave") {
         e.type = "mouseout";
-        this._origHandleEvent(e); 
+        this._origHandleEvent(e);
         e.type = "mouseleave";
-        } 
+        }
       else { this._origHandleEvent(e); }
-      this.iscrollview._logIscrollEvent("iScroll.handleEvent", e, then);       
-    },
-    
+      this.iscrollview._logIscrollEvent("iScroll.handleEvent", e, then);
+    };
+
     // Override _resize function in iScroll, which calls refresh() and is only called on resize
     // and orientationchange events. We call refresh() when necessary, so these are redundant.
     // As well, some refreshes are deferred, and the user will need to refresh any jQuery Mobile
     // widgets using a callbackBefore. So, it makes no sense to have iScroll do event-based
     // refresh.
-    this._resize = function() { },
+    this._resize = function() { };
 
     // Override width/height functions (if present in patched iScroll) with our own. These use
     // jquery.actual to get the height/width while a page is loaded but hidden. So, refresh()
@@ -239,22 +239,22 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     this._clientWidth  = function(ele) {
       if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("innerWidth"); }
-      else                                      { return ele.clientWidth; }
+      return ele.clientWidth;
       };
 
     this._clientHeight = function(ele) {
       if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("innerHeight"); }
-      else                                      { return ele.clientHeight; }
+      return ele.clientHeight;
       };
 
     this._offsetWidth  = function(ele) {
       if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("outerWidth"); }
-      else                                      { return ele.offsetWidth; }
+      return ele.offsetWidth;
       };
 
     this._offsetHeight = function(ele) {
       if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("outerHeight"); }
-      else                                      { return ele.offsetHeight; }
+      return ele.offsetHeight;
       };
 
     iScroll.call(this, scroller, options);
@@ -311,15 +311,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     debug: false,                      // Enable some messages to console
                                        // Debug true needed for any trace options
     traceResizeWrapper: false,         // Enable to trace resize wrapper
-    traceRefresh: false,               // Enable to trace refresh                                      
+    traceRefresh: false,               // Enable to trace refresh
     traceIscrollEvents: true,          // Enable to trace events handled by iScroll
     tracedIscrollEvents: [],           // List of specific iScroll events to trace, empty list for all
                                        // Items are strings, like "touchstart"
     traceWidgetEvents: false,          // Enable to trace events registered by widget
     // Note: in some cases we might bind to multiple events. You will have to include the multiple
     // events in one string to filter on such a bind. For example, "resize orientationchange"
-    tracedWidgetEvents: [],            // List of specific widget events to trace                                  
-    traceIscrollCallbacks: false,      // Enable to trace iScroll callbacks to the widget 
+    tracedWidgetEvents: [],            // List of specific widget events to trace
+    traceIscrollCallbacks: false,      // Enable to trace iScroll callbacks to the widget
     tracedIscrollCallbacks: [],        // List of specific iScroll callbacks to trace, empty list for all
                                        // Items are strings, like "onRefresh"
     traceWidgetCallbacks: false,
@@ -419,16 +419,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // Same deal, for re-sizing the wrapper
     deferNonActiveResize: true,
-    
+
     // True to prevent hover in scroller touch devices.  If this is false, you will get
-    //  "piano keyboard" effect in JQM <1.1 when scrolling due to hover, which is both 
-    // time-consuming and distracting. A negative is that with the current implementation, you will 
-    // never get a "hover" visual effect within a scroller on touch devices, even when not scrolling. 
-    // But you still will on desktop browser with mouse, and you will still get "down" effect 
+    //  "piano keyboard" effect in JQM <1.1 when scrolling due to hover, which is both
+    // time-consuming and distracting. A negative is that with the current implementation, you will
+    // never get a "hover" visual effect within a scroller on touch devices, even when not scrolling.
+    // But you still will on desktop browser with mouse, and you will still get "down" effect
     // when a link is selected. This really is a jQuery Mobile problem with listview, and is
     // fixed in JQM 1.1.
-    preventTouchHover: JQMIsLT11,   // Enable is JQM version is < 1.1 
-    
+    preventTouchHover: JQMIsLT11,   // Enable is JQM version is < 1.1
+
     // This is an experimental feature under development and DOES NOT WORK completely!
     // For one, it breaks mousewheel with jQuery Mobile 1.1 (because jQuery Mobile 1.1 breaks
     // mousewheel...)
@@ -493,8 +493,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "traceWidgetCallbacks",
       "tracedWidgetCallbacks",
       "traceResizeWrapper",
-      "traceRefresh",  
-      "bottomOffset",     
+      "traceRefresh",
+      "bottomOffset",
       "emulateBottomOffset",
       "pageClass",
       "wrapperClass",
@@ -579,14 +579,14 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       onRefresh: function(e) {
         this._doCallback("onRefresh", e, function(e) {
           this._emulateBottomOffset();
-          this.iscrollview._pullOnRefresh.call(this.iscrollview,e);         
+          this.iscrollview._pullOnRefresh.call(this.iscrollview,e);
           });
         },
 
       onBeforeScrollStart: function(e) {
         this._doCallback("onBeforeScrollStart", e, function(e) {
-          this._fixInput(e);           
-          });  
+          this._fixInput(e);
+          });
         },
 
       onScrollStart:       function(e) { this._doCallback("onScrollStart",      e); },
@@ -594,7 +594,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
       onScrollMove: function(e) {
         this._doCallback("onScrollMove", e, function(e) {
-          this.iscrollview._pullOnScrollMove.call(this.iscrollview, e);          
+          this.iscrollview._pullOnScrollMove.call(this.iscrollview, e);
           });
         },
 
@@ -602,16 +602,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
       onScrollEnd: function(e) {
         this._doCallback("onScrollEnd", e, function(e){
-          this.iscrollview._pullOnScrollEnd.call(this.iscrollview, e);         
-          });  
+          this.iscrollview._pullOnScrollEnd.call(this.iscrollview, e);
+          });
         },
 
       onTouchEnd:          function(e) { this._doCallback("onTouchEnd",  e); },
       onDestroy:           function(e) { this._doCallback("onDestroy",   e); },
       onZoomStart:         function(e) { this._doCallback("onZoomStart", e); },
       onZoom:              function(e) { this._doCallback("onZoom",      e); },
-      onZoomEnd:           function(e) { this._doCallback("onZoomEnd",   e); },
-
+      onZoomEnd:           function(e) { this._doCallback("onZoomEnd",   e); }
       },
 
   // Merge options from the iscroll object into the widget options
@@ -643,7 +642,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
   // Formats number with fixed digits
   _pad: function(num, digits, char) {
-    var str = num.toString(), 
+    var str = num.toString(),
         padChar = char || "0";
     while (str.length < digits) { str = padChar + str; }
     return str;
@@ -661,7 +660,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // text - message to log
   // now - optional timestamp, if missing generates new timestamp
   // Returns timestamp
-  _log: function(text, now) {   
+  _log: function(text, now) {
     var _now, id, idStr;
     if (!this.options.debug) { return null; }
     _now = now || new Date();
@@ -670,9 +669,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     console.log(this._toTime(_now) + " " +
                 $.mobile.path.parseUrl(this.$page.jqmData("url")).filename + idStr + " " +
                 text );
-    return _now;  
+    return _now;
   },
-  
+
   // Log elapsed time from then to now
   _logInterval: function(text, then) {
     var now;
@@ -680,23 +679,23 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     now = new Date();
     return this._log(text + " " + (now - then) + "mS from " + this._toTime(then), now );
     },
-  
+
   // Log an event
   // Like _logInterval, but additional optional parameter e
   // If e is present, additionally show interval from original event to now
   _logEvent: function(text, e, then) {
-    var now, 
+    var now,
         eventTime,
         haveEvent = e && e instanceof Object,
         type = haveEvent ? e.type : e,
         _text = type + " " + text;
-        
+
     if (!this.options.debug) { return null; }
-    
-    now = new Date(); 
-    
+
+    now = new Date();
+
     if (then) {
-      _text += " end " + +(now-then) + "mS from " + this._toTime(then);     
+      _text += " end " + (+(now-then)) + "mS from " + this._toTime(then);
       }
     else if (haveEvent) {
       _text += " begin";
@@ -705,62 +704,62 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       eventTime = new Date(e.timeStamp);
       _text +=  " (" +  (now - eventTime) + "mS from " +e.type + " @ " + this._toTime(eventTime) + ")";
       }
-      
+
     return this._log(_text, now);
   },
-  
+
   // Log a callback issued by iScroll
   _logCallback: function(callbackName, e, then) {
     if (!this.options.debug ||
-        !this.options.traceIscrollCallbacks || 
-       (this.options.tracedIscrollCallbacks.length !== 0 && 
-        $.inArray(callbackName, this.options.tracedIscrollCallbacks) === -1) ) { 
-      return null; 
+        !this.options.traceIscrollCallbacks ||
+       (this.options.tracedIscrollCallbacks.length !== 0 &&
+        $.inArray(callbackName, this.options.tracedIscrollCallbacks) === -1) ) {
+      return null;
       }
     if (e)         { return this._logEvent(callbackName, e, then); }
-    else if (then) { return this._logInterval(callbackName + " end", then); }
+    if (then)      { return this._logInterval(callbackName + " end", then); }
     return this._log(callbackName + " begin");
   },
-    
-  // Log an event handled by Iscroll  
+
+  // Log an event handled by Iscroll
   // e can be Event or event name
   _logIscrollEvent: function(text, e, then) {
     var haveEvent = e instanceof Event,
         type = haveEvent ? e.type : e;
-    if (!this.options.debug || 
+    if (!this.options.debug ||
         !this.options.traceIscrollEvents ||
-        (this.options.tracedIscrollEvents.length !== 0 && 
-         $.inArray(type, this.options.tracedIscrollEvents) === -1)) { 
-      return null; 
+        (this.options.tracedIscrollEvents.length !== 0 &&
+         $.inArray(type, this.options.tracedIscrollEvents) === -1)) {
+      return null;
       }
-    return this._logEvent(text, e, then); 
+    return this._logEvent(text, e, then);
   },
-  
+
   // Log an event handled by the widget
   _logWidgetEvent: function(text, e, then) {
     var haveEvent = e instanceof Object,
         type = haveEvent ? e.type : e;
-    if (!this.options.debug || 
+    if (!this.options.debug ||
         !this.options.traceWidgetEvents ||
-        (this.options.tracedWidgetEvents.length !== 0 && 
-         $.inArray(type, this.options.tracedWidgetEvents) === -1)) { 
-      return null; 
+        (this.options.tracedWidgetEvents.length !== 0 &&
+         $.inArray(type, this.options.tracedWidgetEvents) === -1)) {
+      return null;
       }
-    return this._logEvent(text, e, then); 
-  }, 
-  
+    return this._logEvent(text, e, then);
+  },
+
   // Log a callback issued by the widtet
   _logWidgetCallback: function(callbackName, e, then) {
     if (!this.options.debug ||
-        !this.options.traceWidgetCallbacks || 
-       (this.options.tracedWidgetCallbacks.length !== 0 && 
-        $.inArray(callbackName, this.options.tracedWidgetCallbacks) === -1) ) { 
-      return null; 
+        !this.options.traceWidgetCallbacks ||
+       (this.options.tracedWidgetCallbacks.length !== 0 &&
+        $.inArray(callbackName, this.options.tracedWidgetCallbacks) === -1) ) {
+      return null;
       }
     if (e)         { return this._logEvent(callbackName, e, then); }
-    else if (then) { return this._logInterval(callbackName + " end", then); }
-    return this._log(callbackName + " begin");  
-  }, 
+    if (then)      { return this._logInterval(callbackName + " end", then); }
+    return this._log(callbackName + " begin");
+  },
 
   // Log elapsed time from then to now and later to now
   _logInterval2: function(text, then, later) {
@@ -776,24 +775,24 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (!this.options.debug) { return null; }
     return new Date();
     },
-    
-	// All bind/unbind/_trigger done by the widget goes through here, to permit logging
-	_bind: function(obj, type, func, objName) {
-	  this._logWidgetEvent("bind " + objName, type);
-	  obj.bind(type, $.proxy(func, this));
-	},
-	
-	_unbind: function(obj, type, func, objName) {
-	  this._logWidgetEvent("unbind " + objName, type);
-	  obj.unbind(type, func);  
-	},   
-	
-	_triggerWidget: function(type, e, f) {
-	  var then = this._logWidgetCallback(type);
-	  if (f) { f.call(this); }  // Perform passed function if present
-	  this._trigger(type, e, {"iscrollview":this}); 
-	  this._logWidgetCallback(type, e, then); 
-	}, 
+
+  // All bind/unbind/_trigger done by the widget goes through here, to permit logging
+  _bind: function(obj, type, func, objName) {
+    this._logWidgetEvent("bind " + objName, type);
+    obj.bind(type, $.proxy(func, this));
+  },
+
+  _unbind: function(obj, type, func, objName) {
+    this._logWidgetEvent("unbind " + objName, type);
+    obj.unbind(type, func);
+  },
+
+  _triggerWidget: function(type, e, f) {
+    var then = this._logWidgetCallback(type);
+    if (f) { f.call(this); }  // Perform passed function if present
+    this._trigger(type, e, {"iscrollview":this});
+    this._logWidgetCallback(type, e, then);
+  },
 
   //-------------------------------------------------------------------
   // Returns status of dirty flag, indicating that refresh() was called
@@ -835,7 +834,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _pageBeforeShowFunc: function(e) {
-   var then = this._logWidgetEvent("_pageBeforeShowFunc", e);  
+   var then = this._logWidgetEvent("_pageBeforeShowFunc", e);
    if (this._sizeDirty) {
      this.resizeWrapper();
      this.expandScrollerToFillWrapper();
@@ -851,12 +850,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
    else if (this.options.refreshOnPageBeforeShow) {
       this.refresh();
       }
-   this._logWidgetEvent("_pageBeforeShowFunc", e, then);      
+   this._logWidgetEvent("_pageBeforeShowFunc", e, then);
    },
 
   // Called on resize events
   _windowResizeFunc: function(e) {
-    var then = this._logWidgetEvent("_windowResizeFunc", e);   
+    var then = this._logWidgetEvent("_windowResizeFunc", e);
     if (this.options.deferNonActiveResize && !this.$page.hasClass("ui-page-active"))  {
       this._sizeDirty = true;
       if (this.options.traceResizeWrapper) { this._log("resizeWrapper() (deferred)"); }
@@ -866,18 +865,18 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this.expandScrollerToFillWrapper();
       }
     this.refresh();
-   this._logWidgetEvent("_windowResizeFunc", e, then);    
+   this._logWidgetEvent("_windowResizeFunc", e, then);
     },
 
   // On some platforms (iOS, for example) you need to scroll back to top after orientation change,
   // because the address bar pushed the window down. jQuery Mobile handles this for page links,
   // but doesn't for orientationchange
   _orientationChangeFunc: function(e) {
-    var then = this._logWidgetEvent("_orientationChangeFunc", e);  
+    var then = this._logWidgetEvent("_orientationChangeFunc", e);
     if (this.options.scrollTopOnOrientationChange) {
       $.mobile.silentScroll(0);
       }
-    this._logWidgetEvent("_orientationChangeFunc", e, then);       
+    this._logWidgetEvent("_orientationChangeFunc", e, then);
     },
 
   //----------------------------
@@ -896,7 +895,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       $(this).jqmRemoveData("iscrollviewOrigStyle");
       });
     },
-    
+
   //----------------------------------
   // Adapt the page for this widget
   // This should only be done for one
@@ -1151,7 +1150,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this._origWrapperHeight = this.$wrapper.height() - this._wrapperHeightAdjustForBoxModel;
       this._firstWrapperResize = false;
       }
-    if (this.options.traceResizeWrapper) { 
+    if (this.options.traceResizeWrapper) {
       this._logInterval("resizeWrapper() end" + (this._sizeDirty ? " (dirty)" : ""), then);
       }
     },
@@ -1295,7 +1294,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this._dirtyCallbackBefore = callbackBefore;
       this._dirtyCallbackAfter = callbackAfter;
       this._dirtyContext = context;
-      if (this.options.traceRefresh) { 
+      if (this.options.traceRefresh) {
         this._log("refresh() (deferred)");
       }
       return;
@@ -1317,25 +1316,25 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     _noDefer = noDefer;
     then = this._startTiming();
     if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
-    
+
     setTimeout(function() {
       var later;
-      
+
       if (_this.options.traceRefresh) {
        later =  _this._logInterval("refresh() start", then);
        }
 
       _this._triggerWidget("onbeforerefresh", null, function() {
-        if (_callbackBefore) { _callbackBefore(_context); }     
+        if (_callbackBefore) { _callbackBefore(_context); }
         });
 
       _this.iscroll.refresh();
 
       _this._triggerWidget("onafterrefresh", null, function() {
-        if (_callbackAfter) { _callbackAfter(_context); }      
+        if (_callbackAfter) { _callbackAfter(_context); }
         });
 
-      if (_this.options.traceRefresh) { 
+      if (_this.options.traceRefresh) {
         _this._logInterval2("refresh() end" + (_noDefer ? " (dirty)" : ""), then, later);
         }
       }, _delay);
@@ -1343,7 +1342,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (this.options.traceRefresh) {
       this._log("refresh() will occur after >= " + _delay + "mS");
       }
-    
+
     },
 
    //---------------------------
@@ -1387,14 +1386,14 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // Find pull elements, if present
     $pullDown = $("." + this.options.pullDownClass, this.$scroller);
-    if ($pullDown.length) { 
-      this.$pullDown = $pullDown; 
-      this._modifyPullDown();      
+    if ($pullDown.length) {
+      this.$pullDown = $pullDown;
+      this._modifyPullDown();
       }
     $pullUp = $("." + this.options.pullUpClass, this.$scroller);
     if ($pullUp.length) {
-      this.$pullUp = $pullUp; 
-      this._modifyPullUp();      
+      this.$pullUp = $pullUp;
+      this._modifyPullUp();
       }
 
     // Merge options from data-iscroll, if present
@@ -1584,13 +1583,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     _pullDownSetStateReset: function(e) {
       this._triggerWidget("onpulldownreset", e, function() {
-        this._pullSetStateReset(this.$pullDown, this.options.pullDownResetText);      
+        this._pullSetStateReset(this.$pullDown, this.options.pullDownResetText);
         });
       },
 
     _pullUpSetStateReset: function(e) {
       this._triggerWidget("onpullupreset", e, function () {
-        this._pullSetStateReset(this.$pullUp, this.options.pullUpResetText);      
+        this._pullSetStateReset(this.$pullUp, this.options.pullUpResetText);
         });
       },
 
@@ -1602,13 +1601,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     _pullDownSetStatePulled: function(e) {
       this._triggerWidget("onpulldownpulled", e, function() {
-        this._pullSetStatePulled(this.$pullDown, this.options.pullDownPulledText);      
+        this._pullSetStatePulled(this.$pullDown, this.options.pullDownPulledText);
         });
       },
 
     _pullUpSetStatePulled: function (e) {
       this._triggerWidget("onpulluppulled", e, function() {
-        this._pullSetStatePulled(this.$pullUp, this.options.pullUpPulledText);      
+        this._pullSetStatePulled(this.$pullUp, this.options.pullUpPulledText);
         });
       },
 
@@ -1620,13 +1619,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     _pullDownSetStateLoading: function (e) {
       this._triggerWidget("onpulldownloading", e, function() {
-        this._pullSetStateLoading(this.$pullDown, this.options.pullDownLoadingText);      
+        this._pullSetStateLoading(this.$pullDown, this.options.pullDownLoadingText);
         });
       },
 
     _pullUpSetStateLoading: function(e) {
       this._triggerWidget("onpulluploading", e, function() {
-        this._pullSetStateLoading(this.$pullUp, this.options.pullUpLoadingText);      
+        this._pullSetStateLoading(this.$pullUp, this.options.pullUpLoadingText);
         });
      },
 
@@ -1648,14 +1647,14 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       var pullDownIsPulled, pullUpIsPulled, pullDownHeight, pullDownPast, pullUpHeight, pullUpPast,
           y = this.y();
 
-      if (this.$pullDown) {     
+      if (this.$pullDown) {
         pullDownIsPulled = this._pullDownIsPulled();
         pullDownHeight = this.options.topOffset;
         // User needs to pull down past the top edge of the pulldown element. To prevent false
         // triggers from aggressive scrolling, they should have to pull down some additional
         // amount. Half the height of the pulldown seems reasonable, but adjust per preference.
-        pullDownPast = pullDownHeight / 2;    
-           
+        pullDownPast = pullDownHeight / 2;
+
         // Set "pulled" state if not pulled and user has pulled past the pulldown element
         // by pullDownPast pixels
         if (!pullDownIsPulled && y > pullDownPast ) {
@@ -1668,13 +1667,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         else if (pullDownIsPulled && y <= 0) {
           this._pullDownSetStateReset(e);
           this.minScrollY(-pullDownHeight);  // Re-instate top offset
-          }      
+          }
         }
 
      if (this.$pullUp) {
           pullUpIsPulled = this._pullUpIsPulled();
-          pullUpHeight = this.options.bottomOffset;  
-          pullUpPast = pullUpHeight / 2;                    
+          pullUpHeight = this.options.bottomOffset;
+          pullUpPast = pullUpHeight / 2;
        if (!pullUpIsPulled && y < this.maxScrollY() - pullUpHeight - pullUpPast ) {
          this._pullUpSetStatePulled(e);
          this.maxScrollY(this.wrapperH() - this.scrollerH() + this.minScrollY());
@@ -1683,7 +1682,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         else if (pullUpIsPulled && y >= this.maxScrollY() ) {
           this._pullUpSetStateReset(e);
           this.maxScrollY(this.wrapperH() - this.scrollerH() + this.minScrollY() + pullUpHeight);
-          }     
+          }
        }
 
       },
@@ -1691,12 +1690,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     _pullOnScrollEnd: function (e) {
       if (this._pullDownIsPulled(e)) {
         this._triggerWidget("onpulldown", e, function() {
-          this._pullDownSetStateLoading(e);        
+          this._pullDownSetStateLoading(e);
           });
         }
       else if (this._pullUpIsPulled(e)) {
         this._triggerWidget("onpullup", e, function() {
-          this._pullUpSetStateLoading(e);        
+          this._pullUpSetStateLoading(e);
           });
         }
       }
