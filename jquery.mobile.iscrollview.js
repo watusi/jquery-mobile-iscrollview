@@ -70,7 +70,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
 ;   // Ignore jslint/jshint warning - for safety - terminate previous file if unterminated
 
-(function ($, window, document, undefined) { // Ignore jslint warning on undefined
+(function ($, window, document) { 
   "use strict";
 
   //----------------------------------
@@ -641,10 +641,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   // Formats number with fixed digits
-  _pad: function(num, digits, char) {
+  _pad: function(num, digits, padChar) {
     var str = num.toString(),
-        padChar = char || "0";
-    while (str.length < digits) { str = padChar + str; }
+        _padChar = padChar || "0";
+    while (str.length < digits) { str = _padChar + str; }
     return str;
   },
 
