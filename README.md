@@ -1342,6 +1342,10 @@ The `debug` option must be `true` in order for any of the trace options to be en
 Performance logging can generate a large amount of data. You can use trace options to narrow
 the logging to items of interest.
 
+### traceCreateDestroy
+
+If `true`, creation and destruction of the widget is traced.
+
 ### traceRefresh
 
 If this option option is `true`, calls to the widget's `refresh()` function are traced.

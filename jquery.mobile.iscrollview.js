@@ -312,7 +312,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
                                        // Debug true needed for any trace options
     traceResizeWrapper: false,         // Enable to trace resize wrapper
     traceRefresh: false,               // Enable to trace refresh
-    traceIscrollEvents: true,          // Enable to trace events handled by iScroll
+    traceCreateDestroy: false,         // Enable to trace create/destroy
+    traceIscrollEvents: false,         // Enable to trace events handled by iScroll
     tracedIscrollEvents: [],           // List of specific iScroll events to trace, empty list for all
                                        // Items are strings, like "touchstart"
     traceWidgetEvents: false,          // Enable to trace events registered by widget
@@ -494,6 +495,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "tracedWidgetCallbacks",
       "traceResizeWrapper",
       "traceRefresh",
+      "traceCreateDestroy",
       "bottomOffset",
       "emulateBottomOffset",
       "pageClass",
@@ -1373,31 +1375,36 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Automatically called on page creation
   //-----------------------------------------
   _create: function() {
-    var $pullDown, $pullUp;
+    var $pullDown, 
+        $pullUp,
+        then;   
     this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
     this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
+    if (this.options.debug && this.options.traceCreateDestroy) {
+      then = this._log("_create() start");
+      }     
     this._createScroller();
     this.$scroller = this.$wrapper.children(":first");   // Get the first child of the wrapper, which is the
-                                                         //   element that we will scroll
+                                                         //   element that we will scroll                                                         
     if (!this.$scroller) { return; }
 
     // Find the scroller content elements. These are the direct descendants of the scroller
     this.$scrollerContentElements = $("> *", this.$scroller);
-
+   
     // Find pull elements, if present
-    $pullDown = $("." + this.options.pullDownClass, this.$scroller);
+    $pullDown = $("." + this.options.pullDownClass, this.$scroller); 
     if ($pullDown.length) {
       this.$pullDown = $pullDown;
       this._modifyPullDown();
-      }
-    $pullUp = $("." + this.options.pullUpClass, this.$scroller);
+      }    
+    $pullUp = $("." + this.options.pullUpClass, this.$scroller);    
     if ($pullUp.length) {
       this.$pullUp = $pullUp;
-      this._modifyPullUp();
-      }
+      this._modifyPullUp();    
+      }     
 
     // Merge options from data-iscroll, if present
-    $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));
+    $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));   
 
     // Calculate height of headers, footers, etc.
     // We only do this at create time. If you change their height after creation,
@@ -1405,23 +1412,26 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Calling this from resize events on desktop platforms is unreliable.
     // Some desktop platforms (example, Safari) will report unreliable element
     // heights during resize.
-    this.calculateBarsHeight();
+    this.calculateBarsHeight();    
 
-    this._modifyWrapper();                 // Various changes to the wrapper
-    this._addScrollerPadding();            // Put back padding removed from wrapper
-    this._adaptPage();
+    this._modifyWrapper();                 // Various changes to the wrapper    
+    this._addScrollerPadding();            // Put back padding removed from wrapper     
+    this._adaptPage();   
 
     // Prevent moving the wrapper with touch
     this._bind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
 
     // Need this for deferred refresh processing
-    this._bind(this.$page, "pagebeforeshow", this._pageBeforeShowFunc, "$page");
+    this._bind(this.$page, "pagebeforeshow", this._pageBeforeShowFunc, "$page"); 
 
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
     this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset
-    this.expandScrollerToFillWrapper(); // Make empty scroller content draggable
-    this._create_iscroll_object();
-    this._merge_from_iscroll_options();     // Merge iscroll options into widget options
+    this.expandScrollerToFillWrapper(); // Make empty scroller content draggable   
+    this._create_iscroll_object();   
+    this._merge_from_iscroll_options();     // Merge iscroll options into widget options    
+    if (this.options.debug && this.options.traceCreateDestroy) {
+      this._logInterval("_create() end", then);
+      }    
     },
 
   //----------------------------------------------------------
@@ -1429,6 +1439,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // the widget has made to the DOM
   //----------------------------------------------------------
   destroy: function () {
+    var then;
+    if (this.options.debug && this.options.traceCreateDestroy) {
+      then = this._log("destroy() start");
+      }     
     this.iscroll.destroy();
     this.iscroll = null;
 
@@ -1455,6 +1469,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // For UI 1.8, destroy must be invoked from the
     // base widget
     $.Widget.prototype.destroy.call(this);
+    if (this.options.debug && this.options.traceCreateDestroy) {
+      this._logInterval("destroy() end", then);
+      }     
      // For UI 1.9, define _destroy instead and don't
      // worry about calling the base widget
     },
@@ -1712,7 +1729,7 @@ jQuery(document).bind("pagecreate", function (e) {
   // our plugin on them.
 
   // The find() below returns an array of jQuery page objects. The Widget Factory will
-  // enumerate these and call the widget _create() fucntion for each member of the array.
+  // enumerate these and call the widget _create() function for each member of the array.
   // If the array is of zero length, then no _create() fucntion is called.
   jQuery(e.target).find(":jqmData(iscroll)").iscrollview();
   });
