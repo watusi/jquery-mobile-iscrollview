@@ -854,7 +854,7 @@ effect within a scroller on touch devices, even when not scrolling. But you stil
 browser with mouse, and you will still get "down" effect when a link is selected. However, it
 probably isn't desirable to get hover in a listview, because it is distracting.
 
-Default: `true` for jQuery Mobile < 1.1, `false` for jQuery Mobile >= 1.1
+Default: `true` for touch devices if jQuery Mobile < 1.1, `false` for jQuery Mobile >= 1.1
 
 ####bindIscrollUsingJqueryEvents
 

@@ -79,7 +79,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   var IsWebkit =  (/webkit/i).test(navigator.appVersion),
       IsAndroid = (/android/gi).test(navigator.appVersion),
       IsFirefox = (/firefox/i).test(navigator.userAgent),
-
+      IsTouchPad = (/hp-tablet/gi).test(navigator.appVersion),  
       IsIDevice = (/(iPhone|iPad|iPod).*AppleWebKit/).test(navigator.appVersion),
       IsIPad = (/iPad.*AppleWebKit/).test(navigator.appVersion),
       // IDevice running Mobile Safari - not embedded UIWebKit or Standalone (= saved to desktop)
@@ -88,6 +88,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       IsUIWebView = (/(iPhone|iPad|iPod).*AppleWebKit.(?!.*Safari)/).test(navigator.appVersion),
       // Standalone is when running a website saved to the desktop (SpringBoard)
       IsIDeviceStandalone = IsIDevice && window.navigator.Standalone,
+      HasTouch = 'ontouchstart' in window && !isTouchPad,         
 
       // Kludgey way to seeing if we have JQM 1.1 or higher, since there apparently is no
       // way to access the version number!
@@ -389,7 +390,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // But you still will on desktop browser with mouse, and you will still get "down" effect
     // when a link is selected. This really is a jQuery Mobile problem with listview, and is
     // fixed in JQM 1.1.
-    preventTouchHover: JQMIsLT11,   // Enable is JQM version is < 1.1
+    preventTouchHover: JQMIsLT11 && HasTouch,   // Enable if touch device and JQM version is < 1.1
 
     // This is an experimental feature under development and DOES NOT WORK completely!
     // For one, it breaks mousewheel with jQuery Mobile 1.1 (because jQuery Mobile 1.1 breaks
