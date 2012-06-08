@@ -88,7 +88,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       IsUIWebView = (/(iPhone|iPad|iPod).*AppleWebKit.(?!.*Safari)/).test(navigator.appVersion),
       // Standalone is when running a website saved to the desktop (SpringBoard)
       IsIDeviceStandalone = IsIDevice && window.navigator.Standalone,
-      HasTouch = 'ontouchstart' in window && !isTouchPad,         
+      HasTouch = (window.ontouchstart !== undefined)  && !IsTouchPad,         
 
       // Kludgey way to seeing if we have JQM 1.1 or higher, since there apparently is no
       // way to access the version number!
@@ -911,8 +911,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._barsHeight = barsHeight;
     },
     
-    calculateBarsHeight: function() {
-      this._withPageVisible(_calculateBarsHeight);
+  calculateBarsHeight: function() {
+    this._withPageVisible(this._calculateBarsHeight);
     },
 
   //-----------------------------------------------------------------------
