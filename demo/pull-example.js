@@ -131,6 +131,17 @@
       iscroll_onpulldown : onPullDown,
       iscroll_onpullup   : onPullUp
       });
-    });  
+    }); 
+  
+  $(document).bind("pageinit", function() {
+    $("input, textarea, select").bind("blur", function(e) {
+      setTimeout(function() {
+        if ($(".ui-focus").length == 0) { 
+          $.mobile.silentScroll(0); 
+          }        
+        }, 0);
+      });
+    });
+
 
   }(jQuery));

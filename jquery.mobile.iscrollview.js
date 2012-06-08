@@ -89,8 +89,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // Standalone is when running a website saved to the desktop (SpringBoard)
       IsIDeviceStandalone = IsIDevice && window.navigator.Standalone,
 
-      IScrollHasDimensionFunctions = iScroll.prototype._clientWidth !== undefined,
-
       // Kludgey way to seeing if we have JQM 1.1 or higher, since there apparently is no
       // way to access the version number!
       JQMIsLT11 = !$.fn.jqmEnhanceable;
@@ -221,42 +219,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // refresh.
     this._resize = function() { };
 
-    // Override width/height functions (if present in patched iScroll) with our own. These use
-    // jquery.actual to get the height/width while a page is loaded but hidden. So, refresh()
-    // will work at the time of construction at pagecreate, or at pagebeforeshow.
-    //
-    // jquery.actual is considerably slower than the direct DOM dimension functions
-    // or jQuery's dimension functons, but this enables us to construct the iscrollview
-    // while the page is initially hidden, avoiding visual distraction.
-    //
-    // Using the WatisiWare fork of jqery.actual is considerably faster than the original
-    // jquery.actual. Originally, it saved and restored CSS properties of the element and
-    // it's parents (if hidden). However, it is much faster to save and restore
-    // the style attribute, as well as more proper.
-    //
-    // So, it is a reasonable tradeoff to use jquery.actual, while limiting it's use to
-    // situations where it is actually necessary.
-
-    this._clientWidth  = function(ele) {
-      if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("innerWidth"); }
-      return ele.clientWidth;
-      };
-
-    this._clientHeight = function(ele) {
-      if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("innerHeight"); }
-      return ele.clientHeight;
-      };
-
-    this._offsetWidth  = function(ele) {
-      if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("outerWidth"); }
-      return ele.offsetWidth;
-      };
-
-    this._offsetHeight = function(ele) {
-      if (this.iscrollview.$page.is(":hidden")) { return $(ele).actual("outerHeight"); }
-      return ele.offsetHeight;
-      };
-
     iScroll.call(this, scroller, options);
     }
 
@@ -366,10 +328,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     resizeEvents:  "resize",
 
     // Refresh iscrollview on page show event. This should be true if content inside a
-    // scrollview might change while the page is cached but not shown.
-    // Default to false if we have a version of iScroll that we can patch with
-    // jQuery.actual. Default to true otherwise.
-    refreshOnPageBeforeShow: !IScrollHasDimensionFunctions,
+    // scrollview might change while the page is cached but not shown, and application hasn't
+    // called refresh(), or deferRefresh is false.
+    refreshOnPageBeforeShow: false,
 
     // true to fix iscroll4 input element focus problem in the widget.
     // false if you are using a patched iscroll4 with different fix or to
@@ -821,7 +782,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _restoreStyle: function($ele, originalStyle) {
     if (originalStyle === undefined) { return; }
     if (originalStyle === null)      { $ele.removeAttr("style"); }
-    else                             { $ele.setAttr("style", originalStyle); }
+    else                             { $ele.attr("style", originalStyle); }
     },
 
   //------------------------------------------------------------------------------
@@ -836,12 +797,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _pageBeforeShowFunc: function(e) {
-   var then = this._logWidgetEvent("_pageBeforeShowFunc", e);
+   var then = this._logWidgetEvent("_pageBeforeShowFunc", e),
+       _this = this;
+       
    if (this._sizeDirty) {
-     this.resizeWrapper();
-     this.expandScrollerToFillWrapper();
-     this._sizeDirty = false;
+     this._withPageVisible(function () {
+       _this._resizeWrapper();
+       _this._expandScrollerToFillWrapper();
+       });
       }
+      
    if (this._dirty) {
      this.refresh(0, this._dirtyCallbackBefore, this._dirtyCallbackAfter, this._dirtyContext, true);
      this._dirty = false;
@@ -849,24 +814,32 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
      this._dirtyCallbackAfter = null;
      this._dirtyContext = null;
      }
-   else if (this.options.refreshOnPageBeforeShow) {
+     
+   else if (this.options.refreshOnPageBeforeShow || this._sizeDirty) {
       this.refresh();
       }
+   
+   this._sizeDirty = false;  
+       
    this._logWidgetEvent("_pageBeforeShowFunc", e, then);
    },
 
   // Called on resize events
   _windowResizeFunc: function(e) {
-    var then = this._logWidgetEvent("_windowResizeFunc", e);
+    var then = this._logWidgetEvent("_windowResizeFunc", e),
+        _this = this;
     if (this.options.deferNonActiveResize && !this.$page.hasClass("ui-page-active"))  {
       this._sizeDirty = true;
       if (this.options.traceResizeWrapper) { this._log("resizeWrapper() (deferred)"); }
       }
     else {
-      this.resizeWrapper();
-      this.expandScrollerToFillWrapper();
+      this._withPageVisible(function() {
+        _this._resizeWrapper();
+        _this._expandScrollerToFillWrapper();      
+      });    
+    this.refresh();         
       }
-    this.refresh();
+
    this._logWidgetEvent("_windowResizeFunc", e, then);
     },
 
@@ -929,12 +902,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //--------------------------------------------------------
   // Calculate total bar heights.
   //--------------------------------------------------------
-  calculateBarsHeight: function() {
+  _calculateBarsHeight: function() {
     var barsHeight = 0;
     this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers
-        barsHeight += $(this).actual( "outerHeight", { includeMargin : true } );
+        barsHeight += $(this).outerHeight(true);
         });
     this._barsHeight = barsHeight;
+    },
+    
+    calculateBarsHeight: function() {
+      this._withPageVisible(_calculateBarsHeight);
     },
 
   //-----------------------------------------------------------------------
@@ -970,21 +947,18 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     switch (this._getBoxSizing($elem)) {
       case "border-box":      // AKA traditional, or IE5 (old browsers and IE quirks mode)
         // only subtract margin
-        adjust = $elem.actual("outerHeight", { includeMargin: true } ) -
-                 $elem.actual( "outerHeight" );
+        adjust = $elem.outerHeight(true) - $elem.outerHeight();                 
         break;
 
       case "padding-box":    // Firefox-only
         // subtract margin and border
-        adjust = $elem.actual( "outerHeight" ) -
-                 $elem.actual( "height" );
+        adjust = $elem.outerHeight() - $elem.height();
         break;
 
       case "content-box":     // AKA W3C  Ignore jshint warning
       default:                // Ignore jslint warning
         // We will subtract padding, border, margin
-        adjust = $elem.actual( "outerHeight", { includeMargin : true } ) -
-                 $elem.actual( "height" );
+        adjust = $elem.outerHeight(true) - $elem.height();
         break;
       }
     return adjust;
@@ -997,7 +971,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //--------------------------------------------------------
   _setTopOffsetForPullDown: function() {
     if (this.$pullDown && !this.options.topOffset) {
-      this.options.topOffset = this.$pullDown.actual("outerHeight",{includeMargin:true});
+      this.options.topOffset = this.$pullDown.outerHeight(true);      
       }
     },
 
@@ -1008,7 +982,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //--------------------------------------------------------
   _setBottomOffsetForPullUp: function() {
     if (this.$pullUp && !this.options.bottomOffset) {
-      this.options.bottomOffset = this.$pullUp.actual("outerHeight",{includeMargin:true});
+      this.options.bottomOffset = this.$pullUp.outerHeight(true);
       }
     },
 
@@ -1113,19 +1087,24 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // well, this pushes any pull-up element down so that it
   // will not be visible until the user pulls up.
   //--------------------------------------------------------
-  expandScrollerToFillWrapper: function() {
+  _expandScrollerToFillWrapper: function() {
     if (this.options.expandScrollerToFillWrapper) {
       if (this._firstScrollerExpand) {
         this._origScrollerStyle = this.$scroller.attr("style") || null;
         this._firstScrollerExpand = false;
         }
+           
       this.$scroller.css("min-height",
-        this.$wrapper.actual("height") +
-        (this.$pullDown ? this.$pullDown.actual("outerHeight",{includeMargin:true}) : 0) +
-        (this.$pullUp ? this.$pullUp.actual("outerHeight",{includeMargin:true}) : 0)
+        this.$wrapper.height() +
+        (this.$pullDown ? this.$pullDown.outerHeight(true) : 0) +
+        (this.$pullUp ? this.$pullUp.outerHeight(true) : 0)
         );
       }
     },
+    
+   expandScrollerToFillWrapper: function () {
+     this._withPageVisible(this._expandScrollerToFillWrapper);
+   },
 
   _undoExpandScrollerToFillWrapper: function() {
     this._restoreStyle(this.$scroller, this._origScrollerStyle);
@@ -1135,7 +1114,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //Resize the wrapper for the scrolled region to fill the
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
-  resizeWrapper: function() {
+  _resizeWrapper: function() {
     var then;
     if (!this.options.resizeWrapper) { return; }
     if (this.options.traceResizeWrapper) {then = this._log("resizeWrapper() start"); }
@@ -1155,6 +1134,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (this.options.traceResizeWrapper) {
       this._logInterval("resizeWrapper() end" + (this._sizeDirty ? " (dirty)" : ""), then);
       }
+    },
+    
+    resizeWrapper: function () {
+      this._withPageVisible(this._resizeWrapper);
     },
 
   _undoResizeWrapper: function() {
@@ -1184,7 +1167,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     //
     // TODO: Consider using jquery-resize.js to rate-limit resize events
     if (this.options.resizeWrapper) {
-      this.resizeWrapper();   // Resize wrapper to take remaining space after bars
+      this._resizeWrapper();   // Resize wrapper to take remaining space after bars
       this._bind($(window), this.options.resizeEvents, this._windowResizeFunc, "$(window)");
       if (this.options.scrollTopOnOrientationChange) {
         this._bind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
@@ -1241,7 +1224,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Since we are positioning the pullUp element absolutely, it is pulled out of the
     // document flow. We need to add a dummy <div> with the same height as the pullUp.
     $("<div></div>").insertBefore(this.$pullUp).css(
-      "height", this.$pullUp.actual("outerHeight",{includeMargin:true}) );
+     "height", this.$pullUp.outerHeight(true) );     
     this.$pullUp.prev().addClass(this.options.pullUpSpacerClass);
 
     // We need to position the pullup absolutely at the bottom of the scroller.
@@ -1320,11 +1303,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
 
     setTimeout(function() {
-      var later;
+      var later, hidden;
 
       if (_this.options.traceRefresh) {
        later =  _this._logInterval("refresh() start", then);
        }
+       
+       hidden = _this._setPageVisible();
 
       _this._triggerWidget("onbeforerefresh", null, function() {
         if (_callbackBefore) { _callbackBefore(_context); }
@@ -1335,6 +1320,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       _this._triggerWidget("onafterrefresh", null, function() {
         if (_callbackAfter) { _callbackAfter(_context); }
         });
+        
+      _this._restorePageVisibility(hidden);
 
       if (_this.options.traceRefresh) {
         _this._logInterval2("refresh() end" + (_noDefer ? " (dirty)" : ""), then, later);
@@ -1346,6 +1333,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }
 
     },
+    
 
    //---------------------------
    // Create the iScroll object
@@ -1370,6 +1358,35 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this.$scroller.children().unwrap();
     }
   },
+ 
+  // Temporarily change page CSS to make it "visible" so that dimensions can be read.
+  // This can be used in any event callback, and so can be used in _create(), since it's called
+  // from pageinit event. Because event processing is synchronous, the browser won't render the 
+  // change, as long as the page style is set back before the callback returns. So, a hidden
+  // page will remain hidden as long as _restorePageVisibility() is called before return.
+  // This way, we can just use normal dimension functions and avoid using jquery.actual, which 
+  // slows things down significantly. 
+  //
+  // jquery.actual goes up the tree from the element being measured and sets every element to 
+  // visible, which is unnecessary. (We only have to be concerned about the page element, which
+  // jQuery Mobile sets to display:none for all but the currently-visible page.) It also does this 
+  // for every dimension read. This essentially does the same thing, but then allows us to "batch" 
+  // reading dimensions  
+  _setPageVisible: function() {
+    var hidden = this.$page.is(":hidden");
+    if (hidden) { this.$page.css("display", "block"); }
+    return hidden;
+  },
+  
+  _restorePageVisibility: function(hidden) {
+   if (hidden) { this.$page.css("display", ""); }
+  },
+  
+  _withPageVisible: function(f) {
+    var hidden = this._setPageVisible();
+    f();
+    this._restorePageVisibility(hidden);
+  },
 
   //-----------------------------------------
   // Automatically called on page creation
@@ -1377,9 +1394,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _create: function() {
     var $pullDown, 
         $pullUp,
-        then;   
+        then,
+        hidden; 
+
     this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
     this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
+    this._adaptPage();             // Note: has to be done before _setPageVisible() because it saves page style    
+    hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work   
     if (this.options.debug && this.options.traceCreateDestroy) {
       then = this._log("_create() start");
       }     
@@ -1401,10 +1422,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if ($pullUp.length) {
       this.$pullUp = $pullUp;
       this._modifyPullUp();    
-      }     
-
+      } 
+       
     // Merge options from data-iscroll, if present
-    $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));   
+    $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));  
 
     // Calculate height of headers, footers, etc.
     // We only do this at create time. If you change their height after creation,
@@ -1412,11 +1433,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Calling this from resize events on desktop platforms is unreliable.
     // Some desktop platforms (example, Safari) will report unreliable element
     // heights during resize.
-    this.calculateBarsHeight();    
+    this._calculateBarsHeight();         
 
-    this._modifyWrapper();                 // Various changes to the wrapper    
-    this._addScrollerPadding();            // Put back padding removed from wrapper     
-    this._adaptPage();   
+    this._modifyWrapper();                 // Various changes to the wrapper          
+    this._addScrollerPadding();            // Put back padding removed from wrapper              
 
     // Prevent moving the wrapper with touch
     this._bind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
@@ -1425,13 +1445,14 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._bind(this.$page, "pagebeforeshow", this._pageBeforeShowFunc, "$page"); 
 
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
-    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset
-    this.expandScrollerToFillWrapper(); // Make empty scroller content draggable   
-    this._create_iscroll_object();   
-    this._merge_from_iscroll_options();     // Merge iscroll options into widget options    
+    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset    
+    this._expandScrollerToFillWrapper(); // Make empty scroller content draggable        
+    this._create_iscroll_object();        
+    this._merge_from_iscroll_options();     // Merge iscroll options into widget options       
+    this._restorePageVisibility(hidden);       
     if (this.options.debug && this.options.traceCreateDestroy) {
       this._logInterval("_create() end", then);
-      }    
+      }          
     },
 
   //----------------------------------------------------------
@@ -1449,7 +1470,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._undoExpandScrollerToFillWrapper();
     this._undoModifyPullDown();
     this._undoModifyPullUp();
-    this._undoAdaptPage();
     this._undoAddScrollerPadding();
     this._undoModifyWrapper();
 
@@ -1459,6 +1479,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$scroller.removeClass(this.options.scrollerClass);
 
     this._undoCreateScroller();
+    this._undoAdaptPage();    
 
     // Unbind events
     this._unbind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
@@ -1515,7 +1536,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         //default:
           this.options[ key ] = value;
           this.iscroll.destroy();
-          this._create_iscroll_object();
+          this._withPageVisible(this._create_iscroll_object);
           //break;
         //}
       // For UI 1.8, _setOption must be manually invoked from
