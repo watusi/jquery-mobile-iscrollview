@@ -1,25 +1,118 @@
+
+
 body {
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -webkit-touch-callout: none; /* Shut off long touch on links for info */
-  -webkit-user-select: none;   /* Shut off content selection, because it's really annoying when dragging */
+  /* optimizeSpeed is the default. Using optimizeLegibility here will typically DOUBLE
+     rendering time! So, think twice about using optimizeLegibility */
+  text-rendering: optimizeSpeed;
+  
+  /* subpixel-antialiased is the default, but you might like to use antialiased for a thinner look
+     in Safari. There is no speed penalty for this, nor a speed advantage for "none", which looks
+     absolutely terrible... */
+  -webkit-font-smoothing: subpixel-antialiased;
+  
+  /* Shut off long touch on links for info. If this is set to "default", then a long touch
+     on a link will display the URL in a popup. This is pretty darn annoying. */  
+  -webkit-touch-callout: none;
+  
+  /* Shut off content selection, because it's really annoying when dragging 
+     You might like to do this only for scroller content, though, or enable it for certain
+     text you want the user to be able to cut-and-paste */      
+  -webkit-user-select: none;   
   -khtml-user-select: none;
   -ms-user-select: none;
   -moz-user-select: none;
   user-select: none;
   }
 
-/* Force list items to be cached on WebKit
-   See: cubiq.org/you-shall-not-flicker */
-.iscroll-scroller,
-.iscroll-scroller * {
-  -webkit-transition-duration: 0;
-  -webkit-transform: translateZ(0);
+/* Force list items to be cached on WebKit 
+   See: cubiq.org/you-shall-not-flicker 
+   
+   If this is NOT used, then scrolling long lists might exhibit a "flicker" when scrolling
+   toward the bottom of the list, as well as seem slower and jerky until the first
+   time the user has reached the bottom of the list.
+   
+   If this IS used, then the browser may be forced to cache the content in advance, resulting
+   in smoother scrolling, but with the side-effect of increasing initial rendering time.
+   
+   This can more than DOUBLE initial rendering time!
+   
+   This is probably reasonable to use on short lists. Long lists - well, long lists should
+   be avoided...
+    
+   You need to apply this judiciously. For example, if you know your scroller content consists
+   of list items, use "li" not "*' to select. A small additional performance gain can be
+   made by selecting iscroll-scroller-content instead of iscroll-scroller. You might get a 
+   glitch on a pull-up if you have one, but it's a small price to pay for doubling speed.
+   
+   I use an @media tag to disable, because it is a safe way of disabling CSS that might contain
+   comments. As well, you might like to enable this only for certain devices, which often
+   can be detected using media queries.
+   
+*/
+
+/* This one will always work to eliminate the flicker, but is very expensive */
+@media DISABLED { 
+  .iscroll-scroller, 
+  .iscroll-scroller * {
+    -webkit-transform: translateZ(0);
+  }
 }
 
-/* Disable dragging content. This is really annoying when scrolling a list! 
-   This doesn't seem to work when applied to body */
-.iscroll-scroller,
-.iscroll-scroller * {
-  -webkit-user-drag: none;
+/* So, for the demo, I'm using this one... */
+@media all { 
+  .iscroll-scroller-content,
+  .iscroll-scroller-content li  {
+    -webkit-transform: translateZ(0);
+  }
 }
+
+/*
+  Sane overrides for buttons in lists
+
+  JQM default styling has up/down/hover/select styles for buttons. This is nice for real
+  buttons, but slows list scrolling to a crawl. This can be avoided by styling the up/down/hover states
+  identically.
+*/
+
+
+.ui-listview li.ui-btn-up-c
+  {
+  /*
+  border-color: #ccc;
+  background: #eee;
+  font-weight: bold;
+  color: #444;
+  text-shadow: 0 1px 1px #f6f6f6;
+  */
+  background: white;
+  background-image: none:
+  }
+   
+.ui-listview li.ui-btn-hover-c
+  {
+  background: yellow;
+  background-image: none;
+  }
+  
+.ui-listview li.ui-btn-down-c 
+  {
+  background: red;
+  background-image: none;
+  } 
+
+/* Change button text color here */
+.ui-listview *.ui-btn-up-c a.ui-link-inherit
+  { color: black; }
+  
+.ui-listview *.ui-btn-hover-c a.ui-link-inherit
+  { color: green; }
+  
+.ui-listview *.ui-btn-down-c a.ui-link-inherit
+  { color: yellow; }    
+
+
+
+
+
+
+
