@@ -860,15 +860,17 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //----------------------------
   _raiseFixedHeightElements: function() { 
     this.$page.find(this.options.fixedHeightSelector).each(function() {
-      $(this).jqmData("iscrollviewOrigStyle", $(this).attr("style"));
-      $(this).css("z-index", 1000);
+      var $this = $(this);
+      $this.jqmData("iscrollviewOrigStyle", $this.attr("style"));
+      $this.css("z-index", 1000);
        });    
     },
 
   _undoRaiseFixedHeightElements: function() {
     this.$page.find(this.options.fixedHeightSelector).each(function() {
-      $(this).attr("style", $(this).jqmData("iscrollviewOrigStyle"));
-      $(this).jqmRemoveData("iscrollviewOrigStyle");
+      var $this = $(this);
+      $this.attr("style", $this.jqmData("iscrollviewOrigStyle"));
+      $this.jqmRemoveData("iscrollviewOrigStyle");
       });
     },
 
