@@ -858,11 +858,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //----------------------------
   // Raise fixed-height elements
   //----------------------------
-  _raiseFixedHeightElements: function() {
+  _raiseFixedHeightElements: function() { 
     this.$page.find(this.options.fixedHeightSelector).each(function() {
       $(this).jqmData("iscrollviewOrigStyle", $(this).attr("style"));
       $(this).css("z-index", 1000);
-       });
+       });    
     },
 
   _undoRaiseFixedHeightElements: function() {
@@ -884,7 +884,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // XXX: fix crumbled css in transition changePage
     // for jquery mobile 1.0a3 in jquery.mobile.navigation.js changePage
     //  in loadComplete in removeContainerClasses in .removeClass(pageContainerClasses.join(" "));
-    this._origPageStyle = this.$page.attr("style") || null;  // Save for later restore
     this.$page.css({overflow: "hidden"});
     this._raiseFixedHeightElements();
 
@@ -1397,17 +1396,20 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         $pullUp,
         then,
         hidden; 
-
+        
     this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
-    this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
-    this._adaptPage();             // Note: has to be done before _setPageVisible() because it saves page style    
-    hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work   
-    if (this.options.debug && this.options.traceCreateDestroy) {
-      then = this._log("_create() start");
-      }     
+    this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper 
+    
+    if (this.options.debug && this.options.traceCreateDestroy) { 
+      then = this._log("_create() start"); 
+      }      
+      
+    if (this.options.adaptPage) { this._origPageStyle = this.$page.attr("style") || null; }  // Save for later restore        
+    hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work  
+    this._adaptPage();
     this._createScroller();
     this.$scroller = this.$wrapper.children(":first");   // Get the first child of the wrapper, which is the
-                                                         //   element that we will scroll                                                         
+                                                         //   element that we will scroll                                                                                                               
     if (!this.$scroller) { return; }
 
     // Find the scroller content elements. These are the direct descendants of the scroller
@@ -1418,13 +1420,14 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if ($pullDown.length) {
       this.$pullDown = $pullDown;
       this._modifyPullDown();
-      }    
+      }  
+      
     $pullUp = $("." + this.options.pullUpClass, this.$scroller);    
     if ($pullUp.length) {
       this.$pullUp = $pullUp;
       this._modifyPullUp();    
       } 
-       
+            
     // Merge options from data-iscroll, if present
     $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));  
 
@@ -1434,10 +1437,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Calling this from resize events on desktop platforms is unreliable.
     // Some desktop platforms (example, Safari) will report unreliable element
     // heights during resize.
-    this._calculateBarsHeight();         
+    this._calculateBarsHeight();        
 
-    this._modifyWrapper();                 // Various changes to the wrapper          
-    this._addScrollerPadding();            // Put back padding removed from wrapper              
+    this._modifyWrapper();                 // Various changes to the wrapper           
+    this._addScrollerPadding();            // Put back padding removed from wrapper            
 
     // Prevent moving the wrapper with touch
     this._bind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
@@ -1446,11 +1449,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._bind(this.$page, "pagebeforeshow", this._pageBeforeShowFunc, "$page"); 
 
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
-    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset    
+    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset   
     this._expandScrollerToFillWrapper(); // Make empty scroller content draggable        
-    this._create_iscroll_object();        
-    this._merge_from_iscroll_options();     // Merge iscroll options into widget options       
-    this._restorePageVisibility(hidden);       
+    this._create_iscroll_object();          
+    this._merge_from_iscroll_options();     // Merge iscroll options into widget options    
+    this._restorePageVisibility(hidden);     
     if (this.options.debug && this.options.traceCreateDestroy) {
       this._logInterval("_create() end", then);
       }          
