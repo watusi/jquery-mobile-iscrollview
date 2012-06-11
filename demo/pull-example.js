@@ -24,9 +24,8 @@
         newContent = "";        
     for (i=0; i<3; i+=1) {  // Add some items to the list
       newContent += "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>";
-      $list.prepend(newContent);
       }
-    $list.listview("refresh");  // Refresh the listview
+    $list.prepend(newContent).listview("refresh");  // Prepend new content and refresh listview
     d.iscrollview.refresh();    // Refresh the iscrollview
     }
   
@@ -38,7 +37,7 @@
     for (i=0; i<3; i+=1) { 
       newContent += "<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>";
       }
-    $list.append(newContent);    
+    $list.append(newContent).listview("refresh");
   
     // The refresh is a bit different for the pull-up, because I want to demonstrate the use
     // of refresh() callbacks. The refresh() function has optional pre and post-refresh callbacks.
@@ -46,25 +45,12 @@
     // after the new elements are added. The scroller will smoothly scroll to the bottom over
     // a 400mSec period. It's important to use the refresh() callback to insure that the scroll
     // isn't started until the scroller has first been refreshed.
-    //
-    // A pre-refresh callback is used here, as well, though it really isn't necessary
-    // in this case. A pre-refresh callback is typically used to refresh jQuery Mobile widgets,
-    // such as a listview. This needs to be done BEFORE the scroller refreshes. You could just
-    // do this before calling refresh(), as done above for the pull-down. The advantage of using
-    // a pre-refresh callback is that if you update some page that is cached and isn't the
-    // active page, iscrollview defers refresh until just before the page is shown. If there
-    // are multiple calls to refresh() while the page isn't shown, only a single refresh() call
-    // is done. By using a pre-refresh callback, you can take advantage of this to also avoid
-    // unnecessarily refreshing widgets that are inside the scroller.
-    //
-    // In this particular case, it doesn't matter, because when the user does a pull-up gesture,
-    // obviously the page IS the active page. It's just done here for demo.
     
     // Refresh the iscrollview. After refresh, scroll to the end of the list using callback
     // 400mSec scroll to last list element for nice visual effect
     v.refresh(
       null,                                                      // Optional delay value
-      function(v) { $list.listview("refresh"); },                // Pre-refresh
+      null,
       function(v) { v.scrollToElement(lastItemSelector, 400); }, // Post-refresh
       v);                                                        // Context  
     }
@@ -109,8 +95,7 @@
     for (i=0; i<3; i+=1) {
       newContent += "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>";
       }
-    $list.prepend(newContent);
-    $list.listview("refresh");
+    $list.prepend(newContent).listview("refresh");
     v.refresh();
     }
 
@@ -122,11 +107,10 @@
     for (i=0; i<3; i+=1) {
       newContent += "<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>";
       }
-    $list.append(newContent);
-    $list.listview("refresh");          
+    $list.append(newContent).listview("refresh");  
     d.iscrollview.refresh(
       null, 
-      function(v) { $list.listview("refresh"); },
+      null,
       function(v) { v.scrollToElement(lastItemSelector, 400);},
       v );
     }
@@ -145,7 +129,7 @@
   $(document).bind("pageinit", function() {
     $("input, textarea, select").bind("blur", function(e) {
       setTimeout(function() {
-        if ($(".ui-focus").length == 0) { 
+        if ($(".ui-focus").length === 0) { 
           $.mobile.silentScroll(0); 
           }        
         }, 0);
