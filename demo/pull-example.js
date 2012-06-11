@@ -31,10 +31,12 @@
   function gotPullUpData(e,d) {
     var i,
         $list = $(listSelector),
-        v = d.iscrollview;
+        v = d.iscrollview,
+        newContent = "";
     for (i=0; i<3; i+=1) { 
-      $list.append("<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>");
+      newContent += "<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>";
       }
+    $list.append(newContent);    
   
     // The refresh is a bit different for the pull-up, because I want to demonstrate the use
     // of refresh() callbacks. The refresh() function has optional pre and post-refresh callbacks.
@@ -111,10 +113,12 @@
   function gotPullUpData(e,d) {
     var i,
         $list = $(listSelector),
-        v = d.iscrollview;
+        v = d.iscrollview,
+        newContent = "";
     for (i=0; i<3; i+=1) {
-      $list.append("<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>");
+      newContent += "<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>";
       }
+    $list.append(newContent);
     $list.listview("refresh");          
     d.iscrollview.refresh(
       null, 
