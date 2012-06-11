@@ -20,9 +20,11 @@
   // data into the page. For demo, we just generate 3 items and add them to the top of the list.
   function gotPullDownData(e,d) {
     var i,
-        $list = $(listSelector); // Get a jQuery object for the list element
+        $list = $(listSelector), // Get a jQuery object for the list element
+        newContent = "";        
     for (i=0; i<3; i+=1) {  // Add some items to the list
-      $list.prepend("<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>");
+      newContent += "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>";
+      $list.prepend(newContent);
       }
     $list.listview("refresh");  // Refresh the listview
     d.iscrollview.refresh();    // Refresh the iscrollview
@@ -102,10 +104,12 @@
   function gotPullDownData(e,d) {
     var i,
         $list = $(listSelector),
-        v = d.iscrollview;
+        v = d.iscrollview,
+        newContent = "";
     for (i=0; i<3; i+=1) {
-      $list.prepend("<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>");
+      newContent += "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>";
       }
+    $list.prepend(newContent);
     $list.listview("refresh");
     v.refresh();
     }
@@ -136,7 +140,8 @@
       iscroll_onpullup   : onPullUp
       });
     }); 
-  
+ 
+  // Temporary - will be moved into widget
   $(document).bind("pageinit", function() {
     $("input, textarea, select").bind("blur", function(e) {
       setTimeout(function() {
