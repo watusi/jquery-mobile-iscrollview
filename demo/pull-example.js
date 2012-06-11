@@ -22,7 +22,7 @@
     var i,
         $list = $(listSelector), // Get a jQuery object for the list element
         newContent = "";        
-    for (i=0; i<3; i+=1) {  // Add some items to the list
+    for (i=0; i<3; i+=1) {  // Generate some fake new content
       newContent += "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>";
       }
     $list.prepend(newContent).listview("refresh");  // Prepend new content and refresh listview
