@@ -302,7 +302,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     pullUpClass:     "iscroll-pullup",      // Class for pullup element (if any)
     pullLabelClass:  "iscroll-pull-label",  // Class for pull element label span
     pullUpSpacerClass: "iscroll-pullup-spacer", // Class added to generated pullup spacer
-    scrollerContentClass: "iscroll-scroller-content", // Real content of scroller, not including pull-up, pull-down
+    scrollerContentClass: "iscroll-content", // Real content of scroller, not including pull-up, pull-down
 
     // true to adapt the page containing the widget. If false, the widget will not alter any
     // elements outside of the widget's container.
@@ -837,22 +837,19 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this._withPageVisible(function() {
         _this._resizeWrapper();
         _this._expandScrollerToFillWrapper();      
-      });    
-    this.refresh();         
+        }); 
+        
+      // On some platforms (iOS, for example) you need to scroll back to top after orientation change,
+      // because the address bar pushed the window down. jQuery Mobile handles this for page links,
+      // but doesn't for orientationchange         
+      if (this.options.scrollTopOnOrientationChange) {
+        setTimeout(function() { $.mobile.silentScroll(0); } );
+        } 
+               
+      this.refresh();     
       }
 
    this._logWidgetEvent("_windowResizeFunc", e, then);
-    },
-
-  // On some platforms (iOS, for example) you need to scroll back to top after orientation change,
-  // because the address bar pushed the window down. jQuery Mobile handles this for page links,
-  // but doesn't for orientationchange
-  _orientationChangeFunc: function(e) {
-    var then = this._logWidgetEvent("_orientationChangeFunc", e);
-    if (this.options.scrollTopOnOrientationChange) {
-      $.mobile.silentScroll(0);
-      }
-    this._logWidgetEvent("_orientationChangeFunc", e, then);
     },
 
   //----------------------------
@@ -1011,7 +1008,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
    _removeWrapperPadding: function() {
      var $wrapper = this.$wrapper;
      if (this.options.removeWrapperPadding) {
-       // Save padding so we can re-apply it to the iscroll-scroller-content div that we create
+       // Save padding so we can re-apply it to the iscroll-content div that we create
        this._origWrapperPaddingLeft   = $wrapper.css("padding-left");
        this._origWrapperPaddingRight  = $wrapper.css("padding-right");
        this._origWrapperPaddingTop    = $wrapper.css("padding-top");
@@ -1171,9 +1168,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (this.options.resizeWrapper) {
       this._resizeWrapper();   // Resize wrapper to take remaining space after bars
       this._bind($(window), this.options.resizeEvents, this._windowResizeFunc, "$(window)");
-      if (this.options.scrollTopOnOrientationChange) {
-        this._bind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
-        }
       }
     },
 
