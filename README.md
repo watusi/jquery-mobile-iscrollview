@@ -685,12 +685,12 @@ Default: `"iscroll-pullup-spacer`"
 
 ####scrollerContentClass
 
-Normally (unless override with `createScroll="false"`) the widget creates a protective `<div>`
+Normally (unless override with `createScroller="false"`) the widget creates a protective `<div>`
 around your scroller content. It also wraps the pull-down and/or pull-up blocks, if present.
 This is so that you don't have to create this `<div>` in your HTML
 if you are scrolling multiple elements. The widget adds a class to this `<div>`.
 
-Default: `"iscroll-scroller-content"`
+Default: `"iscroll-content"`
 
 ####adaptPage
 

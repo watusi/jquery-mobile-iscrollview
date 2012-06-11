@@ -34,14 +34,12 @@ body {
    If this IS used, then the browser may be forced to cache the content in advance, resulting
    in smoother scrolling, but with the side-effect of increasing initial rendering time.
    
-   This can more than DOUBLE initial rendering time!
-   
-   This is probably reasonable to use on short lists. Long lists - well, long lists should
-   be avoided...
-    
+   This can more than DOUBLE initial rendering time if you are not careful with the selector.
+      
    You need to apply this judiciously. For example, if you know your scroller content consists
-   of list items, use "li" not "*' to select. A small additional performance gain can be
-   made by selecting iscroll-scroller-content instead of iscroll-scroller. You might get a 
+   of list items, use "li" not "*' to select. * as the right-most component of a select is
+   horribly expensive. A small additional performance gain can be made by selecting 
+   iscroll-content instead of iscroll-scroller. You might get a 
    glitch on a pull-up if you have one, but it's a small price to pay for doubling speed.
    
    I use an @media tag to disable, because it is a safe way of disabling CSS that might contain
@@ -50,7 +48,8 @@ body {
    
 */
 
-/* This one will always work to eliminate the flicker, but is very expensive */
+/* This one will always work to eliminate the flicker, regardless of scroller content but 
+   is very expensive */
 @media DISABLED { 
   .iscroll-scroller, 
   .iscroll-scroller * {
@@ -60,55 +59,52 @@ body {
 
 /* So, for the demo, I'm using this one... */
 @media all { 
-  .iscroll-scroller-content,
-  .iscroll-scroller-content li  {
+  .iscroll-content,
+  .iscroll-content li  {
     -webkit-transform: translateZ(0);
   }
 }
 
-/*
-  Sane overrides for buttons in lists
-
-  JQM default styling has up/down/hover/select styles for buttons. This is nice for real
-  buttons, but slows list scrolling to a crawl. This can be avoided by styling the up/down/hover states
-  identically.
+/* Remove the background gradients from buttons in the scroller. It's very costly to scroll these
+   around, because they are really just generated bitmaps, after all. You can use these same
+   rules to style the up/down/hover appearance of listview buttons in the scroller.
 */
 
-
-.ui-listview li.ui-btn-up-c
+.iscroll-content .ui-listview li.ui-btn-up-c
   {
-  /*
-  border-color: #ccc;
-  background: #eee;
-  font-weight: bold;
-  color: #444;
-  text-shadow: 0 1px 1px #f6f6f6;
-  */
-  background: white;
-  background-image: none:
+  background-image: none; 
   }
    
-.ui-listview li.ui-btn-hover-c
+.iscroll-content .ui-listview li.ui-btn-hover-c
   {
-  background: yellow;
   background-image: none;
   }
   
-.ui-listview li.ui-btn-down-c 
+.iscroll-content .ui-listview li.ui-btn-down-c 
   {
-  background: red;
   background-image: none;
   } 
 
-/* Change button text color here */
-.ui-listview *.ui-btn-up-c a.ui-link-inherit
-  { color: black; }
+/* If you want to change the text color or other text properties of listview buttons in the scroller, 
+   you have to do it here, not above.
+*/
+.iscroll-content .ui-listview *.ui-btn-up-c a.ui-link-inherit
+  {  
+  }
   
-.ui-listview *.ui-btn-hover-c a.ui-link-inherit
-  { color: green; }
+.iscroll-content. .ui-listview *.ui-btn-hover-c a.ui-link-inherit
+  { 
+  }
   
-.ui-listview *.ui-btn-down-c a.ui-link-inherit
-  { color: yellow; }    
+.iscroll-content .ui-listview *.ui-btn-down-c a.ui-link-inherit
+  {  
+  } 
+
+/* Remove background image from non-button scroller content */
+.iscroll-content .ui-body-c
+  {
+  background-image: none;
+  }  
 
 
 

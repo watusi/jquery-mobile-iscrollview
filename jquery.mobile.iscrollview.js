@@ -302,7 +302,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     pullUpClass:     "iscroll-pullup",      // Class for pullup element (if any)
     pullLabelClass:  "iscroll-pull-label",  // Class for pull element label span
     pullUpSpacerClass: "iscroll-pullup-spacer", // Class added to generated pullup spacer
-    scrollerContentClass: "iscroll-scroller-content", // Real content of scroller, not including pull-up, pull-down
+    scrollerContentClass: "iscroll-content", // Real content of scroller, not including pull-up, pull-down
 
     // true to adapt the page containing the widget. If false, the widget will not alter any
     // elements outside of the widget's container.
@@ -1011,7 +1011,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
    _removeWrapperPadding: function() {
      var $wrapper = this.$wrapper;
      if (this.options.removeWrapperPadding) {
-       // Save padding so we can re-apply it to the iscroll-scroller-content div that we create
+       // Save padding so we can re-apply it to the iscroll-content div that we create
        this._origWrapperPaddingLeft   = $wrapper.css("padding-left");
        this._origWrapperPaddingRight  = $wrapper.css("padding-right");
        this._origWrapperPaddingTop    = $wrapper.css("padding-top");
