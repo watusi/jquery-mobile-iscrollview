@@ -23,24 +23,52 @@ body {
   -moz-user-select: none;
   user-select: none;
   }
+  
+/* Style header bar and footer bar with a 1px red border at top and bottom. This facilitates
+   a quick visual indication of correct sizing of the page. You should not see any white
+   space above the header or below the footer. (Note that Retina devices will show a 2px border,
+   rather than 1px.) Use your OS's accessibility features to magnify and inspect. On mobile
+   devices, there is usually a way to capture the screen contents to an image file that you can
+   later examine. (iPhone: Home+On/Off)
+*/
+
+.ui-header.ui-bar-a,
+.ui-footer.ui-bar-a {
+    border-top: 1px solid #ff0000;
+    border-bottom: 1px solid #ff0000;
+} 
+
+/* Style iScroll wrapper with a 1px green border at top and bottom. You should see no gap
+   or different color between the top of the wrapper and the bottom of the header, or between
+   the bottom of the wrapper and the top of the footer.
+*/
+.iscroll-wrapper {
+  border-top: 1px solid #00ff00;
+  border-bottom: 1px solid #00ff00;
+} 
 
 /* Force list items to be cached on WebKit 
    See: cubiq.org/you-shall-not-flicker 
    
    If this is NOT used, then scrolling long lists might exhibit a "flicker" when scrolling
-   toward the bottom of the list, as well as seem slower and jerky until the first
+   toward the bottom of the list, as well as exhibit slow and jerky until the first
    time the user has reached the bottom of the list.
    
    If this IS used, then the browser may be forced to cache the content in advance, resulting
    in smoother scrolling, but with the side-effect of increasing initial rendering time.
    
-   This can more than DOUBLE initial rendering time if you are not careful with the selector.
+   This can more than DOUBLE initial rendering time if you are not careful with the selector. The
+   recommended CSS at the above link is NOT optimal.
       
    You need to apply this judiciously. For example, if you know your scroller content consists
    of list items, use "li" not "*' to select. * as the right-most component of a select is
    horribly expensive. A small additional performance gain can be made by selecting 
    iscroll-content instead of iscroll-scroller. You might get a 
    glitch on a pull-up if you have one, but it's a small price to pay for doubling speed.
+   
+   It is important NOT to apply this to .iscroll-scroller itself. This will result in a huge
+   performance loss. The second rule below gives performance on iOS devices very close to not 
+   using this at all.
    
    I use an @media tag to disable, because it is a safe way of disabling CSS that might contain
    comments. As well, you might like to enable this only for certain devices, which often
@@ -49,7 +77,8 @@ body {
 */
 
 /* This one will always work to eliminate the flicker, regardless of scroller content but 
-   is very expensive */
+   is very slow at initial rendering. The scroller may not be initially responsive after 
+   a page is first rendered */
 @media DISABLED { 
   .iscroll-scroller, 
   .iscroll-scroller * {
@@ -57,9 +86,9 @@ body {
   }
 }
 
-/* So, for the demo, I'm using this one... */
+/* So, for the demo, I'm using this one, which doesn't target the scroller itself, and
+   targets specific top-level elements inside the scroller. */
 @media all { 
-  .iscroll-content,
   .iscroll-content li  {
     -webkit-transform: translateZ(0);
   }
@@ -67,7 +96,11 @@ body {
 
 /* Remove the background gradients from buttons in the scroller. It's very costly to scroll these
    around, because they are really just generated bitmaps, after all. You can use these same
-   rules to style the up/down/hover appearance of listview buttons in the scroller.
+   rules to style the up/down/hover appearance of listview buttons in the scroller. If you
+   do want to use gradients - particularly if building a native or webapp, consider using gradient 
+   images rather than CSS-generated gradients,  because they have been proven faster than CSS 
+   gradients. If you are developing a website, using image gradients will increase the download
+   time, both due to the size of the images (but generally small) and the additional round-trip(s).
 */
 
 .iscroll-content .ui-listview li.ui-btn-up-c

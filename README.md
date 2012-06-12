@@ -1215,9 +1215,11 @@ between states.
 
 Caching List Items
 ------------------
-Webkit-based browsers can exhibit a "flicker" effect when initially scrolling. Once
-you have scrolled down to the bottom of the list, the flicker will typically
-stop.
+Webkit-based browsers can exhibit a "flicker" effect wwhen scrolling
+toward the bottom of the list, as well as exhibit slow and jerky movement until the first
+time the user has reached the bottom of the list.. Once you have scrolled down to the bottom of 
+the list, the flicker will typically stop. This does not seem to be an issue with non-Webkit
+browsers.
 
 This issue is discussed here: http://cubiq.org/you-shall-not-flicker
 
@@ -1227,19 +1229,31 @@ when each element is first encountered and hardware acceleration is enabled for
 the element. By pre-setting a null 3D transform (which triggers hardware accelation on WebKit
 browsers) on each element, the flicker is avoided, and the content is added to the hardware cache.
 
-However, this may cause bluring of text during transform on Android platforms. You will
+This has been reported to cause bluring of text during transform on Android platforms. You will
 need to decide which of two evils you want to live with.
-
-You can implement this fix in your CSS like this:
+   
+If this IS used, then the browser may be forced to cache the content in advance, resulting
+in smoother scrolling, but with the side-effect of increasing initial rendering time.
+   
+This can more than DOUBLE initial rendering time if you are not careful with the selector. The
+ecommended CSS at the above link is NOT optimal.
+      
+You need to apply this judiciously. For example, if you know your scroller content consists
+of list items, use "li" not "*' to select. * as the right-most component of a select is
+horribly expensive. A small additional performance gain can be made by selecting 
+iscroll-content instead of iscroll-scroller. You might get a 
+glitch on a pull-up if you have one, but it's a small price to pay for doubling speed.
+   
+It is important NOT to apply this to .iscroll-scroller itself. This will result in a huge
+performance loss. The second rule below gives performance on iOS devices very close to not 
+using this at all.
+   
+The demo uses this CSS:
 
 ```css
-    /* Force list items to be cached
-       See: cubiq.org/you-shall-not-flicker */
-     .iscroll-scroller,
-     .iscroll-scroller * {
-       -webkit-transition-duration: 0;
-       -webkit-transform: translateZ(0);
-       }
+   .iscroll-content li  {
+     -webkit-transform: translateZ(0);
+   }
 ```       
 ---
 
@@ -1263,16 +1277,34 @@ Safari User Agent, or else use a custom User Agent. From the iPhone user agent s
 the string "Safari". This will fool the widget into thinking you are running in "full screen"
 mode, without the disappearing address bar.
 
+
 ---
 
 Demo
 ----
-The demo directory contains a simple example with three pages. You can switch between
+The demo directory contains a simple example with 5 pages. You can switch between
 the pages using the tabbar at the bottom. The three tabs demonstrate scrolling a listview,
-an inset listview, and a listview with pull-down and pull-up blocks. To demo, simply open the
-`index.html` file in your browser. Note that the page transitions will not work with some
-browsers when loading from a local file - for those browsers, you will have to load the demo
-from a server. (It does work with local files for Safari and Firefox.)
+an inset listview, a listview with pull-down and pull-up blocks, a listview with a short
+list and pull-down/pull-up blocks, and a form. 
+
+To demo, simply open the `index.html` file in your browser. Note that the page transitions will 
+not work with some browsers when loading from a local file - for those browsers, you will have 
+to load the demo from a server. (It does work with local files for Safari and Firefox.)
+
+### Special Demo Borders
+
+The demo has headers and footer styled with a 1px red border at top and bottom. This facilitates
+a quick visual indication of correct sizing of the page. You should not see any white
+space above the header or below the footer. (Note that Retina devices will show a 2px border,
+rather than 1px.) Use your OS's accessibility features to magnify and inspect. On mobile
+devices, there is usually a way to capture the screen contents to an image file that you can
+later examine. (iPhone: Home+On/Off)
+
+The iScroll wrapper is styled with a 1px green border at top and bottom. You should see no gap
+or different color between the top of the wrapper and the bottom of the header, or between
+the bottom of the wrapper and the top of the footer.
+
+### Demo Content
 
 As a convenience, the demo directory is self-contained (except for the widget, `iscroll-pull-js`
 and pull icon files, which are expected to be found in the parent directory), and contains the
@@ -1281,7 +1313,8 @@ following additional components:
 * jQuery 1.6.4
 * jQuery 1.7.1
 * JQuery Mobile 1.0.1
-* jQuery Mobile 1.1.0
+* jQuery Mobile 1.1.0, patched for listview link bug (very long delay when clicking on list items
+in unpatched version - due for fix in 1.1.1).
 $ iscroll4, master commit a8b8720296 6/4/2012
 
 
