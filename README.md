@@ -809,13 +809,16 @@ have a pull-up or pull-down block.
 
 Default: `true`
 
-####scrollTopOnOrientationChange
+####scrollTopOnResize
 
 On some platforms (for example, iOS) when orientation is changed, the address bar pushes the
 page down. jQuery Mobile scroll the pgae back up on hash changes, but doesn't do so for 
 orientation changes. So, the page is left scrolled-down.
 
-If you have multiple scrollers on the same page, only enable this option for one of them.
+Since `orientationchange` seems unreliable on iOS, we actually do this on resize. (Though
+you can change the event(s) on which the widget resizes...)
+
+This will only be done if you also have `resizeWrapper` set to `true`.
 
 Default: `true`
 
@@ -865,6 +868,15 @@ This is an experimental feature, and is not yet completely functional. The code 
 permit further experimentation.
 
 Default: `false`
+
+###fastDestroy
+
+If `true`, an assumption is made that you will not call the widget's `destroy()` method to
+un-enhance the widget while retaining the page. The assumption is that `destroy()` will only 
+be called internally by the page plugin when the page is removed from the DOM. This saves
+the overhead of un-enhancing the page.
+
+Default: `true`
 
 #### pullDownResetText
 

@@ -361,9 +361,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // On some platforms (iOS, for example) we need to scroll to top after orientation change,
     // because the address bar pushed the window down. jQuery Mobile handles this for page links,
-    // but doesn't for orientationchange
+    // but doesn't for orientationchange. We actually do this on resize, because orientationchange
+    // seems unreliable on iOS.
     // If you have multiple scrollers, only enable this for one of them
-    scrollTopOnOrientationChange: true,
+    scrollTopOnResize: true,
 
     // iScroll scrolls the first child of the wrapper. I don't see a use case for having more
     // than one child. What kind of mess is going to be shown in that case? So, by default, we
@@ -396,6 +397,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // For one, it breaks mousewheel with jQuery Mobile 1.1 (because jQuery Mobile 1.1 breaks
     // mousewheel...)
     bindIscrollUsingJqueryEvents: false,
+    
+    // If fastDestroy is true, don't tear down the widget on destroy. The assumption is destroy
+    // will only be called when the page is removed, so there is no need. Is anyone really
+    // going to un-enhance a scroller? If so, set this to false, but then you will have to
+    // fix the unbind issue...
+    fastDestroy: true,
 
     pullDownResetText   : "Pull down to refresh...",
     pullDownPulledText  : "Release to refresh...",
@@ -484,7 +491,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "preventTouchHover",
       "deferNonActiveResize",
       "bindIscrollUsingJqueryEvents",
-      "scrollTopOnOrientationChange",
+      "scrollTopOnResize",
       "pullDownResetText",
       "pullDownPulledText",
       "pullDownLoadingText",
@@ -500,7 +507,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "onpulluppulled",
       "onpullup",
       "onbeforerefresh",
-      "onafterrefresh"
+      "onafterrefresh",
+      "fastDestroy"
       ],
 
     //-----------------------------------------------------------------------
@@ -748,7 +756,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
   _unbind: function(obj, type, func, objName) {
     this._logWidgetEvent("unbind " + objName, type);
-    obj.unbind(type, func);
+    //obj.unbind(type, func);
   },
 
   _triggerWidget: function(type, e, f) {
@@ -895,7 +903,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _undoAdaptPage: function() {
-    this._unbind(this.$page, "touchmove", this._preventDefaultFunc, "$page");
+    //this._unbind(this.$page, "touchmove", this._preventDefaultFunc, "$page");
     this._undoRaiseFixedHeightElements();
     this._restoreStyle(this.$page, this._origPageStyle);
     this.$page.removeClass(this.options.pageClass);
@@ -1261,6 +1269,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       $("." + this.options.pullLabelClass, this.$pullUp).text(this._origPullUpLabelText);
       }
   },
+  
+  _correctPushedDownPage: function() {
+    // Scroll to top in case address bar pushed the page down
+    if (this.options.resizeWrapper && this.options.scrollTopOnResize) {
+      $.mobile.silentScroll(0);
+      }  
+  },
 
   //----------------------------------------------------------------------
   // Refresh the iscroll object. Insure that refresh is called with proper
@@ -1324,6 +1339,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         });
         
       _this._restorePageVisibility(hidden);
+      
+      // Scroll to top in case address bar pushed the page down
+      if (!hidden) { 
+        _this._correctPushedDownPage(); 
+        }
 
       if (_this.options.traceRefresh) {
         _this._logInterval2("refresh() end" + (_noDefer ? " (dirty)" : ""), then, later);
@@ -1469,29 +1489,39 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     var then;
     if (this.options.debug && this.options.traceCreateDestroy) {
       then = this._log("destroy() start");
-      }     
-    this.iscroll.destroy();
-    this.iscroll = null;
+      } 
+      
+    // fastDestroy option skips tearing down the modifications to the page, because we assume
+    // that the page itself is being removed, and nobody is going to be silly enough to
+    // un-ehance a scroller and keep the page.  
+    if (!this.options.fastDestroy) {      
+      this.iscroll.destroy();
+      this.iscroll = null;
 
-    this._undoExpandScrollerToFillWrapper();
-    this._undoModifyPullDown();
-    this._undoModifyPullUp();
-    this._undoAddScrollerPadding();
-    this._undoModifyWrapper();
+      this._undoExpandScrollerToFillWrapper();
+      this._undoModifyPullDown();
+      this._undoModifyPullUp();
+      this._undoAddScrollerPadding();
+      this._undoModifyWrapper();
 
-    // Remove the classes we added, since no longer using iscroll at
-    // this point.
-    this.$wrapper.removeClass(this.options.wrapperClass);
-    this.$scroller.removeClass(this.options.scrollerClass);
+      // Remove the classes we added, since no longer using iscroll at
+      // this point.
+      this.$wrapper.removeClass(this.options.wrapperClass);
+      this.$scroller.removeClass(this.options.scrollerClass);
 
-    this._undoCreateScroller();
-    this._undoAdaptPage();    
+      this._undoCreateScroller();
+      this._undoAdaptPage();    
 
-    // Unbind events
-    this._unbind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
-    this._unbind(this.$page, "pagebeforeshow", this._pageBeforeshowFunc, "$page");
-    this._unbind($(window), this.options.resizeEvents, this._orientationChangeFunc, "$(window)");
-    this._unbind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
+      // Unbind events
+      // This doesn't seem necessary, as long as the page is being destroyed, and unbinding the 
+      // $(window) bindings seems to have the unintended consequence of unbinding from ALL instances, 
+      // because a proxy was used. If the page is not destroyed, and you just want to un-enhance
+      // the page, this is probably gonna cause trouble...
+      //this._unbind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
+      //this._unbind(this.$page, "pagebeforeshow", this._pageBeforeshowFunc, "$page");
+      //this._unbind($(window), this.options.resizeEvents, this._orientationChangeFunc, "$(window)");
+      // this._unbind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
+      }
 
     // For UI 1.8, destroy must be invoked from the
     // base widget
