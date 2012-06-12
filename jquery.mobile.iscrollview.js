@@ -1235,7 +1235,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // document flow. We need to add a dummy <div> with the same height as the pullUp.
     $("<div></div>").insertBefore(this.$pullUp).css(
      "height", this.$pullUp.outerHeight(true) );     
-    this.$pullUp.prev().addClass(this.options.pullUpSpacerClass);
+    this.$pullUpSpacer = this.$pullUp.prev();
+    this.$pullUpSpacer.addClass(this.options.pullUpSpacerClass);
 
     // We need to position the pullup absolutely at the bottom of the scroller.
     // The scroller is position:relative, so the pullUp is positioned here relative
@@ -1461,8 +1462,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // heights during resize.
     this._calculateBarsHeight();        
 
-    this._modifyWrapper();                 // Various changes to the wrapper           
-    this._addScrollerPadding();            // Put back padding removed from wrapper            
+    this._modifyWrapper();                 // Various changes to the wrapper                      
 
     // Prevent moving the wrapper with touch
     this._bind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
@@ -1472,7 +1472,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
     this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset   
-    this._expandScrollerToFillWrapper(); // Make empty scroller content draggable        
+    this._expandScrollerToFillWrapper(); // Make empty scroller content draggable   
+    this._addScrollerPadding();            // Put back padding removed from wrapper          
     this._create_iscroll_object();          
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options    
     this._restorePageVisibility(hidden);     
