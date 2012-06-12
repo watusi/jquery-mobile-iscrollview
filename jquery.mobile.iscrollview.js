@@ -1035,7 +1035,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._origWrapperStyle = this.$wrapper.attr("style") || null;
     this.$wrapper.css({
                         "z-index"  : 1,         // Lower the wrapper
-                        "overflow" : "hidden"   // hide overflow
+                        "overflow" : "hidden",  // hide overflow
+                        "min-height" : 0        // Override any min-height
                         });
     this._removeWrapperPadding();
     this._correctWrapperPosition();
