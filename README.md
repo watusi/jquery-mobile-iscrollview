@@ -28,12 +28,12 @@ same element.
 This widget has only been tested with a single scroller on a page.
 The widget will (normally) re-size the container to take up all available height
 within the viewport after fixed headers/footers are taken into account,
-and will make necessary adjustments to the page CSS. This can be disabled,
-and should only be enabled for one scroller on a given page.
+and will make necessary adjustments to the page CSS. This behaviour can be disabled using
+the `adaptPage` option. (It is not necessary to diable this for multiple scrollers on a page.
+Only the first scroller with `adaptPage` enabled will adjust the page.)
 
-The widget has been designed to
-support multiple scrolling regions on a page - for example, you might
-want a second, gallery-like horizontal scroll region. So, all
+The widget has been designed to support multiple scrolling regions on a page - for example, you 
+might want a second, gallery-like horizontal scroll region. So, all
 data related to a scroller is stored in the scroller's container, not the page.
 Feel free to experiment with multiple scrollers - I just haven't had the
 need so haven't put the effort into testing and supporting that scenario.
@@ -782,11 +782,8 @@ Default: `false`
 
 ####emulateBottomOffset
 
-If true, the widget will emulate a `bottomOffset` iScroll option. This option is present in
-the Watusiware iScroll4 fork (`watusi` branch). This needs to be set `true` if using an 
-unmodified iScroll4 that doesn't have this option.
-
-There's really no need to disable this option.
+If true, the widget will emulate a `bottomOffset` iScroll option. This option needs to be set
+`true` if you are using a pull-up block.
 
 Default: `true`
 
@@ -796,7 +793,7 @@ If true, the widget will remove any padding from the wrapper. Normally, there sh
 padding on the wrapper element. If there is padding, then it isn't possible to drag within the
 padding, and pull-down/pull-up elements will not be 100% width.
 `
-Default `true'
+Default `true`
 
 ####addScrollerPadding
 
@@ -819,7 +816,7 @@ On some platforms (for example, iOS) when orientation is changed, the address ba
 page down. jQuery Mobile scroll the pgae back up on hash changes, but doesn't do so for 
 orientation changes. So, the page is left scrolled-down.
 
-Since `orientationchange` seems unreliable on iOS, we actually do this on resize. (Though
+Since `orientationchange` seems unreliable on iOS, the widget actually does this on resize. (Though
 you can change the event(s) on which the widget resizes...)
 
 This will only be done if you also have `resizeWrapper` set to `true`.
@@ -970,8 +967,7 @@ called after iScroll has calculated the scroll range, but before it has updated 
 bar. 
 
 *This event is of dubious value to applications. The widget uses this internally to 
-support pull-down/pull-up. (It seems it was put just where it is just for that purpose -
-to support pull-up/pull-down.)*
+support pull-down/pull-up. (It seems it was put just where it is just for that purpose.)*
 
 If you want to do some refresh of jQuery Mobile structures (such as listview) contained within
 the scroller prior to scroller refresh, see the `iscroll_onbeforerefresh` event and the optional
@@ -1038,7 +1034,7 @@ Triggered by iScroll's `onZoomEnd` event.
 
 ####iscroll_onpulldown
 
-This event is triggered when the user has completed a pull-down sequence. Your event callback
+This event is triggered when the user has completed a pull-down gesture. Your event callback
 should perform the pull-down action. (For example, getting data from a server in order to refresh
 text shown within the scroller.)
 
@@ -1047,21 +1043,21 @@ UI should indicate that the pull-down action is being performed.
 
 ####iscroll_onpulldownreset
 
-This event is triggered when the user has aborted a pull-down sequence by scrolling back up, or
+This event is triggered when the user has aborted a pull-down gesture by scrolling back up, or
 after completion of the pull-down action and `refresh()`. You can use this event for complex
 customization of pull-down feedback to the user. The UI should indicate that the user may
 initiate a pull-down sequence.
 
 ####iscroll_onpulldownpulled
 
-This event is triggered when the user has completed the first half of a pull-down sequence.
+This event is triggered when the user has completed the first half of a pull-down gesture.
 i.e. they have pulled-down, but not yet released. You can use this event for complex 
 customization of pull-down feedback to the user. The UI should indicate that the user may
 complete a pull-down sequence by releasing.
 
 ####iscroll_onpullup
 
-This event is triggered when the user has completed a pull-up sequence. Your event callback
+This event is triggered when the user has completed a pull-up gesture. Your event callback
 should perform the pull-up action. (For example, getting data from a server in order to refresh
 text shown within the scroller.)
 
@@ -1070,14 +1066,14 @@ UI should indicate that the pull-up action is being performed.
 
 ####iscroll_onpullupreset
 
-This event is triggered when the user has aborted a pull-up sequence by scrolling back down, or
+This event is triggered when the user has aborted a pull-up gesture by scrolling back down, or
 after completion of the pull-up action and `refresh()`. You can use this event for complex
 customization of pull-up feedback to the user. The UI should indicate that the user may
 initiate a pull-up sequence.
 
 ####iscroll_onpulluppulled
 
-This event is triggered when the user has completed the first half of a pull-up sequence.
+This event is triggered when the user has completed the first half of a pull-up gesture.
 i.e. they have pulled-up, but not yet released. You can use this event for complex 
 customization of pull-up feedback to the user. The UI should indicate that the user may
 complete a pull-up sequence by releasing.
@@ -1092,7 +1088,7 @@ Scroll Bars
 
 iScroll requires that the wrapper be CSS-positioned either `absolute` or `relative`. If the
 wrapper is positioned `static` (the default, if positioning is not specified), then the 
-scroll bars will incorrectly be created relative to the page, rather than the wrapper. The
+scroll bars will (incorrectly) be created relative to the page, rather than the wrapper. The
 symptom is that the scroll bar will be the full height of the window. (Though the widget
 will hide the scrollbar under any header/footer.)
 
@@ -1141,19 +1137,12 @@ Multiple Scrolling Areas
 ------------------------
 If you wish to have multiple scrolling areas, please note the following:
 
-- The `adaptPage` option should be set to `true` for no more than one of
-your scrollers. Since it defaults to `true`, you will need to set it to
-false for all but (a maximum of) one of your scrollers.
-
 - The `resizeWrapper` option should be set to `true` for no more than one
 of your scrollers. If you have multiple scrollers one above the other,
 then at most one of them can be auto-sized. If you have multiple scrollers
 side-by-side, then you will probably have to size all them yourself.
 Since `resizeWrapper` is `true` by default, you will need to set the option
 to `false` for all but (a maximum) of one of your scrollers.
-
-- You should set the `resizeEvents` option to an empty string for those
-scrollers for which you have set `resizeWrapper` to `false`.
 
 - iScroll will not work correctly if scrollbars from multiple scrollers
 overlap. It will fail to scroll in all but one of the scrollers that
