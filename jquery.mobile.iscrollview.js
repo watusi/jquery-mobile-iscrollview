@@ -1420,10 +1420,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$scroller = this.$wrapper.children(":first");   // Get the first child of the wrapper, which is the
                                                          //   element that we will scroll                                                                                                               
     if (!this.$scroller) { return; }
-
-    // Find the scroller content elements. These are the direct descendants of the scroller
-    this.$scrollerContentElements = $("> *", this.$scroller);
-   
+  
     // Find pull elements, if present
     $pullDown = $("." + this.options.pullDownClass, this.$scroller); 
     if ($pullDown.length) {
