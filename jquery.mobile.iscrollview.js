@@ -128,7 +128,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         }
     };
 
-    // Allow events through to input elements
+    // Allow mouse clicks through to input elements
+    // Note that this is not an issue for touch devices, just mouse
     this._fixInput = function(e) {
      if (this.iscrollview.options.fixInput ) {
        var tagName,
@@ -139,6 +140,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
            return;
          }
        }
+       
+      // If preventTouchHover, stop hover from occuring inside scroller for jQuery Mobile 1.0
+      // (Not used for 1.1) 
       if (this.iscrollview.options.preventTouchHover) { e.stopImmediatePropagation(); }
       else                                            { e.preventDefault(); }
     };
