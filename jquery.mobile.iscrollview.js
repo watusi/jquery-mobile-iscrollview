@@ -863,25 +863,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._logWidgetEvent("_orientationChangeFunc", e, then);
     },
 
-  //----------------------------
-  // Raise fixed-height elements
-  //----------------------------
-  _raiseFixedHeightElements: function() { 
-    this.$page.find(this.options.fixedHeightSelector).each(function() {
-      var $this = $(this);
-      $this.jqmData("iscrollviewOrigStyle", $this.attr("style"));
-      $this.css("z-index", 1000);
-       });    
-    },
-
-  _undoRaiseFixedHeightElements: function() {
-    this.$page.find(this.options.fixedHeightSelector).each(function() {
-      var $this = $(this);
-      $this.attr("style", $this.jqmData("iscrollviewOrigStyle"));
-      $this.jqmRemoveData("iscrollviewOrigStyle");
-      });
-    },
-
   //----------------------------------
   // Adapt the page for this widget
   // This should only be done for one
@@ -895,7 +876,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // for jquery mobile 1.0a3 in jquery.mobile.navigation.js changePage
     //  in loadComplete in removeContainerClasses in .removeClass(pageContainerClasses.join(" "));
     this.$page.css({overflow: "hidden"});
-    this._raiseFixedHeightElements();
 
     // Prevent moving the page with touch. Should be optional?
     // (Maybe you want a scrollview within a scrollable page)
@@ -904,7 +884,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
   _undoAdaptPage: function() {
     //this._unbind(this.$page, "touchmove", this._preventDefaultFunc, "$page");
-    this._undoRaiseFixedHeightElements();
     this._restoreStyle(this.$page, this._origPageStyle);
     this.$page.removeClass(this.options.pageClass);
     },
@@ -1034,7 +1013,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _modifyWrapperCSS: function() {
     this._origWrapperStyle = this.$wrapper.attr("style") || null;
     this.$wrapper.css({
-                        "z-index"  : 1,         // Lower the wrapper
                         "overflow" : "hidden",  // hide overflow
                         "min-height" : 0        // Override any min-height
                         });
