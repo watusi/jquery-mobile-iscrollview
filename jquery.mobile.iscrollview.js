@@ -140,7 +140,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
            return;
          }
        }
-       
+           
       // If preventTouchHover, stop hover from occuring inside scroller for jQuery Mobile 1.0
       // (Not used for 1.1) 
       if (this.iscrollview.options.preventTouchHover) { e.stopImmediatePropagation(); }
@@ -410,6 +410,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // going to un-enhance a scroller? If so, set this to false, but then you will have to
     // fix the unbind issue...
     fastDestroy: true,
+   
+    // Prevent scrolling the page by grabbing areas outside of the scroller.
+    // Normally, this should be true. Set this false if you are NOT using a fixed-height page,
+    // but instead are using iScroll to scroll an area within a scollable page. If you have
+    // multiple scrollers on a scrollable page, then set this false for all of them.
+    // Note that we ALWAYS prevent scrolling the page by dragging inside the scroller. 
+    preventPageScroll: true,
 
     pullDownResetText   : "Pull down to refresh...",
     pullDownPulledText  : "Release to refresh...",
@@ -569,7 +576,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         },
 
       onScrollStart:       function(e) { this._doCallback("onScrollStart",      e); },
-      onBeforeScrollMove:  function(e) { this._doCallback("onBeforeScrollMove", e); },
+      
+      onBeforeScrollMove:  function(e) { 
+        this._doCallback("onBeforeScrollMove", e); 
+        e.preventDefault();    // Don't scroll the page for touchmove inside scroller
+        e.stopPropagation();   // And don't unnecessarily bubble up, as we have also bound to
+                               // the page in jQuery if preventPageScroll option is true.
+                               // We could do a delegation on the page content minus the scroller,
+                               // but that gets complicated if there are more than one scroller.
+        },
 
       onScrollMove: function(e) {
         this._doCallback("onScrollMove", e, function(e) {
@@ -765,7 +780,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._logWidgetEvent("unbind " + objName, type);
     //obj.unbind(type, func);
   },
-
+  
+  // Currently unused - just in case we need it
+  _delegate: function(obj, selector, type, func, objName) {
+    this._logWidgetEvent("delegate " + objName + " " + selector, type);
+    obj.delegate(selector, type, $.proxy(func, this));
+  },  
+  
   _triggerWidget: function(type, e, f) {
     var then = this._logWidgetCallback(type);
     if (f) { f.call(this); }  // Perform passed function if present
@@ -805,11 +826,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Functions that we bind to. They are declared as named members rather than as
   // inline closures so we can properly unbind them.
   //------------------------------------------------------------------------------
-  // generic preventDefault func
-  _preventDefaultFunc: function(e) {
-    var then = this._logWidgetEvent("_preventDefaultFunc", e);
+
+  // This will only be called on scrollmoves outside of the scroller. Scrolling the page on 
+  // scrolls inside the scroller is prevented by the onbeforescrollmove callback.
+  _pageTouchmoveFunc: function(e) {
+    var then = this._logWidgetEvent("_pageTouchmoveFunc", e);
     e.preventDefault();
-    this._logWidgetEvent("_preventDefaultFunc", e, then);
+    this._logWidgetEvent("_pageTouchmoveFunc", e, then);
     },
 
   _pageBeforeShowFunc: function(e) {
@@ -883,9 +906,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     //  in loadComplete in removeContainerClasses in .removeClass(pageContainerClasses.join(" "));
     this.$page.css({overflow: "hidden"});
 
-    // Prevent moving the page with touch. Should be optional?
-    // (Maybe you want a scrollview within a scrollable page)
-    this._bind(this.$page, "touchmove", this._preventDefaultFunc, "$page");
+    // Prevent moving the page with touch. 
+    if (this.options.preventPageScroll) {
+      this._bind(this.$page, "touchmove", this._pageTouchmoveFunc, "$page");  
+      }
     
     // Prevent adapting the page more than once, if more than one iscrollview widget on page
     this.$page.jqmData("iscroll-adapted", true);
@@ -893,7 +917,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _undoAdaptPage: function() {
-    //this._unbind(this.$page, "touchmove", this._preventDefaultFunc, "$page");
+    //this._unbind(this.$page, "touchmove", this._pageTouchmoveFunc, "$page");
     this._restoreStyle(this.$page, this._origPageStyle);
     this.$page.removeClass(this.options.pageClass);
     this.$page.jqmRemoveData("iscroll-adapted");
@@ -1451,9 +1475,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     this._modifyWrapper();                 // Various changes to the wrapper                      
 
-    // Prevent moving the wrapper with touch
-    this._bind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
-
     // Need this for deferred refresh processing
     this._bind(this.$page, "pagebeforeshow", this._pageBeforeShowFunc, "$page"); 
 
@@ -1505,7 +1526,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // $(window) bindings seems to have the unintended consequence of unbinding from ALL instances, 
       // because a proxy was used. If the page is not destroyed, and you just want to un-enhance
       // the page, this is probably gonna cause trouble...
-      //this._unbind(this.$wrapper, "touchmove", this._preventDefaultFunc, "$wrapper");
       //this._unbind(this.$page, "pagebeforeshow", this._pageBeforeshowFunc, "$page");
       //this._unbind($(window), this.options.resizeEvents, this._orientationChangeFunc, "$(window)");
       // this._unbind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");

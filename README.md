@@ -879,6 +879,18 @@ the overhead of un-enhancing the page.
 
 Default: `true`
 
+###preventPageScroll
+
+If `true` prevent scrolling the page by grabbing areas outside of the scroller.
+Normally, this should be true. Set this false if you are NOT using a fixed-height page,
+but instead are using iScroll to scroll an area within a scollable page. If you have
+multiple scrollers on a scrollable page, then set this false for all of them.
+Note that scrolling of the page by dragging inside the scroller is *always* prevented. 
+
+This option has no effect unless the `adaptPage` option is also `true`.
+
+Default: `true`
+
 ####pullDownResetText
 
 Default: `"Pull down to refresh..."`
