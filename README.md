@@ -153,10 +153,6 @@ the icon and/or label can be omitted.
 All of the class names used for pull-down and pull-up are configurable in options. The example
 above uses the default class names.
 
-Note: in order for correct pull-up appearance (with the pull-up block hidden, even for short
-content), make sure that the `expandScrollerToFillWrapper` option is set to `true` 
-(the default value).
-
 ### Pull States
 
 A pull block can be in one of three states:
@@ -359,10 +355,12 @@ height of header/footer etc. after the widget has been created.
 
 ####expandScrollerToFillWrapper()
 
-This will expand the size of the scroller to fill the wrapper. Call this after calling
-`resizeWrapper()`, or if you manually resize the wrapper after instantiation.
+This will expand the size of the scroller to fill the wrapper, so that even content that
+is shorter than the wrapper will scroll. Call this after calling `resizeWrapper()`, or if you 
+manually resize the wrapper after instantiation.
 
-### iScroll Methods
+
+###iScroll Methods
 
 These are methods that exist in iScroll. They are available on
 the widget as a convenience. See "calling methods" for information
@@ -485,58 +483,58 @@ While wrapper and scroller height can be easily obtained using JQuery functions,
 these functions can still be useful because they reflect the precise internal
 state of  the scroller.
 
-#### x()
+####x()
 
 Current x origin (top) of the scroller.
 
-#### y()
+####y()
 
 Current y origin (left) of the scroller.
 
-#### wrapperW()
+####wrapperW()
 
 The width, in pixels, of the wrapper. This is the visible width of the scrolling area.
 
-#### wrapperH()
+####wrapperH()
 
 The height, in pixels, of the wrapper. This is the visible height of the scrolling area.
 
-#### scrollerW()
+####scrollerW()
 
 The width, in pixels, of the scroller. This is the total width of the scroller, including
 visible and non-visible portions.
 
-#### scrollerH()
+####scrollerH()
 
 The height, in pixels, of the scroller. This is the total height of the scroller, including
 visible and non-visible portions.
 
-### iScroll Getters/Setters
+###iScroll Getters/Setters
 
 This widget provides getters with options setter functionality for some iScroll internal
 variables that might be useful to an application. If a value is provided, then the
 functions act as setters. In any case, they return the value of the associated internal
 variable.
 
-#### minScrollX(val)
+####minScrollX(val)
 
 The minimum X scroll position. This defines the left-most position of scroll. The user
 can scroll past the minimum X, but then the scroller will snap-back to the mimimum X
 position.
 
-#### minScrollY(val)
+####minScrollY(val)
 
 The minimum Y scroll position. This defines the top-most position of the scroll. The
 user can scroll past the minimum Y, but then the scroller will snap-back to the minimum
 Y position.
 
-#### maxScrollX(val)
+####maxScrollX(val)
 
 The maximum X scroll position. This defines the right-most position of scroll. The user
 can scroll past the maximum X, but then the scroller will snap-back to the maximum X
 position.
 
-#### maxScrollY(val)
+####maxScrollY(val)
 
 The maximum Y scroll position. This defines the bottom-most position of the scroll. The
 user can drag past the maximum Y, but then the scroller will snap-back to the maximum
@@ -571,7 +569,7 @@ at the same time that you override any jQuery Mobile default options.
     </script>  
 ```  
 
-### Programatic access
+###Programatic access
 
 This widget supports programmatic access to options using standard widget factory
 syntax:
@@ -585,20 +583,20 @@ syntax:
 The widget handles copying widget options to the iScroll object options and
 vice-versa.
 
-### Setting options in the data-iscroll attribute
+###Setting options in the data-iscroll attribute
 
 This widget also supports setting options directly in the `data-iscroll`
 attribute. The options need to be in **strict** JSON format. This means that keys
 and string values need to be enclosed in **double** quotes **only**. Numeric and
 boolean values should **not** be enclosed in quotation marks.
 
-#### Example:
+####Example:
 
 ```html
     <div data-role="content" data-iscroll='{"hScroll":true,"vScroll":false,"resizeEvents":"orientationchange"}' data-theme="c">
 ```
 
-### Modifying options after instantiation
+###Modifying options after instantiation
 
 If you modify an option after a scroller has been instantiated, the underlying
 iScroll object will be destroyed and re-created. This is because iScroll does
@@ -767,14 +765,20 @@ have done some update which you know will require a lengthy render.
 
 Default: `200` for Android, otherwise `0`
 
-####expandScrollerToFillWrapper
+####scrollShortContent
 
 If true, the widget will set the minimum height of the scroller so that it fills the wrapper
-(exclusive of any pull-down/pull-up elements). This is necessary in order to be able to drag
-the scroller up/down to activate pull-down/pull-up in case the scroller content is either empty
-or shorter than the wrapper. 
+(exclusive of any pull-down/pull-up elements). 
 
-Default: `true`
+Note that if you have a pull-down or pull-up, then this is done regardless of this setting,
+since otherwise there would be no way to access the pull-down or pull-up if there is no
+content. (If there were some content but it was shorter than the wrapper, then you wouldn't
+be able to drag in the empty space.)
+
+Set this to `true` if you want scrollers that do *not* have a pull-down or pull-up to always
+be scrollable, even if their content is short. 
+
+Default: `false`
 
 ####emulateBottomOffset
 
@@ -878,35 +882,35 @@ the overhead of un-enhancing the page.
 
 Default: `true`
 
-#### pullDownResetText
+####pullDownResetText
 
 Default: `"Pull down to refresh..."`
 
-#### pullDownPulledText
+####pullDownPulledText
 
 Default: `"Release to refresh..."`
 
-#### pullDownLoadingText
+####pullDownLoadingText
 
 Default: `"Loading..."`
 
-#### pullUpResetText
+####pullUpResetText
 
 Default: `"Pull up to refresh..."`
 
-#### pullUpPulledText
+####pullUpPulledText
 
 Default: `"Release to refresh..."`
 
-#### pullUpLoadingText
+####pullUpLoadingText
 
 default: `"Loading..."`
      
-#### pullPulledClass
+####pullPulledClass
 
 Default: `"iscroll-pull-pulled"`
 
-#### pullLoadingClass
+####pullLoadingClass
 
 Default: `"iscroll-pull-loading"`
 
@@ -920,7 +924,7 @@ jQuery events, or by specifying a callback in the widget's `options` object.
 When an event is triggered it will call the callback if defined in options, and, as well, trigger 
 any bound events.
 
-### jQuery Event Callbacks
+###jQuery Event Callbacks
 
 The widget exposes jQuery events that can be bound like any other event.
 The names are prepended with the string `iscroll_`. So, the `onrefresh`
@@ -929,7 +933,7 @@ are different than iScroll event names. iScroll event names are in mixed case. W
 names are in all lower case - this is a limitation of jQuery widgets.)
 
 
-### Option Callbacks
+###Option Callbacks
 
 Alternately, you can add callback functions to the widget's `options` object. The key
 of the option corresponds to the event name **without** the widget name
@@ -937,7 +941,7 @@ prefix. So, you can add a callback function for the refresh event
 with the key `onrefresh`.
 
 
-### Bound Callback parameters
+###Bound Callback parameters
 
 Bound event callbacks receive two parameters:
 
@@ -1291,7 +1295,7 @@ To demo, simply open the `index.html` file in your browser. Note that the page t
 not work with some browsers when loading from a local file - for those browsers, you will have 
 to load the demo from a server. (It does work with local files for Safari and Firefox.)
 
-### Special Demo Borders
+###Special Demo Borders
 
 The demo has headers and footer styled with a 1px red border at top and bottom. This facilitates
 a quick visual indication of correct sizing of the page. You should not see any white
@@ -1304,7 +1308,7 @@ The iScroll wrapper is styled with a 1px green border at top and bottom. You sho
 or different color between the top of the wrapper and the bottom of the header, or between
 the bottom of the wrapper and the top of the footer.
 
-### Demo Content
+###Demo Content
 
 As a convenience, the demo directory is self-contained (except for the widget, `iscroll-pull-js`
 and pull icon files, which are expected to be found in the parent directory), and contains the
@@ -1366,54 +1370,48 @@ the log entry will indicate "(dirty)". "Dirty" pages are pages that have had `re
 while they were not the active page. Normally (depending on the `DeferNonActiveRefresh` option)
 such pages have their `refresh()` deferred until the page is about to be shown.
 
-### traceResizeWrapper
+###traceResizeWrapper
 
 If this option is `true`, calls to the widget's `resizeWrapper()` function
 are traced.
 
-### traceIscrollEvents
+###traceIscrollEvents
 
 If this option is `true`, events handled by iScroll are traced.
 
-### tracedIscrollEvents
+###tracedIscrollEvents
 
 This is a list of iScroll events to trace. If the list is empty, all iScroll events will be
 traced. List items are strings, example: `touchstart`.
 
-### traceWidgetEvents
+###traceWidgetEvents
 
 If this option is `true` events handled by the widget (not by iScroll) are traced.
 
-### tracedWidgetEvents
+###tracedWidgetEvents
 
 This is a list of widget events to trace. If the list is empty, all widget events will be
 traced. List items are strings. Events that iScroll itself handles are *not* traced when this
 option is `true`.
 
-### traceIscrollCallbacks
+###traceIscrollCallbacks
 
 If this option is `true`, callbacks issued by iScroll are traced.
 
-### tracedIscrollCallbacks
+###tracedIscrollCallbacks
 
 This is a list of iScroll callbacks to trace. If the list is empty, all iScroll callbacks will
 be traced. List items are strings. Example: `onRefresh`.
 
-### traceWidgetCallbacks
+###traceWidgetCallbacks
 
 If this option is `true`, callbacks issed by the widget are traced. This does not include
 callbacks issued by iScroll itself (which application code may also bind to.)
 
-### tracedWidgetCallbacks
+###tracedWidgetCallbacks
 
 This is a list of widget callbacks to trace. If the list is empty, all widget callbacks will
 be traced. List items are strings. Do not include the `iscroll_` prefix. Example: `onpulldown`.
-
-
-
-
-
-
 
 ---
 

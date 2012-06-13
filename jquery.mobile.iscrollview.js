@@ -345,11 +345,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     refreshDelay:  IsAndroid ? 200 : 0,   // Wild-ass guesses
 
     // true to set the minimum height of scroller content (not including
-    // any pull-down or pull-up) to the height of the wrapper.. This allows
-    // scrolling empty content e.g. if using pull down to refresh. As well,
-    // this will displace any pull up to refresh so that it is not initially
-    // visible.
-    expandScrollerToFillWrapper: true,
+    // any pull-down or pull-up) to the height of the wrapper. Note that
+    // if there is a pull-down or pull-up, then this is done regardless of
+    // this option, because you have to be able to scroll the empty content
+    // to access the pull-down or pull-up. Set this option true if you
+    // want to make short content ALWAYS scrollable, even if there isn't
+    // a pull-down or pull-up.
+    scrollShortContent: false,
 
     // Normally, we need the wrapper to have no padding. Otherwise, the result will look awkward,
     // you won't be able to grab the padded area to scroll, etc.
@@ -483,7 +485,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "fixInput",
       "wrapperAdd",
       "refreshDelay",
-      "expandScrollerToFillWrapper",
+      "scrollShortContent",
       "removeWrapperPadding",
       "addScrollerPadding",
       "createScroller",
@@ -1077,7 +1079,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // will not be visible until the user pulls up.
   //--------------------------------------------------------
   _expandScrollerToFillWrapper: function() {
-    if (this.options.expandScrollerToFillWrapper) {
+    if (this.options.scrollShortContent || this.$pullDown || this.pullUp) {
       if (this._firstScrollerExpand) {
         this._origScrollerStyle = this.$scroller.attr("style") || null;
         this._firstScrollerExpand = false;
