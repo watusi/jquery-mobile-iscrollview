@@ -45,8 +45,8 @@ the headers/footers will fade in/out. Since this widget resizes the scrolling re
 no need for fixed positioning of header/footer.
 
 Additional fixed-height elements (which are not headers or footers)
-outside of the scrolling region should be given the `iscroll-foreground`
-class, if they would add to the height of the page. (Do not add the `iscroll-foreground` class
+outside of the scrolling region should be given the `iscroll-fixed`
+class, if they would add to the height of the page. (Do not add the `iscroll-fixed` class
 to sidebars.)
 
 ---
@@ -705,7 +705,7 @@ A JQuery selector which selects the fixed-height elements on the page which are 
 of the scrolling area. The heights of these elements will be added-up, and subtracted
 from the total viewport height to arrive at the wrapper height.
 
-Default: `":jqmData(role='header'), :jqmData(role='footer'), .iscroll-foreground"`
+Default: `":jqmData(role='header'), :jqmData(role='footer'), .iscroll-fixed"`
 
 ####resizeWrapper
 
