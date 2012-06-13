@@ -865,13 +865,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._logWidgetEvent("_orientationChangeFunc", e, then);
     },
 
-  //----------------------------------
+  //--------------------------------------------------------------------------
   // Adapt the page for this widget
-  // This should only be done for one
-  // iscrollview widget per page.
-  //----------------------------------
+  // This is only done for the first iscrollview widget encountered on a page.
+  //--------------------------------------------------------------------------
   _adaptPage: function() {
-    if (!this.options.adaptPage) { return; }
+    if (!this.options.adaptPage || this.$page.jqmData("iscroll-adapted")) { return; }
     this.$page.addClass(this.options.pageClass);
 
     // XXX: fix crumbled css in transition changePage
@@ -882,12 +881,17 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Prevent moving the page with touch. Should be optional?
     // (Maybe you want a scrollview within a scrollable page)
     this._bind(this.$page, "touchmove", this._preventDefaultFunc, "$page");
+    
+    // Prevent adapting the page more than once, if more than one iscrollview widget on page
+    this.$page.jqmData("iscroll-adapted", true);
+    
     },
 
   _undoAdaptPage: function() {
     //this._unbind(this.$page, "touchmove", this._preventDefaultFunc, "$page");
     this._restoreStyle(this.$page, this._origPageStyle);
     this.$page.removeClass(this.options.pageClass);
+    this.$page.jqmRemoveData("iscroll-adapted");
     },
 
   //--------------------------------------------------------

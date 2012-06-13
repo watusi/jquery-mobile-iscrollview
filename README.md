@@ -692,9 +692,9 @@ Default: `"iscroll-content"`
 
 ####adaptPage
 
-If true, necessary adaptations will be made to the page to accommodate iScroll. If false,
-the adaptations will not be made. If multiple scrollers are used on the same page, only
-one of them should have `adaptPage` set to true. You can also set this false if you
+If `true`, necessary adaptations will be made to the page to accommodate iScroll. If false,
+the adaptations will not be made. If multiple scrollers are used on the same page, the page 
+adaptation will only be done once, regardless of this setting. You can set this false if you
 want to make the adaptations yourself.
 
 Default: `true`
