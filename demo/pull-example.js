@@ -8,36 +8,38 @@
 //-------------------------------------------------------
 // Pull-Up and Pull-Down callbacks for "Pull" page
 //-------------------------------------------------------
-
-(function($) {  // Self-invoking function to keep definitions local
+(function pullPagePullImplementation($) {
   "use strict";
   var pullDownGeneratedCount = 0,
       pullUpGeneratedCount = 0,
       listSelector = "div.pull-demo-page ul.ui-listview",
       lastItemSelector = listSelector + " > li:last-child";
     
-  // This function represents the callback from jQuery.ajax() etc. that will insert retrieved
-  // data into the page. For demo, we just generate 3 items and add them to the top of the list.
-  function gotPullDownData(e,d) {
+  /* For this example, I prepend three rows to the list with the pull-down, and append
+   * 3 rows to the list with the pull-up. This is only to make a clear illustration that the
+   * action has been performed. A pull-down or pull-up might prepend, append, replace or modify
+   * the list in some other way, modify some other page content, or may not change the page 
+   * at all. It just performs whatever action you'd like to perform when the gesture has been 
+   * completed by the user.
+   */
+  function gotPullDownData(event, data) {
     var i,
-        $list = $(listSelector), // Get a jQuery object for the list element
         newContent = "";        
     for (i=0; i<3; i+=1) {  // Generate some fake new content
-      newContent += "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>";
+      newContent = "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>" + newContent;
       }
-    $list.prepend(newContent).listview("refresh");  // Prepend new content and refresh listview
-    d.iscrollview.refresh();    // Refresh the iscrollview
+    $(listSelector).prepend(newContent).listview("refresh");  // Prepend new content and refresh listview
+    data.iscrollview.refresh();    // Refresh the iscrollview
     }
   
-  function gotPullUpData(e,d) {
+  function gotPullUpData(event, data) {
     var i,
-        $list = $(listSelector),
-        v = d.iscrollview,
+        iscrollview = data.iscrollview,
         newContent = "";
     for (i=0; i<3; i+=1) { 
       newContent += "<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>";
       }
-    $list.append(newContent).listview("refresh");
+    $(listSelector).append(newContent).listview("refresh");
   
     // The refresh is a bit different for the pull-up, because I want to demonstrate the use
     // of refresh() callbacks. The refresh() function has optional pre and post-refresh callbacks.
@@ -45,14 +47,11 @@
     // after the new elements are added. The scroller will smoothly scroll to the bottom over
     // a 400mSec period. It's important to use the refresh() callback to insure that the scroll
     // isn't started until the scroller has first been refreshed.
-    
-    // Refresh the iscrollview. After refresh, scroll to the end of the list using callback
-    // 400mSec scroll to last list element for nice visual effect
-    v.refresh(
-      null,                                                      // Optional delay value
-      null,
-      function(v) { v.scrollToElement(lastItemSelector, 400); }, // Post-refresh
-      v);                                                        // Context  
+    iscrollview.refresh(null, null,
+      function afterRefreshCallback(iscrollview) { 
+        iscrollview.scrollToElement(lastItemSelector, 400); 
+        },
+      iscrollview);  // Context  
     }
   
   // This is the callback that is called when the user has completed the pull-down gesture.
@@ -61,18 +60,29 @@
   // once data has been retrieved.
   //
   // For demo, we just use timeout to simulate the time required to complete the operation.
-  function onPullDown (e,d) { setTimeout(function () {gotPullDownData(e,d);}, 1500); }    
+  function onPullDown (event, data) { 
+    setTimeout(function fakeRetrieveDataTimeout() {
+      gotPullDownData(event, data);
+      }, 
+      1500); 
+    }    
 
   // Called when the user completes the pull-up gesture.
-  function onPullUp (e,d) { setTimeout(function () {gotPullUpData(e,d);}, 1500); }    
+  function onPullUp (event, data) { 
+    setTimeout(function fakeRetrieveDataTimeout() {
+      gotPullUpData(event, data);
+      }, 
+      1500); 
+    }    
   
   // Set-up jQuery event callbacks
-  $(document).delegate("div.pull-demo-page", "pageinit", function(e) {
+  $(document).delegate("div.pull-demo-page", "pageinit", 
+    function bindPullPagePullCallbacks(event) {
       $(".iscroll-wrapper", this).bind( {
       iscroll_onpulldown : onPullDown,
       iscroll_onpullup   : onPullUp
-      });
-    });  
+      } );
+    } );  
 
   }(jQuery));
 
@@ -80,61 +90,54 @@
 // Pull-down and Pull-up callbacks for "Short Pull" page
 //-------------------------------------------------------
 
-(function($) { 
+(function shortPullPagePullImplementation($) { 
   "use strict";
   var pullDownGeneratedCount = 0,
     pullUpGeneratedCount = 0,
     listSelector = "div.short-pull-demo-page ul.ui-listview",
     lastItemSelector = listSelector + " > li:last-child";
       
-  function gotPullDownData(e,d) {
+  function gotPullDownData(event, data) {
     var i,
-        $list = $(listSelector),
-        v = d.iscrollview,
         newContent = "";
     for (i=0; i<3; i+=1) {
-      newContent += "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>";
+      newContent = "<li>Pulldown-generated row " + (++pullDownGeneratedCount) + "</li>" + newContent;
       }
-    $list.prepend(newContent).listview("refresh");
-    v.refresh();
+    $(listSelector).prepend(newContent).listview("refresh");
+    data.iscrollview.refresh();
     }
 
-  function gotPullUpData(e,d) {
+  function gotPullUpData(event, data) {
     var i,
-        $list = $(listSelector),
-        v = d.iscrollview,
+        iscrollview = data.iscrollview,
         newContent = "";
     for (i=0; i<3; i+=1) {
       newContent += "<li>Pullup-generated row " + (++pullUpGeneratedCount) + "</li>";
       }
-    $list.append(newContent).listview("refresh");  
-    d.iscrollview.refresh(
-      null, 
-      null,
-      function(v) { v.scrollToElement(lastItemSelector, 400);},
-      v );
+    $(listSelector).append(newContent).listview("refresh");  
+    iscrollview.refresh(null, null,
+      function afterRefreshCallback(iscrollview) { 
+        iscrollview.scrollToElement(lastItemSelector, 400);
+        },
+      iscrollview );
     }
   
-  function onPullDown (e,d) { setTimeout(function() { gotPullDownData(e,d); }, 1500); }   
-  function onPullUp (e,d)   { setTimeout(function() { gotPullUpData(e,d);   }, 1500); }   
+  function onPullDown (event, data) { 
+    setTimeout(function fakeRetrieveDataTimeout() { 
+      gotPullDownData(event, data); }, 
+      1500); }  
   
-  $(document).delegate("div.short-pull-demo-page", "pageinit", function(e) {
+  function onPullUp (event, data) { 
+    setTimeout(function fakeRetrieveDataTimeout() { 
+      gotPullUpData(event, data);   
+      }, 1500); }   
+  
+  $(document).delegate("div.short-pull-demo-page", "pageinit", 
+    function bindShortPullPagePullCallbacks(event) {
       $(".iscroll-wrapper", this).bind( {
       iscroll_onpulldown : onPullDown,
       iscroll_onpullup   : onPullUp
-      });
+      } );
     }); 
  
-  // Temporary - will be moved into widget
-  $(document).bind("pageinit", function() {
-    $("input, textarea, select").bind("blur", function(e) {
-      setTimeout(function() {
-        if ($(".ui-focus").length === 0) { 
-          $.mobile.silentScroll(0); 
-          }        
-        }, 0);
-      });
-    });
-
-
   }(jQuery));

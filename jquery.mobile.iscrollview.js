@@ -93,6 +93,18 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // Kludgey way to seeing if we have JQM 1.1 or higher, since there apparently is no
       // way to access the version number!
       JQMIsLT11 = !$.fn.jqmEnhanceable;
+      
+  // This function is defined outside of the widget, because it needs to survive across widget
+  // destroy in case there are multiple scrollers on a page, and for some reason application
+  // code destroys one or more widgets, leaving at least one. The widget keeps a count of
+  // scrollers in JQM data attached to the page, and binds to this function when the first
+  // scroller widget is created and unbinds when the last one is destroyed.
+  //
+    // This will only be called on scrollmoves outside of the scroller. Scrolling the page on 
+  // scrolls inside the scroller is prevented by the onbeforescrollmove callback.
+  function _pageTouchmoveFunc(e) {
+    e.preventDefault();
+    }    
 
   //===============================================================================
   // This essentially subclasses iScroll. Originally, this was just so that we could
@@ -306,17 +318,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     pullUpClass:     "iscroll-pullup",      // Class for pullup element (if any)
     pullLabelClass:  "iscroll-pull-label",  // Class for pull element label span
     pullUpSpacerClass: "iscroll-pullup-spacer", // Class added to generated pullup spacer
-    scrollerContentClass: "iscroll-content", // Real content of scroller, not including pull-up, pull-down
+    scrollerContentClass: "iscroll-content", // Real content of scroller, not including pull-up, pull-down   
+    fixedHeightClass: "iscroll-fixed",       // Class applied to elements that match fixedHeightSelector
 
-    // true to adapt the page containing the widget. If false, the widget will not alter any
-    // elements outside of the widget's container.
-    adaptPage:      true,
-
-    // JQuery selector for fixed-height elements on page.
-    // Use iscroll-fixed class for arbitrary fixed-height elements other than
-    // header/footer. If you have multiple fixed-height elements, it's helpful to group
-    // them in divs to minimize the number of elements you have to apply iscroll-fixed to.
-    fixedHeightSelector: ":jqmData(role='header'), :jqmData(role='footer'), .iscroll-fixed",
+    // The widget adds the fixedHeightClass to all elements that match fixedHeightSelector.
+    // Don't add the fixedHeightClass to elements manually. Use data-iscroll-fixed instead.
+    fixedHeightSelector: ":jqmData(role='header'), :jqmData(role='footer'), :jqmData(iscroll-fixed)",
 
     // true to resize the wrapper to take all viewport space after fixed-height elements
     // (typically header/footer)
@@ -353,10 +360,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // any pull-down or pull-up) to the height of the wrapper. Note that
     // if there is a pull-down or pull-up, then this is done regardless of
     // this option, because you have to be able to scroll the empty content
-    // to access the pull-down or pull-up. Set this option true if you
-    // want to make short content ALWAYS scrollable, even if there isn't
-    // a pull-down or pull-up.
-    scrollShortContent: false,
+    // to access the pull-down or pull-up. Set this option false if you do
+    // not want to show a scrollbar on short content. However, this will have
+    // the side-effect of making the "empty" part of the scroller non-draggable.
+    // Leaving this true provides a more consistent UI behaviour.
+    scrollShortContent: true,
 
     // Normally, we need the wrapper to have no padding. Otherwise, the result will look awkward,
     // you won't be able to grab the padded area to scroll, etc.
@@ -489,7 +497,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "scrollerContentClass",
       "pullLabelClass",
       "pullUpSpacerClass",
-      "adaptPage",
       "fixedHeightSelector",
       "resizeWrapper",
       "resizeEvents",
@@ -827,14 +834,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // inline closures so we can properly unbind them.
   //------------------------------------------------------------------------------
 
-  // This will only be called on scrollmoves outside of the scroller. Scrolling the page on 
-  // scrolls inside the scroller is prevented by the onbeforescrollmove callback.
-  _pageTouchmoveFunc: function(e) {
-    var then = this._logWidgetEvent("_pageTouchmoveFunc", e);
-    e.preventDefault();
-    this._logWidgetEvent("_pageTouchmoveFunc", e, then);
-    },
-
   _pageBeforeShowFunc: function(e) {
    var then = this._logWidgetEvent("_pageBeforeShowFunc", e),
        _this = this;
@@ -892,35 +891,55 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }
     this._logWidgetEvent("_orientationChangeFunc", e, then);
     },
+    
+  // Get or set the count of instances on the page containing the widget  
+  _instance_count: function(count_in) {
+    var key = "iscroll-instance-count",
+        count = 0;
+    if (count_in !== undefined) {
+      count = count_in;    
+      this.$page.jqmData(key, count);
+      }
+    else {
+      count = this.$page.jqmData(key);
+      if (count === undefined) { count = 0; }
+    }
+    return count;  
+  },
 
   //--------------------------------------------------------------------------
   // Adapt the page for this widget
-  // This is only done for the first iscrollview widget encountered on a page.
   //--------------------------------------------------------------------------
   _adaptPage: function() {
-    if (!this.options.adaptPage || this.$page.jqmData("iscroll-adapted")) { return; }
-    this.$page.addClass(this.options.pageClass);
-
-    // XXX: fix crumbled css in transition changePage
-    // for jquery mobile 1.0a3 in jquery.mobile.navigation.js changePage
-    //  in loadComplete in removeContainerClasses in .removeClass(pageContainerClasses.join(" "));
-    this.$page.css({overflow: "hidden"});
-
-    // Prevent moving the page with touch. 
-    if (this.options.preventPageScroll) {
-      this._bind(this.$page, "touchmove", this._pageTouchmoveFunc, "$page");  
+    var _this = this,
+        instanceCount = this._instance_count();        
+    if (instanceCount === 0) {  
+      this.$page.addClass(this.options.pageClass);   
+      this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers/etc.
+        $(this).addClass(_this.options.fixedHeightClass);
+        });     
+      if (this.options.preventPageScroll) {
+        this._bind(this.$page, "touchmove", _pageTouchmoveFunc, "$page");  
+        }
       }
-    
-    // Prevent adapting the page more than once, if more than one iscrollview widget on page
-    this.$page.jqmData("iscroll-adapted", true);
+    this._instance_count(instanceCount + 1);
     
     },
 
   _undoAdaptPage: function() {
-    //this._unbind(this.$page, "touchmove", this._pageTouchmoveFunc, "$page");
-    this._restoreStyle(this.$page, this._origPageStyle);
-    this.$page.removeClass(this.options.pageClass);
-    this.$page.jqmRemoveData("iscroll-adapted");
+    var _this = this,
+        instanceCount = this.$page.jqmData("iscroll-instance-count") || 0;     
+    if (instanceCount === 1) {
+      this._unbind(this.$page, "touchmove", _pageTouchmoveFunc, "$page");    
+      this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers/etc.
+        $(this).removeClass(_this.options.fixedHeightClass);
+        });     
+      this.$page.jqmRemoveData("iscroll-instance-count");
+      this.$page.removeClass(this.options.pageClass);         
+      }    
+    else {
+      this.$page.jqmData("iscroll-instance-count", instanceCount - 1);
+      }
     },
 
   //--------------------------------------------------------
@@ -928,7 +947,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //--------------------------------------------------------
   _calculateBarsHeight: function() {
     var barsHeight = 0;
-    this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers
+    this.$page.find("." + this.options.fixedHeightClass).each(function() {  // Iterate over headers/footers/etc.
         barsHeight += $(this).outerHeight(true);
         });
     this._barsHeight = barsHeight;
@@ -1010,26 +1029,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }
     },
 
-  //---------------------------------------------------------
-  // Correct the wrapper CSS position in case it is static.
-  // We need relative or absolute for proper positioning of
-  // the scrollbar. Either relative or absolute on the wrapper
-  // will cause the absolute positioning of the scrollbar in
-  // iScroll to be relative to the wrapper. iScroll examples
-  // all work because they happen to use position:fixed on the
-  // wrapper. Rather than force the user to set wrapper
-  // positioning, just force it to relative if it is static
-  // (which is CSS default.)
-  //
-  // Hopefully, user won't  set it to fixed, I dunno what
-  // they'd be trying to do then!
-  //---------------------------------------------------------
-  _correctWrapperPosition: function() {
-    if (this.$wrapper.css("position") === "static") {
-      this.$wrapper.css("position", "relative");
-      }
-    },
-
    _removeWrapperPadding: function() {
      var $wrapper = this.$wrapper;
      if (this.options.removeWrapperPadding) {
@@ -1047,12 +1046,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //---------------------------------------------------------
   _modifyWrapperCSS: function() {
     this._origWrapperStyle = this.$wrapper.attr("style") || null;
-    this.$wrapper.css({
-                        "overflow" : "hidden",  // hide overflow
-                        "min-height" : 0        // Override any min-height
-                        });
     this._removeWrapperPadding();
-    this._correctWrapperPosition();
     },
 
   _undoModifyWrapperCSS: function() {
@@ -1140,8 +1134,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //--------------------------------------------------------
   _resizeWrapper: function() {
     var then;
-    if (!this.options.resizeWrapper) { return; }
-    if (this.options.traceResizeWrapper) {then = this._log("resizeWrapper() start"); }
+    if (!this.options.resizeWrapper) { 
+      return; 
+      }
+    then = this._log("resizeWrapper() start");
     this.$wrapper.height(
     $(window).height() -         // Height of the window
     this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
@@ -1252,17 +1248,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$pullUpSpacer = this.$pullUp.prev();
     this.$pullUpSpacer.addClass(this.options.pullUpSpacerClass);
 
-    // We need to position the pullup absolutely at the bottom of the scroller.
-    // The scroller is position:relative, so the pullUp is positioned here relative
-    // to the scroller, not the page. If we don't do this, the pullUp will initially appear
-    // briefly at the bottom of content if content is shorter than the wrapper.
-    this._origPullUpStyle = this.$pullUp.attr("style") || null;
-    this.$pullUp.css({
-      "position": "absolute",
-      "bottom": 0,
-      "width": "100%"
-      });
-
     $pullUpLabel = $("." + this.options.pullLabelClass, this.$pullUp);
     if ($pullUpLabel) {
       this._origPullUpLabelText = $pullUpLabel.text();
@@ -1278,7 +1263,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
   _undoModifyPullUp: function () {
     if (!this.$pullUp) { return; }
-    this._restoreStyle(this.$pullUp, this._origPullUpStyle);
     this.$pullUp.prev().remove();  // Remove the dummy div
     if (this._origPullUpLabelText) {
       $("." + this.options.pullLabelClass, this.$pullUp).text(this._origPullUpLabelText);
@@ -1439,11 +1423,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     
     if (this.options.debug && this.options.traceCreateDestroy) { 
       then = this._log("_create() start"); 
-      }      
-      
-    if (this.options.adaptPage) { this._origPageStyle = this.$page.attr("style") || null; }  // Save for later restore        
+      }  
+             
     hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work  
-    this._adaptPage();
+    this._adaptPage();    
     this._createScroller();
     this.$scroller = this.$wrapper.children(":first");   // Get the first child of the wrapper, which is the
                                                          //   element that we will scroll                                                                                                               
@@ -1789,10 +1772,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 // Self-init
 jQuery(document).bind("pagecreate", function (e) {
   "use strict";
+  
   // In here, e.target refers to the page that was created (it's the target of the pagecreate event)
   // So, we can simply find elements on this page that match a selector of our choosing, and call
   // our plugin on them.
-
+  
   // The find() below returns an array of jQuery page objects. The Widget Factory will
   // enumerate these and call the widget _create() function for each member of the array.
   // If the array is of zero length, then no _create() fucntion is called.

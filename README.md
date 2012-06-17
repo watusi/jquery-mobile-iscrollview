@@ -25,12 +25,10 @@ because a common use case would be to use a `data-role="content"` `<div>` as the
 container, and, of course, you can't have two `data-role` attributes on the
 same element.
 
-This widget has only been tested with a single scroller on a page.
 The widget will (normally) re-size the container to take up all available height
-within the viewport after fixed headers/footers are taken into account,
-and will make necessary adjustments to the page CSS. This behaviour can be disabled using
-the `adaptPage` option. (It is not necessary to diable this for multiple scrollers on a page.
-Only the first scroller with `adaptPage` enabled will adjust the page.)
+within the viewport after fixed headers/footers are taken into account. This behaviour can be 
+disabled using the `resizeWrapper` option, which should be se `true` for no more than one widget
+on a given page.
 
 The widget has been designed to support multiple scrolling regions on a page - for example, you 
 might want a second, gallery-like horizontal scroll region. So, all
@@ -54,34 +52,55 @@ to sidebars.)
 Example
 -------
 ```html
-  <div data-role="page" id="index">
 
-    <div data-role="header" data-position="inline">
-      <h1>INDEX PAGE</h1>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Demo</title>
+   
+    <link rel="stylesheet" href="jquery.mobile-1.0.1.min.css"/>
+    <link rel="stylesheet" href="jquery.mobile.iscrollview.css"/>
+    <link rel="stylesheet" href="jquery.mobile.iscrollview-pull.css"/>
+    <link rel="stylesheet" href="additional-site-specific-styles.css"/>
+    
+    <script src="jquery-1.6.4.min.js"></script>
+    <script src="jquery.mobile-1.0.1.min.js"></script>
+    <script src="iscroll.js"></script>
+    <script src="jquery.mobile.iscrollview.js"></script>
+    <script src="additional-site-specific-scripts.js"></script>
+  </head>
 
-    <div data-role="content" class='example-wrapper' data-iscroll>
-      <div>
-        some content that will be scrolled.
+  <body>
+    <div data-role="page" id="index">
+      <div data-role="header" data-position="inline">
+        <h1>INDEX PAGE</h1>
       </div>
-      <div> 
-        Some more content that will be scrolled.
+      <div data-role="content" data-iscroll>
+        <div>
+          some content that will be scrolled.
+        </div>
+        <div> 
+          Some more content that will be scrolled.
+        </div>
+      </div>
+      <div data-role="footer" data-position="inline">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="home">home</a></li>
+            <li><a href="timeline">timeline</a></li>
+            <li><a href="message">message</a></li>
+            <li><a href=bookmark">bookmark</a></li>
+            <li><a href="config">config</a></li>
+          </ul>
+        </div>
       </div>
     </div>
-
-    <div data-role="footer" class="ui-bar" data-position="inline">
-      <div data-role="navbar" class="ui-navbar">
-        <ul class="ui-grid-b">
-          <li class="ui-block-a"><a href="#home">home</a></li>
-          <li class="ui-block-a"><a href="#timeline">timeline</a></li>
-          <li class="ui-block-a"><a href="#message">message</a></li>
-          <li class="ui-block-a"><a href="#bookmark">bookmark</a></li>
-          <li class="ui-block-a"><a href="#config">config</a></li>
-        </ul>
-      </div>
-    </div>
-
-  </div>
+  </body>
+</html>
 ```
 
 ---
@@ -690,27 +709,18 @@ if you are scrolling multiple elements. The widget adds a class to this `<div>`.
 
 Default: `"iscroll-content"`
 
-####adaptPage
-
-If `true`, necessary adaptations will be made to the page to accommodate iScroll. If false,
-the adaptations will not be made. If multiple scrollers are used on the same page, the page 
-adaptation will only be done once, regardless of this setting. You can set this false if you
-want to make the adaptations yourself.
-
-Default: `true`
-
 ####fixedHeightSelector
 
 A JQuery selector which selects the fixed-height elements on the page which are outside
 of the scrolling area. The heights of these elements will be added-up, and subtracted
 from the total viewport height to arrive at the wrapper height.
 
-Default: `":jqmData(role='header'), :jqmData(role='footer'), .iscroll-fixed"`
+Default: `":jqmData(role='header'), :jqmData(role='footer'), :jqmData(iscroll-fixed)"`
 
 ####resizeWrapper
 
 If true, the wrapper will be resized to the height remaining after accounting for
-fixed-height elements.
+fixed-height elements. You should only set this to "true" for one scroller on a page.
 
 Default: `true`
 
@@ -775,10 +785,11 @@ since otherwise there would be no way to access the pull-down or pull-up if ther
 content. (If there were some content but it was shorter than the wrapper, then you wouldn't
 be able to drag in the empty space.)
 
-Set this to `true` if you want scrollers that do *not* have a pull-down or pull-up to always
-be scrollable, even if their content is short. 
+Set this to `false` if you want scrollers that do not have a pull-down or pull-up to not display
+a scrollbar and not be draggable if they are shorter than the wrapper. Recommended setting is
+`true` because it provides a more consistent UI experience. 
 
-Default: `false`
+Default: `true`
 
 ####emulateBottomOffset
 

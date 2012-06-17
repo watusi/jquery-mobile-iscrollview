@@ -1,3 +1,17 @@
+/*******************************************
+ Default Pull-up and Pull-down styling 
+ Replace/modify/override to your preferences  
+*******************************************/
+.iscroll-pullup {
+    /* The wrapper is position:relative or position:absolute, so the pullUp is positioned here 
+       relative to the scroller, not the page. If we don't do this, the pullUp will initially 
+       appear briefly at the bottom of content if content is shorter than the wrapper. 
+    */
+    position: absolute;    /* relative to the scroller */
+    bottom:   0;           /* at the bottom of the scroller */
+    width:    100%;
+}
+
 .iscroll-pulldown,
 .iscroll-pullup {
   background: #fff;
@@ -94,6 +108,5 @@
 @-keyframes iscroll-pull-loading {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}  
-
+} 
 
