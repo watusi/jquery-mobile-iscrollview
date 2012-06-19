@@ -92,7 +92,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
       // Kludgey way to seeing if we have JQM v1.0.x, since there apparently is no
       // way to access the version number!
-      JQMIsV1_0 = $.mobile.ignoreContentEnabled === undefined;
+      JQMIsV1_0 = $.mobile.ignoreContentEnabled === undefined,
+      
+      nextPageID = 1;      // Used to generate event namespaces
+  
+ 
       
   // This function is defined outside of the widget, because it needs to survive across widget
   // destroy in case there are multiple scrollers on a page, and for some reason application
@@ -263,7 +267,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _firstWrapperResize:     true,  // True on first resize, so we can capture original wrapper height
   _firstScrollerExpand:    true,  // True on first scroller expand, so we can capture original CSS
   
-  _createdAt:         0,     // Time when created - used as unique ID
+  createdAt:          null,   // Time when created - used as unique ID
+  pageID:             null,   // Each page that has 1 or more iscrollviews gets a unique page ID # 
+  instanceID:         null,   // Each isntance of iscrollview created on a page gets a unique instance ID #
 
   // True if this scroller content is "dirty" - i.e. needs refresh because refresh
   // was deferred when the page was not the active page. This does NOT imply that the wrapper
@@ -420,7 +426,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // will only be called when the page is removed, so there is no need. Is anyone really
     // going to un-enhance a scroller? If so, set this to false, but then you will have to
     // fix the unbind issue...
-    fastDestroy: true,
+    fastDestroy: false,
    
     // Prevent scrolling the page by grabbing areas outside of the scroller.
     // Normally, this should be true. Set this false if you are NOT using a fixed-height page,
@@ -779,17 +785,41 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (!this.options.debug) { return null; }
     return new Date();
     },
-
+    
+  // Returns the event namespace for the page containing this widget
+  _pageEventNamespace: function() {
+    return ".iscroll_p_" + this.pageID; 
+  },    
+  
+   // Returns the event namespace for this widget
+  _instanceEventNamespace: function() {
+    return this._pageEventNamespace() + "_i_" + this.instanceID;
+  },
+  
   // All bind/unbind/_trigger done by the widget goes through here, to permit logging
-  _bind: function(obj, type, func, objName) {
+  _bind: function(obj, type_in, func, objName) {
+    var type = type_in + this._instanceEventNamespace();
     this._logWidgetEvent("bind " + objName, type);
     obj.bind(type, $.proxy(func, this));
   },
-
-  _unbind: function(obj, type, func, objName) {
-    this._logWidgetEvent("unbind " + objName, type);
-    obj.unbind(type, func);
+  
+  _bindPage: function(type_in, func) {
+    var type = type_in + this._pageEventNamespace();
+    this._logWidgetEvent("bind $page", type);
+    this.$page.bind(type, $.proxy(func, this));
   },
+
+  _unbind: function(obj, type_in, objName) {
+    var type = type_in + this._instanceEventNamespace();  
+    this._logWidgetEvent("unbind " + objName, type);
+    obj.unbind(type);
+  },
+  
+  _unbindPage: function(type_in) {
+    var type = type_in + this._pageEventNamespace();  
+    this._logWidgetEvent("unbind  $page", type);
+    this.$page.unbind(type);
+  },  
   
   // Currently unused - just in case we need it
   _delegate: function(obj, selector, type, func, objName) {
@@ -888,53 +918,87 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
     
   // Get or set the count of instances on the page containing the widget  
-  _instance_count: function(count_in) {
-    var key = "iscroll-instance-count",
-        count = 0;
+  // This increases or decreases depending on the number of iscrollview widgets currently
+  // instantiated on the page.
+  _instanceCount: function(count_in) {
+    var key = "iscroll-private",
+        count = 0,
+        data = this.$page.jqmData(key) || {};
     if (count_in !== undefined) {
       count = count_in;    
-      this.$page.jqmData(key, count);
+      data.instanceCount = count;
+      this.$page.jqmData(key, data);
       }
     else {
-      count = this.$page.jqmData(key);
-      if (count === undefined) { count = 0; }
-    }
+      if (data.instanceCount !== undefined) {
+        count = data.instanceCount;
+        }
+      }
     return count;  
   },
-
+   
+  _nextInstanceID: function(id_in) {
+    var key = "iscroll-private",
+        id = 1,
+        data = this.$page.jqmData(key) || {};
+    if (id_in !== undefined) {
+      id = id_in;    
+      data.nextInstanceID = id;
+      this.$page.jqmData(key, data);
+      }
+    else {
+      if (data.nextInstanceID !== undefined) {
+        id = data.nextInstanceID;
+        }
+      }
+    return id;  
+  },
+  
+  _pageID: function(id_in) {
+    var key = "iscroll-private",
+        id = 1,
+        data = this.$page.jqmData(key) || {};
+    if (id_in !== undefined) {
+      id = id_in;
+      data.pageID = id;
+      this.$page.jqmData(key, data);
+      }
+    else {
+      if (data.pageID !== undefined) {
+        id = data.pageID;
+        }
+      }
+    return id;  
+  },   
+  
   //--------------------------------------------------------------------------
   // Adapt the page for this widget
   //--------------------------------------------------------------------------
   _adaptPage: function() {
-    var _this = this,
-        instanceCount = this._instance_count();        
-    if (instanceCount === 0) {  
+    var _this = this;  
+    
+    // Only adapt the page if this is the only iscrollview widget instantiated on the page
+    // If the count >1, then the page has already been adapted. When the count goes back
+    // to 0, the changes will be un-done
+    if (this._instanceCount() === 1) {
       this.$page.addClass(this.options.pageClass);   
       this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers/etc.
         $(this).addClass(_this.options.fixedHeightClass);
         });     
       if (this.options.preventPageScroll) {
-        this._bind(this.$page, "touchmove", _pageTouchmoveFunc, "$page");  
+        this._bindPage("touchmove", _pageTouchmoveFunc);  
         }
-      }
-    this._instance_count(instanceCount + 1);
-    
+      }   
     },
 
   _undoAdaptPage: function() {
-    var _this = this,
-        instanceCount = this.$page.jqmData("iscroll-instance-count") || 0;     
-    if (instanceCount === 1) {
-      this._unbind(this.$page, "touchmove", _pageTouchmoveFunc, "$page");    
+    var _this = this;  
+    if (this._instanceCount() === 1) { 
       this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers/etc.
         $(this).removeClass(_this.options.fixedHeightClass);
         });     
-      this.$page.jqmRemoveData("iscroll-instance-count");
       this.$page.removeClass(this.options.pageClass);         
       }    
-    else {
-      this.$page.jqmData("iscroll-instance-count", instanceCount - 1);
-      }
     },
 
   //--------------------------------------------------------
@@ -1126,7 +1190,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       return; 
       }
     then = this._log("resizeWrapper() start");
-    viewportHeight = $window.height();
+    viewportHeight = this.$window.height();
     barsHeight = this._calculateBarsHeight();
        
     // The first time we resize, save the size of the wrapper, so we can restore it when destroyed
@@ -1387,17 +1451,26 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _create: function() {
     var $pullDown, 
         $pullUp,
-        then = null,
+        then = new Date,
         hidden; 
         
     this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
     this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper 
     
     if (this.options.debug && this.options.traceCreateDestroy) { 
-      then = this._log("_create() start"); 
+      this._log("_create() start", then); 
       }  
-       
-    this._createdAt = then;
+
+    this.createdAt = then;    
+    this._instanceCount(this._instanceCount() + 1);  // The count of extant instances of this widget on the page
+    this.instanceID = this._nextInstanceID();       // The serial ID of this instance of this widget on the page
+    this._nextInstanceID(this._instanceID + 1);     
+    if (this.instanceID === 1) {
+      this._pageID(nextPageID);
+      nextPageID += 1;
+    }
+    this.pageID = this._pageID();
+
     hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work  
     this._adaptPage();    
     this._createScroller();
@@ -1424,7 +1497,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._modifyWrapper();                 // Various changes to the wrapper   
     
     // Need this for deferred refresh processing
-    this._bind(this.$page, "pagebeforeshow", this._pageBeforeShowFunc, "$page"); 
+    this._bindPage("pagebeforeshow", this._pageBeforeShowFunc); 
 
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
     this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset  
@@ -1437,9 +1510,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         // Setup bindings for window resize and orientationchange
     
     if (this.options.resizeWrapper) {
-      this._bind($window, this.options.resizeEvents, this._windowResizeFunc, "$window");
+      this._bind(this.$window, this.options.resizeEvents, this._windowResizeFunc, "$window");
       if (this.options.scrollTopOnOrientationChange) {
-         this._bind($window, "orientationchange", this._orientationChangeFunc, "$window");
+         this._bind(this.$window, "orientationchange", this._orientationChangeFunc, "$window");
          }        
       }
 
@@ -1477,18 +1550,23 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this.$scroller.removeClass(this.options.scrollerClass);
 
       this._undoCreateScroller();
-      this._undoAdaptPage();    
-
-      // Unbind events
-      // This doesn't seem necessary, as long as the page is being destroyed, and unbinding the 
-      // $window bindings seems to have the unintended consequence of unbinding from ALL instances, 
-      // because a proxy was used. If the page is not destroyed, and you just want to un-enhance
-      // the page, this is probably gonna cause trouble...
-      //this._unbind(this.$page, "pagebeforeshow", this._pageBeforeshowFunc, "$page");
-      //this._unbind($window, this.options.resizeEvents, this._orientationChangeFunc, "$window");
-     // this._unbind($window, "orientationchange", this._orientationChangeFunc, "$window");
-      
+      this._undoAdaptPage();      
       }
+    
+    // Unbind events
+    // This doesn't seem necessary, as long as the page is being destroyed, and unbinding the 
+    // $window bindings seems to have the unintended consequence of unbinding from ALL instances, 
+    // because a proxy was used. If the page is not destroyed, and you just want to un-enhance
+    // the page, this is probably gonna cause trouble...
+
+    this._unbind(this.$window, this.options.resizeEvents, "$window");
+    this._unbind(this.$window, "orientationchange", "$window");
+   
+    this._instanceCount(this._instanceCount() - 1);   // The count of extant instances of this widget on the page  
+    if (this._instanceCount() == 0) {
+      this._unbindPage("pagebeforeshow");  
+      this._unbindPage(this.options.resizeEvents);  
+    }    
 
     // For UI 1.8, destroy must be invoked from the
     // base widget
@@ -1757,10 +1835,12 @@ jQuery(document).bind("pagecreate", function (e) {
   // So, we can simply find elements on this page that match a selector of our choosing, and call
   // our plugin on them.
   
-  // The find() below returns an array of jQuery page objects. The Widget Factory will
-  // enumerate these and call the widget _create() function for each member of the array.
+  // The find() below returns an array of elements within a newly-created page that have
+  // the data-iscroll attribute. The Widget Factory will enumerate these and call the widget 
+  // _create() function for each member of the array.
   // If the array is of zero length, then no _create() fucntion is called.
-  jQuery(e.target).find(":jqmData(iscroll)").iscrollview();
+  var elements = jQuery(e.target).find(":jqmData(iscroll)");
+  elements.iscrollview();
   });
 
 
