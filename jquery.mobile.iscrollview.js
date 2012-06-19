@@ -1436,9 +1436,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         // Setup bindings for window resize and orientationchange
     
     if (this.options.resizeWrapper) {
-      this._bind($(window), this.options.resizeEvents + "." + this._createdAt, this._windowResizeFunc, "$(window)");
+      this._bind($(window), this.options.resizeEvents, this._windowResizeFunc, "$(window)");
       if (this.options.scrollTopOnOrientationChange) {
-         this._bind($(window), "orientationchange." + this._createdAt, this._orientationChangeFunc, "$(window)");
+         this._bind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
          }        
       }
 
