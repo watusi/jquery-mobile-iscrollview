@@ -251,6 +251,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //=========================================================
 
   iscroll:            null,  // The underlying iScroll object
+  $window:            $(window), 
   $wrapper:           null,  // The wrapper element
   $scroller:          null,  // The scroller element (first child of wrapper)
   $pullDown:          null,  // The pull-down element (if any)
@@ -1125,7 +1126,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       return; 
       }
     then = this._log("resizeWrapper() start");
-    viewportHeight = $(window).height();
+    viewportHeight = $window.height();
     barsHeight = this._calculateBarsHeight();
        
     // The first time we resize, save the size of the wrapper, so we can restore it when destroyed
@@ -1436,9 +1437,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         // Setup bindings for window resize and orientationchange
     
     if (this.options.resizeWrapper) {
-      this._bind($(window), this.options.resizeEvents, this._windowResizeFunc, "$(window)");
+      this._bind($window, this.options.resizeEvents, this._windowResizeFunc, "$window");
       if (this.options.scrollTopOnOrientationChange) {
-         this._bind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
+         this._bind($window, "orientationchange", this._orientationChangeFunc, "$window");
          }        
       }
 
@@ -1480,12 +1481,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
       // Unbind events
       // This doesn't seem necessary, as long as the page is being destroyed, and unbinding the 
-      // $(window) bindings seems to have the unintended consequence of unbinding from ALL instances, 
+      // $window bindings seems to have the unintended consequence of unbinding from ALL instances, 
       // because a proxy was used. If the page is not destroyed, and you just want to un-enhance
       // the page, this is probably gonna cause trouble...
       //this._unbind(this.$page, "pagebeforeshow", this._pageBeforeshowFunc, "$page");
-      //this._unbind($(window), this.options.resizeEvents, this._orientationChangeFunc, "$(window)");
-     // this._unbind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
+      //this._unbind($window, this.options.resizeEvents, this._orientationChangeFunc, "$window");
+     // this._unbind($window, "orientationchange", this._orientationChangeFunc, "$window");
       
       }
 
