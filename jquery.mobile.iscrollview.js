@@ -87,12 +87,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // IDevice native app using embedded UIWebView
       IsUIWebView = (/(iPhone|iPad|iPod).*AppleWebKit.(?!.*Safari)/).test(navigator.appVersion),
       // Standalone is when running a website saved to the desktop (SpringBoard)
-      IsIDeviceStandalone = IsIDevice && window.navigator.Standalone,
+      IsIDeviceStandalone = IsIDevice && (window.navigator.Standalone !== undefined),
       HasTouch = (window.ontouchstart !== undefined)  && !IsTouchPad,         
 
-      // Kludgey way to seeing if we have JQM 1.1 or higher, since there apparently is no
+      // Kludgey way to seeing if we have JQM v1.0.x, since there apparently is no
       // way to access the version number!
-      JQMIsLT11 = !$.fn.jqmEnhanceable;
+      JQMIsV1_0 = $.mobile.ignoreContentEnabled === undefined;
       
   // This function is defined outside of the widget, because it needs to survive across widget
   // destroy in case there are multiple scrollers on a page, and for some reason application
@@ -408,7 +408,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // But you still will on desktop browser with mouse, and you will still get "down" effect
     // when a link is selected. This really is a jQuery Mobile problem with listview, and is
     // fixed in JQM 1.1.
-    preventTouchHover: JQMIsLT11 && HasTouch,   // Enable if touch device and JQM version is < 1.1
+    preventTouchHover: JQMIsV1_0 && HasTouch,   // Enable if touch device and JQM version is < 1.1
 
     // This is an experimental feature under development and DOES NOT WORK completely!
     // For one, it breaks mousewheel with jQuery Mobile 1.1 (because jQuery Mobile 1.1 breaks
