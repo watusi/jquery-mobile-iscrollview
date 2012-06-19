@@ -365,19 +365,11 @@ if you have change the page structure and so need to resize the wrapper.
 This is also normally called for you when page orientation or page
 size changes.
 
-####calculateBarsHeight()
-
-This will re-calculate the height of header/footer etc. bars on the
-page. Call this prior to calling `resizeWrapper()`, if you change the
-height of header/footer etc. after the widget has been created.
-
-
 ####expandScrollerToFillWrapper()
 
 This will expand the size of the scroller to fill the wrapper, so that even content that
 is shorter than the wrapper will scroll. Call this after calling `resizeWrapper()`, or if you 
 manually resize the wrapper after instantiation.
-
 
 ###iScroll Methods
 

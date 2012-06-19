@@ -1,6 +1,21 @@
 
 
 body {
+
+  /* Disable Safari scrollbars, because jQuery Mobile annoyingly insists on setting the
+     min-height of the page to 320px. It does this (unsuccessfully, in 1.0.1, but successfully
+     in 1.1) in order to keep the Mobile Safari location bar from appearing during page
+     transitions. But this causes a problem in desktop Safari if the height is <320px.
+     If you resize to <320 in a desktop browser, you will see a scrollbar if you don't
+     use this style.       
+        
+     I haven't put this in jquery.mobile.iscrollview.css, because it has to be applied
+     to <body>, and so it will affect the entire site/app. It is an appropriate
+     setting for any site/app meant to use a page size fixed at the browser window size. 
+     If your site/app mixes fixed-height pages with scrolling pages, you will need to
+     work out another solution. */
+  overflow:hidden;
+  
   /* optimizeSpeed is the default. Using optimizeLegibility here will typically DOUBLE
      rendering time! So, think twice about using optimizeLegibility */
   text-rendering: optimizeSpeed;
@@ -46,6 +61,55 @@ body {
   border-top: 1px solid #00ff00;
   border-bottom: 1px solid #00ff00;
 } 
+
+
+/* Demonstrate how to make headers/footer a different height for different orientations
+   or screen sizes. This also demonstrates that the widget now (once again) measures the 
+   headers/footers on every resize. 
+   
+   Unfortunately, the state of detecting mobile orientation on mobile devices is a mess.
+   Mobile Safari doesn't support orientation media query, while iPad doesn't. There are 
+   various hacks involving max-width, max-height, max-device-width, etc. Fortunately, for
+   this demo, we can use something simple. We want the header and footer to be smaller
+   in landscape because they make the scrollable area too small. So, just test max-height.
+   This will of course also make the header/footer smaller on a desktop browser with 
+   very short height - which makes it easy to demonstrate. :) */
+ 
+
+   
+.ui-navbar a {
+  /* For demo, make portrait navbar the same height as iPhone tabbar, because using the
+     standard navbar height for portrait and a shorter navbar for landscape would make
+     the navbar unusably short. */
+     height: 47px;    /* + 2px margins = 49px */
+}
+
+.ui-navbar .ui-btn-inner {
+  font-size: 14px;
+}
+   
+@media only screen and (max-height: 280px){
+  .ui-header { 
+    height: 30px;
+  }
+  
+  .ui-header .ui-title {
+    font-size: 14px;
+  }
+  
+  /* Make the buttons in the header just disappear - they're too big for a tiny header */
+  .ui-header .ui-btn {
+    display: none;
+  }
+  
+  .ui-navbar a {    
+    height: 37px;    /* + 2px border = 39px */
+  }
+  
+  .ui-navbar .ui-btn-inner {
+    font-size: 13px;
+  }
+}
 
 /* Force list items to be cached on WebKit 
    See: cubiq.org/you-shall-not-flicker 

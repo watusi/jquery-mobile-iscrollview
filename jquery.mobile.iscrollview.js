@@ -262,16 +262,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _firstWrapperResize:     true,  // True on first resize, so we can capture original wrapper height
   _firstScrollerExpand:    true,  // True on first scroller expand, so we can capture original CSS
 
-  _barsHeight:       null,   // Total height of headers, footers, etc.
-
-  // True if this scroller is "dirty" - i.e. needs refresh because refresh
-  // was deferred when the page was not the active page.
+  // True if this scroller content is "dirty" - i.e. needs refresh because refresh
+  // was deferred when the page was not the active page. This does NOT imply that the wrapper
+  // needs to be refreshed - see _sizeDirty, below.
   _dirty:               false,
   _dirtyCallbackBefore: null,
   _dirtyCallbackAfter:  null,
   _dirtyContext:        null,
 
-  _sizeDirty:     false,  // True if wrapper resize is needed
+  _sizeDirty:     false,  // True if wrapper resize is needed because page size or fixed content
+                          //  size changed
 
   //----------------------------------------------------
   // Options to be used as defaults
@@ -835,14 +835,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //------------------------------------------------------------------------------
 
   _pageBeforeShowFunc: function(e) {
-   var then = this._logWidgetEvent("_pageBeforeShowFunc", e),
-       _this = this;
+   var then = this._logWidgetEvent("_pageBeforeShowFunc", e);
        
    if (this._sizeDirty) {
-     this._withPageVisible(function () {
-       _this._resizeWrapper();
-       _this._expandScrollerToFillWrapper();
-       });
+       this.resizeWrapper();
       }
       
    if (this._dirty) {
@@ -864,21 +860,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
   // Called on resize events
   _windowResizeFunc: function(e) {
-    var then = this._logWidgetEvent("_windowResizeFunc", e),
-        _this = this;
+    var then = this._logWidgetEvent("_windowResizeFunc", e);
     if (this.options.deferNonActiveResize && !this.$page.hasClass("ui-page-active"))  {
       this._sizeDirty = true;
       if (this.options.traceResizeWrapper) { this._log("resizeWrapper() (deferred)"); }
       }
-    else {
-      this._withPageVisible(function() {
-        _this._resizeWrapper();
-        _this._expandScrollerToFillWrapper();      
-      });    
-    this.refresh();         
+    else {  
+      this.refresh(null, this._resizeWrapper(), null, this);    
       }
-
-   this._logWidgetEvent("_windowResizeFunc", e, then);
+    this._logWidgetEvent("_windowResizeFunc", e, then);
     },
 
   // On some platforms (iOS, for example) you need to scroll back to top after orientation change,
@@ -950,13 +940,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$page.find("." + this.options.fixedHeightClass).each(function() {  // Iterate over headers/footers/etc.
         barsHeight += $(this).outerHeight(true);
         });
-    this._barsHeight = barsHeight;
+    return barsHeight;
     },
-    
-  calculateBarsHeight: function() {
-    this._withPageVisible(this._calculateBarsHeight);
-    },
-
+   
   //-----------------------------------------------------------------------
   // Determine the box-sizing model of an element
   // While jQuery normalizes box-sizing models when retriving geometry,
@@ -1120,10 +1106,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }
     },
     
-   expandScrollerToFillWrapper: function () {
-     this._withPageVisible(this._expandScrollerToFillWrapper);
-   },
-
   _undoExpandScrollerToFillWrapper: function() {
     this._restoreStyle(this.$scroller, this._origScrollerStyle);
     },
@@ -1133,24 +1115,32 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   _resizeWrapper: function() {
-    var then;
+    var then, viewportHeight, oldWrapperHeight, barsHeight, newWrapperHeight;
     if (!this.options.resizeWrapper) { 
       return; 
       }
     then = this._log("resizeWrapper() start");
-    this.$wrapper.height(
-    $(window).height() -         // Height of the window
-    this._barsHeight -           // Height of fixed bars or "other stuff" outside of the wrapper
-    this._wrapperHeightAdjustForBoxModel +   // Make adjustment based on content-box model
-    // Note: the following will fail for Safari desktop with Develop/User Agent/iPhone
-    (IsMobileSafari && !IsIPad ? 60 : 0) +  // Add 60px for space recovered from Mobile Safari address bar
-    this.options.wrapperAdd      // User-supplied fudge-factor if needed
-    );
-    // The first time we resize, save the size of the wrapper
+    viewportHeight = $(window).height();
+    barsHeight = this._calculateBarsHeight();
+       
+    // The first time we resize, save the size of the wrapper, so we can restore it when destroyed
     if (this._firstWrapperResize) {
       this._origWrapperHeight = this.$wrapper.height() - this._wrapperHeightAdjustForBoxModel;
       this._firstWrapperResize = false;
-      }
+      }    
+    
+    newWrapperHeight = 
+      viewportHeight -
+      barsHeight -                             // Height of fixed bars or "other stuff" outside of the wrapper
+      this._wrapperHeightAdjustForBoxModel +   // Make adjustment based on content-box model
+      // Note: the following will fail for Safari desktop with Develop/User Agent/iPhone
+      // Fake fullscreen or webview by using custom user agent and removing "Safari" from string
+      (IsMobileSafari && !IsIPad ? 60 : 0) +  // Add 60px for space recovered from Mobile Safari address bar
+      this.options.wrapperAdd;                // User-supplied fudge-factor if needed
+    
+    this.$wrapper.height(newWrapperHeight);   
+    this._expandScrollerToFillWrapper(); 
+    
     if (this.options.traceResizeWrapper) {
       this._logInterval("resizeWrapper() end" + (this._sizeDirty ? " (dirty)" : ""), then);
       }
@@ -1187,7 +1177,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     //
     // TODO: Consider using jquery-resize.js to rate-limit resize events
     if (this.options.resizeWrapper) {
-      this._resizeWrapper();   // Resize wrapper to take remaining space after bars
       this._bind($(window), this.options.resizeEvents, this._windowResizeFunc, "$(window)");
       if (this.options.scrollTopOnOrientationChange) {
         this._bind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
@@ -1319,7 +1308,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
 
     setTimeout(function() {
-      var later, hidden;
+      var later = null, 
+          hidden;
 
       if (_this.options.traceRefresh) {
        later =  _this._logInterval("refresh() start", then);
@@ -1415,7 +1405,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _create: function() {
     var $pullDown, 
         $pullUp,
-        then,
+        then = null,
         hidden; 
         
     this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
@@ -1446,24 +1436,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       } 
             
     // Merge options from data-iscroll, if present
-    $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));  
-
-    // Calculate height of headers, footers, etc.
-    // We only do this at create time. If you change their height after creation,
-    // please call calculateBarsHeight() yourself prior to calling resizeWrapper().
-    // Calling this from resize events on desktop platforms is unreliable.
-    // Some desktop platforms (example, Safari) will report unreliable element
-    // heights during resize.
-    this._calculateBarsHeight();        
-
+    $.extend(true, this.options, this.$wrapper.jqmData("iscroll")); 
+    
     this._modifyWrapper();                 // Various changes to the wrapper                      
 
     // Need this for deferred refresh processing
     this._bind(this.$page, "pagebeforeshow", this._pageBeforeShowFunc, "$page"); 
 
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
-    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset   
-    this._expandScrollerToFillWrapper(); // Make empty scroller content draggable   
+    this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset  
+    this._resizeWrapper();             // Resize the wrapper to fill available space 
     this._addScrollerPadding();            // Put back padding removed from wrapper          
     this._create_iscroll_object();          
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options    
@@ -1478,7 +1460,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // the widget has made to the DOM
   //----------------------------------------------------------
   destroy: function () {
-    var then;
+    var then = null;
     if (this.options.debug && this.options.traceCreateDestroy) {
       then = this._log("destroy() start");
       } 
