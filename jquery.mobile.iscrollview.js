@@ -261,6 +261,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
   _firstWrapperResize:     true,  // True on first resize, so we can capture original wrapper height
   _firstScrollerExpand:    true,  // True on first scroller expand, so we can capture original CSS
+  
+  _createdAt:         0,     // Time when created - used as unique ID
 
   // True if this scroller content is "dirty" - i.e. needs refresh because refresh
   // was deferred when the page was not the active page. This does NOT imply that the wrapper
@@ -785,7 +787,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
   _unbind: function(obj, type, func, objName) {
     this._logWidgetEvent("unbind " + objName, type);
-    //obj.unbind(type, func);
+    obj.unbind(type, func);
   },
   
   // Currently unused - just in case we need it
@@ -866,7 +868,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       if (this.options.traceResizeWrapper) { this._log("resizeWrapper() (deferred)"); }
       }
     else {  
-      this.refresh(null, this._resizeWrapper(), null, this);    
+        this.resizeWrapper();
+        //this.refresh(0, this.resizeWrapper(), null, this, true);   
+        this.refresh();
       }
     this._logWidgetEvent("_windowResizeFunc", e, then);
     },
@@ -936,8 +940,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Calculate total bar heights.
   //--------------------------------------------------------
   _calculateBarsHeight: function() {
-    var barsHeight = 0;
-    this.$page.find("." + this.options.fixedHeightClass).each(function() {  // Iterate over headers/footers/etc.
+    var barsHeight = 0,
+        $bars = this.$page.find("." + this.options.fixedHeightClass);
+    $bars.each(function() {  // Iterate over headers/footers/etc.
         barsHeight += $(this).outerHeight(true);
         });
     return barsHeight;
@@ -1115,7 +1120,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   _resizeWrapper: function() {
-    var then, viewportHeight, oldWrapperHeight, barsHeight, newWrapperHeight;
+    var then, viewportHeight, barsHeight, newWrapperHeight;
     if (!this.options.resizeWrapper) { 
       return; 
       }
@@ -1147,7 +1152,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
     
     resizeWrapper: function () {
-      this._withPageVisible(this._resizeWrapper);
+      var hidden = this._setPageVisible();
+      this._resizeWrapper();
+      this._restorePageVisibility(hidden);      
     },
 
   _undoResizeWrapper: function() {
@@ -1162,26 +1169,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._modifyWrapperCSS();
 
     this._wrapperHeightAdjustForBoxModel = this._getHeightAdjustForBoxModel(this.$wrapper);
-
-    // Resize the wrapper and refresh iScroll on resize
-    // You might want to do this on orientationchange on mobile
-    // devices, but, on iOS, at least, resize event works better,
-    // because orientationchange event happens too late and you will
-    // see footer(s) being pushed down after the rotation
-    //
-    // iscroll4 has event handling for resize and orientation change,
-    // but doesn't seem to work with JQuery Mobile, probably because
-    // of it's page structure for AJAX loading. So, we have to do this
-    // in the widget code. As well, we need to resize the wrapper in any
-    // case.
-    //
-    // TODO: Consider using jquery-resize.js to rate-limit resize events
-    if (this.options.resizeWrapper) {
-      this._bind($(window), this.options.resizeEvents, this._windowResizeFunc, "$(window)");
-      if (this.options.scrollTopOnOrientationChange) {
-        this._bind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
-        }
-      }
     },
 
   _undoModifyWrapper: function() {
@@ -1393,12 +1380,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
    if (hidden) { this.$page.css("display", ""); }
   },
   
-  _withPageVisible: function(f) {
-    var hidden = this._setPageVisible();
-    f();
-    this._restorePageVisibility(hidden);
-  },
-
   //-----------------------------------------
   // Automatically called on page creation
   //-----------------------------------------
@@ -1414,7 +1395,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (this.options.debug && this.options.traceCreateDestroy) { 
       then = this._log("_create() start"); 
       }  
-             
+       
+    this._createdAt = then;
     hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work  
     this._adaptPage();    
     this._createScroller();
@@ -1438,8 +1420,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Merge options from data-iscroll, if present
     $.extend(true, this.options, this.$wrapper.jqmData("iscroll")); 
     
-    this._modifyWrapper();                 // Various changes to the wrapper                      
-
+    this._modifyWrapper();                 // Various changes to the wrapper   
+    
     // Need this for deferred refresh processing
     this._bind(this.$page, "pagebeforeshow", this._pageBeforeShowFunc, "$page"); 
 
@@ -1449,7 +1431,17 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._addScrollerPadding();            // Put back padding removed from wrapper          
     this._create_iscroll_object();          
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options    
-    this._restorePageVisibility(hidden);     
+    this._restorePageVisibility(hidden);  
+    
+        // Setup bindings for window resize and orientationchange
+    
+    if (this.options.resizeWrapper) {
+      this._bind($(window), this.options.resizeEvents + "." + this._createdAt, this._windowResizeFunc, "$(window)");
+      if (this.options.scrollTopOnOrientationChange) {
+         this._bind($(window), "orientationchange." + this._createdAt, this._orientationChangeFunc, "$(window)");
+         }        
+      }
+
     if (this.options.debug && this.options.traceCreateDestroy) {
       this._logInterval("_create() end", then);
       }          
@@ -1493,7 +1485,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // the page, this is probably gonna cause trouble...
       //this._unbind(this.$page, "pagebeforeshow", this._pageBeforeshowFunc, "$page");
       //this._unbind($(window), this.options.resizeEvents, this._orientationChangeFunc, "$(window)");
-      // this._unbind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
+     // this._unbind($(window), "orientationchange", this._orientationChangeFunc, "$(window)");
+      
       }
 
     // For UI 1.8, destroy must be invoked from the
@@ -1522,6 +1515,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     //Respond to any changes the user makes to the option method
     //----------------------------------------------------------
     _setOption: function( key, value ) {
+      var hidden;
+      
       // iScroll4 doesn't officially support changing options after an iscroll object has been
       // instantiated. However, some changes will work if you do a refresh() after changing the
       // option. This is undocumented other than from user comments on the iscroll4 Google
@@ -1545,7 +1540,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
         //default:
           this.options[ key ] = value;
           this.iscroll.destroy();
-          this._withPageVisible(this._create_iscroll_object);
+          hidden = this._setPageVisible();
+          this._create_iscroll_object();
+          this._restorePageVisibility(hidden);          
           //break;
         //}
       // For UI 1.8, _setOption must be manually invoked from
