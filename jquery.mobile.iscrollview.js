@@ -1451,7 +1451,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _create: function() {
     var $pullDown, 
         $pullUp,
-        then = new Date,
+        then = new Date(),
         hidden; 
         
     this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
@@ -1563,7 +1563,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._unbind(this.$window, "orientationchange", "$window");
    
     this._instanceCount(this._instanceCount() - 1);   // The count of extant instances of this widget on the page  
-    if (this._instanceCount() == 0) {
+    if (this._instanceCount() === 0) {
       this._unbindPage("pagebeforeshow");  
       this._unbindPage(this.options.resizeEvents);  
     }    
