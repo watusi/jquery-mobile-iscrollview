@@ -788,37 +788,45 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     
   // Returns the event namespace for the page containing this widget
   _pageEventNamespace: function() {
-    return ".iscroll_p_" + this.pageID; 
+    return ".iscroll_" + this.pageID; 
   },    
   
    // Returns the event namespace for this widget
   _instanceEventNamespace: function() {
-    return this._pageEventNamespace() + "_i_" + this.instanceID;
+    return this._pageEventNamespace() + "_" + this.instanceID;
   },
   
-  // All bind/unbind/_trigger done by the widget goes through here, to permit logging
-  _bind: function(obj, type_in, func, objName) {
-    var type = type_in + this._instanceEventNamespace();
-    this._logWidgetEvent("bind " + objName, type);
-    obj.bind(type, $.proxy(func, this));
+  // Takes a space-separated list of event types, and appends the given namespace to each
+  _addEventsNamespace: function(types_in, namespace) {
+    var types_out,
+        types = types_in.split(" ");
+    $.each(types, function(k,v) {types[k] += namespace;});
+    return types.join(" ");        
+  },  
+    
+  // All bind/unbind done by the widget goes through here, to permit logging
+  _bind: function(obj, types_in, func, objName) {
+    var types = this._addEventsNamespace(types_in, this._instanceEventNamespace());   
+    this._logWidgetEvent("bind " + objName, types);
+    obj.bind(types, $.proxy(func, this));
   },
   
-  _bindPage: function(type_in, func) {
-    var type = type_in + this._pageEventNamespace();
-    this._logWidgetEvent("bind $page", type);
-    this.$page.bind(type, $.proxy(func, this));
+  _bindPage: function(types_in, func) {
+    var types = this._addEventsNamespace(types_in, this._pageEventNamespace()); 
+    this._logWidgetEvent("bind $page", types);
+    this.$page.bind(types, $.proxy(func, this));
   },
 
-  _unbind: function(obj, type_in, objName) {
-    var type = type_in + this._instanceEventNamespace();  
-    this._logWidgetEvent("unbind " + objName, type);
-    obj.unbind(type);
+  _unbind: function(obj, types_in, objName) {
+    var types = this._addEventsNamespace(types_in, this._instanceEventNamespace());   
+    this._logWidgetEvent("unbind " + objName, types);
+    obj.unbind(types);
   },
   
-  _unbindPage: function(type_in) {
-    var type = type_in + this._pageEventNamespace();  
-    this._logWidgetEvent("unbind  $page", type);
-    this.$page.unbind(type);
+  _unbindPage: function(types_in) {
+    var types = this._addEventsNamespace(types_in, this._instanceEventNamespace());
+    this._logWidgetEvent("unbind  $page", types);
+    this.$page.unbind(types);
   },  
   
   // Currently unused - just in case we need it
