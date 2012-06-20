@@ -97,19 +97,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       
       nextPageID = 1;      // Used to generate event namespaces
   
- 
+   /* Placed here instead of anonymous functions to facilitate debugging.
+      No logging, because these events are too frequent */
       
-  // This function is defined outside of the widget, because it needs to survive across widget
-  // destroy in case there are multiple scrollers on a page, and for some reason application
-  // code destroys one or more widgets, leaving at least one. The widget keeps a count of
-  // scrollers in JQM data attached to the page, and binds to this function when the first
-  // scroller widget is created and unbinds when the last one is destroyed.
-  //
-    // This will only be called on scrollmoves outside of the scroller. Scrolling the page on 
-  // scrolls inside the scroller is prevented by the onbeforescrollmove callback.
   function _pageTouchmoveFunc(e) {
     e.preventDefault();
-    }    
+    }
 
   //===============================================================================
   // This essentially subclasses iScroll. Originally, this was just so that we could
@@ -1546,7 +1539,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._unbind(this.$window, "orientationchange", "$window");  
     if (this._instanceCount() === 1) { 
       this._unbindPage("pagebeforeshow");  
-      this._unbindPage(this.options.resizeEvents);     
+      if (HasTouch) {
+      this._unbindPage("touchmove");
+      }   
     }       
       
     // fastDestroy option skips tearing down the modifications to the page, because we assume
