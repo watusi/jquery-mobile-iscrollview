@@ -88,7 +88,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       IsUIWebView = (/(iPhone|iPad|iPod).*AppleWebKit.(?!.*Safari)/).test(navigator.appVersion),
       // Standalone is when running a website saved to the desktop (SpringBoard)
       IsIDeviceStandalone = IsIDevice && (window.navigator.Standalone !== undefined),
-      HasTouch = (window.ontouchstart !== undefined)  && !IsTouchPad, 
+      HasTouch = window.ontouchstart !== undefined, 
       HasOrientation = window.onorientationchange !== undefined,      
 
       // Kludgey way to seeing if we have JQM v1.0.x, since there apparently is no
@@ -999,7 +999,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers/etc.
         $(this).addClass(_this.options.fixedHeightClass);
         });     
-      if (this.options.preventPageScroll) {
+      if (HasTouch && this.options.preventPageScroll) {
         this._bindPage("touchmove", _pageTouchmoveFunc);  
         }
       }   
