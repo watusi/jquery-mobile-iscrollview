@@ -24,7 +24,16 @@
        scrollbar with iscroll4 default styling of the scrollbar. Either relative or absolute on the 
        wrapper will cause the absolute positioning  of the scrollbar in iScroll to be relative to 
        the wrapper. */ 
-    position: relative;                        
+    position: relative;   
+  
+    /* iScroll examples all show the z-index of the wrapper raised to 1 (default is 0). There may
+       be an issue related to touch/click that this solves on specific platforms or depending on 
+       the ordering of elements in the HTML source if elements are fixed positioned. 
+       This would make sure that the wrapper sees click before underlying content. '
+       
+       Howver, raising the wrapper Z-index creates a serious problem on page transitions on
+       iPhone, so I don't use it here. */ 
+                    
 }
 
 /* The scroller is the element that contains the elements that are scrolled. The height of this
@@ -40,6 +49,10 @@
  * attribute. The widget adds-up the height of these elements when it sizes the wrapper.
  */
 .iscroll-fixed {
+  /* One often sees headers/footers/etc. raised to a z-index of 1000 in iScroll examples. This
+     is probably because the scroll bar has been mis-placed, and raising the z-index of the
+     header/footer masks the problem. I don't do it here. */
+     
   /* Add any styles that you want to add to fixed elements */
 }
 
