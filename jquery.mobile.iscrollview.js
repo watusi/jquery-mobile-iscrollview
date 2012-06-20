@@ -1531,41 +1531,33 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       then = this._log("destroy() start");
       } 
       
+    // Unbind events
+    this._unbind(this.$window, this.options.resizeEvents, "$window");
+    this._unbind(this.$window, "orientationchange", "$window");  
+    if (this._instanceCount() === 1) { 
+      this._unbindPage("pagebeforeshow");  
+      this._unbindPage(this.options.resizeEvents);     
+    }       
+      
     // fastDestroy option skips tearing down the modifications to the page, because we assume
     // that the page itself is being removed, and nobody is going to be silly enough to
     // un-ehance a scroller and keep the page.  
     if (!this.options.fastDestroy) {      
       this.iscroll.destroy();
       this.iscroll = null;
-
       this._undoExpandScrollerToFillWrapper();
       this._undoModifyPullDown();
       this._undoModifyPullUp();
       this._undoAddScrollerPadding();
       this._undoModifyWrapper();
-
-      // Remove the classes we added, since no longer using iscroll at
-      // this point.
       this.$wrapper.removeClass(this.options.wrapperClass);
       this.$scroller.removeClass(this.options.scrollerClass);
-
-      this._undoCreateScroller();
-      this._undoAdaptPage();      
+      this._undoCreateScroller();     
       }
     
-    // Unbind events
-    // This doesn't seem necessary, as long as the page is being destroyed, and unbinding the 
-    // $window bindings seems to have the unintended consequence of unbinding from ALL instances, 
-    // because a proxy was used. If the page is not destroyed, and you just want to un-enhance
-    // the page, this is probably gonna cause trouble...
-
-    this._unbind(this.$window, this.options.resizeEvents, "$window");
-    this._unbind(this.$window, "orientationchange", "$window");
-   
     this._instanceCount(this._instanceCount() - 1);   // The count of extant instances of this widget on the page  
     if (this._instanceCount() === 0) {
-      this._unbindPage("pagebeforeshow");  
-      this._unbindPage(this.options.resizeEvents);  
+      this._undoAdaptPage();     
     }    
 
     // For UI 1.8, destroy must be invoked from the
