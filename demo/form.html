@@ -53,7 +53,30 @@
                   <option value="on" selected>ON</option>
                 </select>
             </li>
-          </ul>          
+          </ul>  
+          
+          <ul data-role="listview" data-inset="true">
+            <li data-role="fieldcontain">
+              <label for="address1" class="itemLabel">Address1</label>
+              <input type="text" name="form-test[address1]" class="itemValue" placeholder="Address line 1" />
+           </li>
+            <li data-role="fieldcontain">
+              <label for="address2" class="itemLabel">Address2</label>
+              <input type="text" name="form-test[address2]" class="itemValue" placeholder="Address line 2" />
+           </li>
+            <li data-role="fieldcontain">
+              <label for="city" class="itemLabel">City</label>
+              <input type="text" name="form-test[city]" class="itemValue" style="width:15em"; placeholder="City" />
+           </li>  
+            <li data-role="fieldcontain">
+              <label for="state" class="itemLabel">State</label>
+              <input type="text" name="form-test[state]" class="itemValue" style="width:2em"; placeholder="State" />
+           </li> 
+            <li data-role="fieldcontain">
+              <label for="zip" class="itemLabel">Zip Code</label>
+              <input type="text" name="form-test[zip]" class="itemValue" style="width:8em;" placeholder="Zip" />
+           </li>                                           
+          </ul>                  
           
         </form>
       </div>
