@@ -383,8 +383,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // On some platforms (iOS, for example) we need to scroll to top after orientation change,
     // because the address bar pushed the window down. jQuery Mobile handles this for page links,
-    // but doesn't for orientationchange. We actually do this on resize, because orientationchange
-    // seems unreliable on iOS.
+    // but doesn't for orientationchange.
     // If you have multiple scrollers, only enable this for one of them
     scrollTopOnResize: true,
 
