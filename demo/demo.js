@@ -26,3 +26,17 @@
         });
     });
   }(jQuery));
+
+$(document).bind("mobileinit", function() {
+//Turn off tap-toggle visibility for fixed toolbars. They are too troublesome during resize
+  $.mobile.fixedToobars.setTouchToggleEnabled(false); 
+  $.mobile.defaultPageTransition = "slide";
+  
+  // Makes nicer transitions on platforms that support it.
+  // This is for 1.1 only, but won't hurt 1.0
+  // It's disabled by default in JQM, because touchOverflow is still half-baked on most
+  // platforms - you still would need to implement your own scrollbar, and doesn't have
+  // native physics. But iScroll solves that problem. So, might as well enable this,
+  // as it makes the JQM page transitions much better.
+  $.mobile.touchOverflowEnabled = true; 
+});
