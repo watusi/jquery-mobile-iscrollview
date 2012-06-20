@@ -720,10 +720,12 @@ Default: `true`
 
 A space-separated list of events which will cause a resize of the wrapper.
 
-Note: This defaults to `"orientationchange"` for iDevices. If you have the `Safari/Advanced/Debug
-Console` system Settings option set, you may wish to change this to `"resize orientationchange"`.
+Note that mobile devices are very inconsistent in regard to `orientationchange` and `resize` events.
+There is no consistency as to whether just one or both event are fired, and multiple events
+of each type are fired on some devices. They are also inconsistent as to which fired event
+first reflects the new width and height values.
 
-Default: `"orientationchange"` for iDevices, `resize` for others
+Default: `"resize orientationchange"` if device supports orientation. Otherwise, `"resize"`.
 
 ####refreshOnPageBeforeShow
 

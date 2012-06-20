@@ -88,7 +88,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       IsUIWebView = (/(iPhone|iPad|iPod).*AppleWebKit.(?!.*Safari)/).test(navigator.appVersion),
       // Standalone is when running a website saved to the desktop (SpringBoard)
       IsIDeviceStandalone = IsIDevice && (window.navigator.Standalone !== undefined),
-      HasTouch = (window.ontouchstart !== undefined)  && !IsTouchPad,         
+      HasTouch = (window.ontouchstart !== undefined)  && !IsTouchPad, 
+      HasOrientation = window.onorientationchange !== undefined,      
 
       // Kludgey way to seeing if we have JQM v1.0.x, since there apparently is no
       // way to access the version number!
@@ -346,8 +347,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // On some mobile devices you may wish to add/substitute orientationchange event
     // iOS 4.x will trigger resize twice then orientationchange
     // iOS 5.x will trigger resize once then orientationchange
+    // Android devices can trigger multiple events, but generally orientationchange before resize
+    // Devices are inconsistent as to when they first report the new width/height
+    // Android tends to first trigger orientationchange with the width/height unchanged, the
+    //  orientationchange with the new width/height.
     // Experimentation with other devices would be useful
-    resizeEvents:  "resize",
+    resizeEvents:  "resize" + (HasOrientation ? " orientationchange" : ""),
 
     // Refresh iscrollview on page show event. This should be true if content inside a
     // scrollview might change while the page is cached but not shown, and application hasn't
@@ -900,6 +905,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
    },
 
   // Called on resize events
+  // TODO: Detect if size is unchanged, and if so just ignore?
   _windowResizeFunc: function(e) {
     var then = this._logWidgetEvent("_windowResizeFunc", e);
     if (this.options.deferNonActiveResize && !this.$page.hasClass("ui-page-active"))  {
