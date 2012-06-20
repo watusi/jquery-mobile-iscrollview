@@ -902,8 +902,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }
     else {  
         this.resizeWrapper();
+        this.refresh(); 
         //this.refresh(0, this.resizeWrapper(), null, this, true);   
-        this.refresh();
+
       }
     this._logWidgetEvent("_windowResizeFunc", e, then);
     },
@@ -1192,6 +1193,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       return; 
       }
     then = this._log("resizeWrapper() start");
+    this.$page.trigger("updatelayout");  // Let jQuery mobile update fixed header/footer, collapsables, etc.
     viewportHeight = this.$window.height();
     barsHeight = this._calculateBarsHeight();
        
