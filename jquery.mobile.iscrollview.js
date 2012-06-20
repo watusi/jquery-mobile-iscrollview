@@ -601,10 +601,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       onBeforeScrollMove:  function(e) { 
         this._doCallback("onBeforeScrollMove", e); 
         e.preventDefault();    // Don't scroll the page for touchmove inside scroller
-        e.stopPropagation();   // And don't unnecessarily bubble up, as we have also bound to
-                               // the page in jQuery if preventPageScroll option is true.
-                               // We could do a delegation on the page content minus the scroller,
-                               // but that gets complicated if there are more than one scroller.
         },
 
       onScrollMove: function(e) {
