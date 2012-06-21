@@ -256,7 +256,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   $page:              null,  // The page element that contains the wrapper
   _wrapperHeightAdjustForBoxModel: 0,  // This is set in _create
 
-  _firstWrapperResize:     true,  // True on first resize, so we can capture original wrapper height
   _firstScrollerExpand:    true,  // True on first scroller expand, so we can capture original CSS
   
   createdAt:          null,   // Time when created - used as unique ID
@@ -1194,13 +1193,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$page.trigger("updatelayout");  // Let jQuery mobile update fixed header/footer, collapsables, etc.
     viewportHeight = this.$window.height();
     barsHeight = this._calculateBarsHeight();
-       
-    // The first time we resize, save the size of the wrapper, so we can restore it when destroyed
-    if (this._firstWrapperResize) {
-      this._origWrapperHeight = this.$wrapper.height() - this._wrapperHeightAdjustForBoxModel;
-      this._firstWrapperResize = false;
-      }    
-    
+          
     newWrapperHeight = 
       viewportHeight -
       barsHeight -                             // Height of fixed bars or "other stuff" outside of the wrapper
@@ -1225,7 +1218,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _undoResizeWrapper: function() {
-    if (this.origWrapperHeight !== undefined) { this.$wrapper.height(this._origWrapperHeight); }
+    if (this._origWrapperHeight !== undefined) { this.$wrapper.height(this._origWrapperHeight); }
     },
 
   //---------------------------------------------------------
@@ -1473,7 +1466,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     }
     this.pageID = this._pageID();
 
-    hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work  
+    hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work
+    // Save the original wrapper height, so it can be restored in destroy  
+    this._origWrapperHeight = this.$wrapper.height() - this._wrapperHeightAdjustForBoxModel;    
     this._adaptPage();    
     this._createScroller();
     this.$scroller = this.$wrapper.children(":first");   // Get the first child of the wrapper, which is the
