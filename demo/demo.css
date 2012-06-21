@@ -165,21 +165,27 @@ body {
    images rather than CSS-generated gradients,  because they have been proven faster than CSS 
    gradients. If you are developing a website, using image gradients will increase the download
    time, both due to the size of the images (but generally small) and the additional round-trip(s).
+   
+   I eliminate text shadows as well, as these reportedly degrade performance on Android
+   browsers.
 */
 
 .iscroll-content .ui-listview li.ui-btn-up-c
   {
   background-image: none; 
+  text-shadow: none;
   }
    
 .iscroll-content .ui-listview li.ui-btn-hover-c
   {
   background-image: none;
+  text-shadow: none;
   }
   
 .iscroll-content .ui-listview li.ui-btn-down-c 
   {
   background-image: none;
+  text-shadow: none;
   } 
 
 /* If you want to change the text color or other text properties of listview buttons in the scroller, 
