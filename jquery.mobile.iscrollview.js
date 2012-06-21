@@ -88,8 +88,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       IsUIWebView = (/(iPhone|iPad|iPod).*AppleWebKit.(?!.*Safari)/).test(navigator.appVersion),
       // Standalone is when running a website saved to the desktop (SpringBoard)
       IsIDeviceStandalone = IsIDevice && (window.navigator.Standalone !== undefined),
-      HasTouch = window.ontouchstart !== undefined, 
-      HasOrientation = window.onorientationchange !== undefined,      
 
       // Kludgey way to seeing if we have JQM v1.0.x, since there apparently is no
       // way to access the version number!
@@ -345,7 +343,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Android tends to first trigger orientationchange with the width/height unchanged, the
     //  orientationchange with the new width/height.
     // Experimentation with other devices would be useful
-    resizeEvents:  "resize" + (HasOrientation ? " orientationchange" : ""),
+    resizeEvents:  "resize" + ($.support.orientation ? " orientationchange" : ""),
 
     // Refresh iscrollview on page show event. This should be true if content inside a
     // scrollview might change while the page is cached but not shown, and application hasn't
@@ -412,7 +410,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // But you still will on desktop browser with mouse, and you will still get "down" effect
     // when a link is selected. This really is a jQuery Mobile problem with listview, and is
     // fixed in JQM 1.1.
-    preventTouchHover: JQMIsV1_0 && HasTouch,   // Enable if touch device and JQM version is < 1.1
+    preventTouchHover: JQMIsV1_0 && $.support.touch,   // Enable if touch device and JQM version is < 1.1
 
     // This is an experimental feature under development and DOES NOT WORK completely!
     // For one, it breaks mousewheel with jQuery Mobile 1.1 (because jQuery Mobile 1.1 breaks
@@ -988,7 +986,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this.$page.find(this.options.fixedHeightSelector).each(function() {  // Iterate over headers/footers/etc.
         $(this).addClass(_this.options.fixedHeightClass);
         });     
-      if (HasTouch && this.options.preventPageScroll) {
+      if ($.support.touch && this.options.preventPageScroll) {
         this._bindPage("touchmove", _pageTouchmoveFunc);  
         }
       }   
@@ -1540,7 +1538,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._unbind(this.$window, "orientationchange", "$window");  
     if (this._instanceCount() === 1) { 
       this._unbindPage("pagebeforeshow");  
-      if (HasTouch) {
+      if ($.support.touch) {
       this._unbindPage("touchmove");
       }   
     }       
