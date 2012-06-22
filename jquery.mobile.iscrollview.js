@@ -70,7 +70,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
 ;   // Ignore jslint/jshint warning - for safety - terminate previous file if unterminated
 
-(function ($, window, document) { 
+(function ($, window, document, undefined) { 
   "use strict";
 
   //----------------------------------
