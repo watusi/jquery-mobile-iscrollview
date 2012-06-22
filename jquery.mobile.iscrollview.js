@@ -1252,7 +1252,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     var $pullDownLabel, pulledText, loadingText;
     if (!this.$pullDown) { return; }
     $pullDownLabel = $("." + this.options.pullLabelClass, this.$pullDown);
-    if ($pullDownLabel) {
+    if ($pullDownLabel.length) {
       this._origPullDownLabelText = $pullDownLabel.text();
       if (this._origPullDownLabelText) { this.options.pullDownResetText = this._origPullDownLabelText; }
       else { $pullDownLabel.text(this.options.pullDownResetText); }
@@ -1266,7 +1266,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _undoModifyPullDown: function () {
     if (!this.$pullDown) { return; }
     var $pullDownLabel = $("." + this.options.pullLabelClass, this.$pullDown);
-    if (!$pullDownLabel) { return; }
+    if (!$pullDownLabel.length) { return; }
     $pullDownLabel.text(this._origPullDownLabelText);
   },
 
@@ -1291,7 +1291,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this.$pullUpSpacer.addClass(this.options.pullUpSpacerClass);
 
     $pullUpLabel = $("." + this.options.pullLabelClass, this.$pullUp);
-    if ($pullUpLabel) {
+    if ($pullUpLabel.length) {
       this._origPullUpLabelText = $pullUpLabel.text();
       if (this._origPullUpLabelText) { this.options.pullUpResetText = this._origPullUpLabelText; }
       else { $pullUpLabel.text(this.options.pullUpResetText); }
@@ -1480,7 +1480,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (!this.$scroller) { return; }
   
     // Find pull elements, if present
-    $pullDown = $("." + this.options.pullDownClass, this.$scroller); 
+    $pullDown = $("." + this.options.pullDownClass, this.$scroller);
     if ($pullDown.length) {
       this.$pullDown = $pullDown;
       this._modifyPullDown();
