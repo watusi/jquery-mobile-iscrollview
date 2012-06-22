@@ -48,10 +48,9 @@
     // a 400mSec period. It's important to use the refresh() callback to insure that the scroll
     // isn't started until the scroller has first been refreshed.
     iscrollview.refresh(null, null,
-      function afterRefreshCallback(iscrollview) { 
-        iscrollview.scrollToElement(lastItemSelector, 400); 
-        },
-      iscrollview);  // Context  
+      $.proxy(function afterRefreshCallback(iscrollview) { 
+        this.scrollToElement(lastItemSelector, 400); 
+        }, iscrollview) ); 
     }
   
   // This is the callback that is called when the user has completed the pull-down gesture.
@@ -116,10 +115,9 @@
       }
     $(listSelector).append(newContent).listview("refresh");  
     iscrollview.refresh(null, null,
-      function afterRefreshCallback(iscrollview) { 
-        iscrollview.scrollToElement(lastItemSelector, 400);
-        },
-      iscrollview );
+      $.proxy(function afterRefreshCallback() { 
+        this.scrollToElement(lastItemSelector, 400);
+        }, iscrollview) );
     }
   
   function onPullDown (event, data) { 

@@ -268,8 +268,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _dirty:               false,
   _dirtyCallbackBefore: null,
   _dirtyCallbackAfter:  null,
-  _dirtyContext:        null,
-
   _sizeDirty:     false,  // True if wrapper resize is needed because page size or fixed content
                           //  size changed
 
@@ -383,6 +381,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // but doesn't for orientationchange.
     // If you have multiple scrollers, only enable this for one of them
     scrollTopOnResize: true,
+    
+    scrollTopOnOrientatationChange: true,
 
     // iScroll scrolls the first child of the wrapper. I don't see a use case for having more
     // than one child. What kind of mess is going to be shown in that case? So, by default, we
@@ -516,6 +516,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       "deferNonActiveResize",
       "bindIscrollUsingJqueryEvents",
       "scrollTopOnResize",
+      "scrollTopOnOrientationChange",
       "pullDownResetText",
       "pullDownPulledText",
       "pullDownLoadingText",
@@ -873,15 +874,14 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       }
       
    if (this._dirty) {
-     this.refresh(0, this._dirtyCallbackBefore, this._dirtyCallbackAfter, this._dirtyContext, true);
-     this._dirty = false;
-     this._dirtyCallbackBefore = null;
-     this._dirtyCallbackAfter = null;
-     this._dirtyContext = null;
+       _this.refresh(0, this._dirtyCallbackBefore, _this._dirtyCallbackAfter, true);
+       _this._dirty = false;
+       _this._dirtyCallbackBefore = null;
+       _this._dirtyCallbackAfter = null;
      }
      
    else if (this.options.refreshOnPageBeforeShow || this._sizeDirty) {
-      this.refresh();
+      this.refresh();           
       }
    
    this._sizeDirty = false;  
@@ -892,16 +892,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Called on resize events
   // TODO: Detect if size is unchanged, and if so just ignore?
   _windowResizeFunc: function(e) {
-    var then = this._logWidgetEvent("_windowResizeFunc", e);
+    var then = this._logWidgetEvent("_windowResizeFunc", e);         
+    // Defer if not active page
     if (this.options.deferNonActiveResize && !this.$page.hasClass("ui-page-active"))  {
       this._sizeDirty = true;
       if (this.options.traceResizeWrapper) { this._log("resizeWrapper() (deferred)"); }
       }
-    else {  
-        this.resizeWrapper();
-        this.refresh(); 
-        //this.refresh(0, this.resizeWrapper(), null, this, true);   
-
+    else {    
+      this.resizeWrapper();
+      this.refresh();
+      //this.refresh(0, null, null, true);
       }
     this._logWidgetEvent("_windowResizeFunc", e, then);
     },
@@ -1185,11 +1185,17 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   _resizeWrapper: function() {
-    var then, viewportHeight, barsHeight, newWrapperHeight;
+    var then, 
+         viewportHeight, 
+         barsHeight, 
+         newWrapperHeight;
+         
     if (!this.options.resizeWrapper) { 
       return; 
       }
-    then = this._log("resizeWrapper() start");
+    if (this.options.traceResizeWrapper) {
+      then = this._log("resizeWrapper() start");
+      }
     this.$page.trigger("updatelayout");  // Let jQuery mobile update fixed header/footer, collapsables, etc.
     viewportHeight = this.$window.height();
     barsHeight = this._calculateBarsHeight();
@@ -1317,7 +1323,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // timing. Call optional before and after refresh callbacks and trigger
   // before and after refresh events.
   //-----------------------------------------------------------------------
-  refresh: function(delay, callbackBefore, callbackAfter, context, noDefer) {
+  refresh: function(delay, callbackBefore, callbackAfter, noDefer) {
 
     var _this, _delay, _callbackBefore, _callbackAfter, _context, _noDefer, then;
 
@@ -1330,7 +1336,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this._dirty = true;
       this._dirtyCallbackBefore = callbackBefore;
       this._dirtyCallbackAfter = callbackAfter;
-      this._dirtyContext = context;
       if (this.options.traceRefresh) {
         this._log("refresh() (deferred)");
       }
@@ -1349,7 +1354,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     _delay = delay;
     _callbackBefore = callbackBefore;
     _callbackAfter = callbackAfter;
-    _context = context;
     _noDefer = noDefer;
     then = this._startTiming();
     if ((_delay === undefined) || (_delay === null) ) { _delay = this.options.refreshDelay; }
@@ -1365,13 +1369,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
        hidden = _this._setPageVisible();
 
       _this._triggerWidget("onbeforerefresh", null, function() {
-        if (_callbackBefore) { _callbackBefore(_context); }
+        if (_callbackBefore) { _callbackBefore(); }
         });
 
       _this.iscroll.refresh();
 
       _this._triggerWidget("onafterrefresh", null, function() {
-        if (_callbackAfter) { _callbackAfter(_context); }
+        if (_callbackAfter) { _callbackAfter(); }
         });
         
       _this._restorePageVisibility(hidden);
@@ -1505,14 +1509,14 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._restorePageVisibility(hidden);  
     
         // Setup bindings for window resize and orientationchange
-    
+   
     if (this.options.resizeWrapper) {
       this._bind(this.$window, this.options.resizeEvents, this._windowResizeFunc, "$window");
       if (this.options.scrollTopOnOrientationChange) {
          this._bind(this.$window, "orientationchange", this._orientationChangeFunc, "$window");
          }        
       }
-
+   
     if (this.options.debug && this.options.traceCreateDestroy) {
       this._logInterval("_create() end", then);
       }          
