@@ -831,9 +831,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     obj.delegate(selector, type, $.proxy(func, this));
   },  
   
-  _triggerWidget: function(type, e, f) {
+  _triggerWidget: function(type, e) {
     var then = this._logWidgetCallback(type);
-    if (f) { f.call(this); }  // Perform passed function if present
     this._trigger(type, e, {"iscrollview":this});
     this._logWidgetCallback(type, e, then);
   },
@@ -1376,23 +1375,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
        }
        
        hidden = _this._setPageVisible();
-
-      _this._triggerWidget("onbeforerefresh", null, function() {
         if (_callbackBefore) { _callbackBefore(); }
-        });
-
+      _this._triggerWidget("onbeforerefresh");
       _this.iscroll.refresh();
-
-      _this._triggerWidget("onafterrefresh", null, function() {
+      _this._triggerWidget("onafterrefresh");
         if (_callbackAfter) { _callbackAfter(); }
-        });
-        
       _this._restorePageVisibility(hidden);
       
       // Scroll to top in case address bar pushed the page down
-      if (!hidden) { 
-        _this._correctPushedDownPage(); 
-        }
+      if (!hidden) { _this._correctPushedDownPage(); }
 
       if (_this.options.traceRefresh) {
         _this._logInterval2("refresh() end" + (_noDefer ? " (dirty)" : ""), then, later);
@@ -1709,15 +1700,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       },
 
     _pullDownSetStateReset: function(e) {
-      this._triggerWidget("onpulldownreset", e, function() {
         this._pullSetStateReset(this.$pullDown, this.options.pullDownResetText);
-        });
+      this._triggerWidget("onpulldownreset", e);
       },
 
     _pullUpSetStateReset: function(e) {
-      this._triggerWidget("onpullupreset", e, function () {
         this._pullSetStateReset(this.$pullUp, this.options.pullUpResetText);
-        });
+      this._triggerWidget("onpullupreset", e);
       },
 
     // Set a pull block to pulled state
@@ -1727,15 +1716,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       },
 
     _pullDownSetStatePulled: function(e) {
-      this._triggerWidget("onpulldownpulled", e, function() {
         this._pullSetStatePulled(this.$pullDown, this.options.pullDownPulledText);
-        });
+      this._triggerWidget("onpulldownpulled", e);
       },
 
     _pullUpSetStatePulled: function (e) {
-      this._triggerWidget("onpulluppulled", e, function() {
         this._pullSetStatePulled(this.$pullUp, this.options.pullUpPulledText);
-        });
+      this._triggerWidget("onpulluppulled", e);
       },
 
     // Set a pull block to the loading state
@@ -1745,15 +1732,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       },
 
     _pullDownSetStateLoading: function (e) {
-      this._triggerWidget("onpulldownloading", e, function() {
         this._pullSetStateLoading(this.$pullDown, this.options.pullDownLoadingText);
-        });
+      this._triggerWidget("onpulldownloading", e);
       },
 
     _pullUpSetStateLoading: function(e) {
-      this._triggerWidget("onpulluploading", e, function() {
         this._pullSetStateLoading(this.$pullUp, this.options.pullUpLoadingText);
-        });
+      this._triggerWidget("onpulluploading", e);
      },
 
     _pullOnRefresh: function (e) {
@@ -1816,14 +1801,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     _pullOnScrollEnd: function (e) {
       if (this._pullDownIsPulled(e)) {
-        this._triggerWidget("onpulldown", e, function() {
           this._pullDownSetStateLoading(e);
-          });
+        this._triggerWidget("onpulldown", e);
         }
       else if (this._pullUpIsPulled(e)) {
-        this._triggerWidget("onpullup", e, function() {
           this._pullUpSetStateLoading(e);
-          });
+        this._triggerWidget("onpullup", e);
         }
       }
 
