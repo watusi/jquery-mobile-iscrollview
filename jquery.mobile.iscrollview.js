@@ -794,7 +794,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   
   // Takes a space-separated list of event types, and appends the given namespace to each
   _addEventsNamespace: function(types_in, namespace) {
-    var types_out,
         types = types_in.split(" ");
     $.each(types, function(k,v) {types[k] += namespace;});
     return types.join(" ");        
@@ -1193,7 +1192,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // viewport remaining after all fixed-height elements
   //--------------------------------------------------------
   _resizeWrapper: function() {
-    var then, 
+    var then = null, 
          viewportHeight, 
          barsHeight, 
          newWrapperHeight;
@@ -1333,7 +1332,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //-----------------------------------------------------------------------
   refresh: function(delay, callbackBefore, callbackAfter, noDefer) {
 
-    var _this, _delay, _callbackBefore, _callbackAfter, _context, _noDefer, then;
+    var _this, _delay, _callbackBefore, _callbackAfter, _noDefer, then;
 
     // If non-active-page refresh is deferred, make a note of it.
     // Note that each call to refresh() overwrites the callback and context variables.
