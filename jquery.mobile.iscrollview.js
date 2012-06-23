@@ -253,12 +253,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   iscroll:            null,  // The underlying iScroll object
   $window:            $window, 
   $body:              $body,
-  $wrapper:           null,  // The wrapper element
-  $scroller:          null,  // The scroller element (first child of wrapper)
-  $pullDown:          null,  // The pull-down element (if any)
-  $pullUp:            null,  // The pull-up element (if any)
-  $pullUpSpacer:      null,
-  $page:              null,  // The page element that contains the wrapper
+  $wrapper:           [],  // The wrapper element
+  $scroller:          [],  // The scroller element (first child of wrapper)
+  $pullDown:          [],  // The pull-down element (if any)
+  $pullUp:            [],  // The pull-up element (if any)
+  $pullUpSpacer:      [],
+  $page:              [],  // The page element that contains the wrapper
   _wrapperHeightAdjustForBoxModel: 0,  // This is set in _create
 
   _firstScrollerExpand:    true,  // True on first scroller expand, so we can capture original CSS
@@ -794,7 +794,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   
   // Takes a space-separated list of event types, and appends the given namespace to each
   _addEventsNamespace: function(types_in, namespace) {
-        types = types_in.split(" ");
+    var types = types_in.split(" ");
     $.each(types, function(k,v) {types[k] += namespace;});
     return types.join(" ");        
   },  
@@ -1076,7 +1076,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // specified a topOffset option, use that instead, though.
   //--------------------------------------------------------
   _setTopOffsetForPullDown: function() {
-    if (this.$pullDown && !this.options.topOffset) {
+    if (this.$pullDown.length && !this.options.topOffset) {
       this.options.topOffset = this.$pullDown.outerHeight(true);      
       }
     },
@@ -1087,7 +1087,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // specified a bottomOffset option, use that instead, though.
   //--------------------------------------------------------
   _setBottomOffsetForPullUp: function() {
-    if (this.$pullUp && !this.options.bottomOffset) {
+    if (this.$pullUp.length && !this.options.bottomOffset) {
       this.options.bottomOffset = this.$pullUp.outerHeight(true);
       }
     },
@@ -1169,7 +1169,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // will not be visible until the user pulls up.
   //--------------------------------------------------------
   _expandScrollerToFillWrapper: function() {
-    if (this.options.scrollShortContent || this.$pullDown || this.pullUp) {
+    if (this.options.scrollShortContent || this.$pullDown.length || this.pullUp.length) {
       if (this._firstScrollerExpand) {
         this._origScrollerStyle = this.$scroller.attr("style") || null;
         this._firstScrollerExpand = false;
@@ -1177,8 +1177,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
            
       this.$scroller.css("min-height",
         this.$wrapper.height() +
-        (this.$pullDown ? this.$pullDown.outerHeight(true) : 0) +
-        (this.$pullUp ? this.$pullUp.outerHeight(true) : 0)
+        (this.$pullDown.length ? this.$pullDown.outerHeight(true) : 0) +
+        (this.$pullUp.length ? this.$pullUp.outerHeight(true) : 0)
         );
       }
     },
@@ -1257,7 +1257,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //--------------------------------------------------------
   _modifyPullDown: function () {
     var $pullDownLabel, pulledText, loadingText;
-    if (!this.$pullDown) { return; }
+    if (this.$pullDown.length === 0) { return; }
     $pullDownLabel = $("." + this.options.pullLabelClass, this.$pullDown);
     if ($pullDownLabel.length) {
       this._origPullDownLabelText = $pullDownLabel.text();
@@ -1271,9 +1271,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _undoModifyPullDown: function () {
-    if (!this.$pullDown) { return; }
+    if (this.$pullDown.length === 0) { return; }
     var $pullDownLabel = $("." + this.options.pullLabelClass, this.$pullDown);
-    if (!$pullDownLabel.length) { return; }
+    if ($pullDownLabel.length === 0) { return; }
     $pullDownLabel.text(this._origPullDownLabelText);
   },
 
@@ -1288,7 +1288,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   _modifyPullUp: function () {
     var $pullUpLabel, pulledText, loadingText;
 
-    if (!this.$pullUp) { return; }
+    if (this.$pullUp.length === 0) { return; }
 
     // Since we are positioning the pullUp element absolutely, it is pulled out of the
     // document flow. We need to add a dummy <div> with the same height as the pullUp.
@@ -1311,7 +1311,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _undoModifyPullUp: function () {
-    if (!this.$pullUp) { return; }
+    if (this.$pullUp.length === 0) { return; }
     this.$pullUp.prev().remove();  // Remove the dummy div
     if (this._origPullUpLabelText) {
       $("." + this.options.pullLabelClass, this.$pullUp).text(this._origPullUpLabelText);
@@ -1447,9 +1447,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Automatically called on page creation
   //-----------------------------------------
   _create: function() {
-    var $pullDown, 
-        $pullUp,
-        then = new Date(),
+    var then = new Date(),
         hidden; 
         
     this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
@@ -1476,20 +1474,14 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._createScroller();
     this.$scroller = this.$wrapper.children(":first");   // Get the first child of the wrapper, which is the
                                                          //   element that we will scroll                                                                                                               
-    if (!this.$scroller) { return; }
+    if (this.$scroller.length === 0) { return; }
   
     // Find pull elements, if present
-    $pullDown = $("." + this.options.pullDownClass, this.$scroller);
-    if ($pullDown.length) {
-      this.$pullDown = $pullDown;
-      this._modifyPullDown();
-      }  
+    this.$pullDown = $("." + this.options.pullDownClass, this.$scroller);
+    this._modifyPullDown(); 
       
-    $pullUp = $("." + this.options.pullUpClass, this.$scroller);    
-    if ($pullUp.length) {
-      this.$pullUp = $pullUp;
-      this._modifyPullUp();    
-      } 
+    this.$pullUp = $("." + this.options.pullUpClass, this.$scroller);    
+    this._modifyPullUp();    
             
     // Merge options from data-iscroll, if present
     $.extend(true, this.options, this.$wrapper.jqmData("iscroll")); 
@@ -1673,12 +1665,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     //-----------------------------------------------------------------------------------
     // Is pull-down in "pulled" state?
     _pullDownIsPulled: function () {
-      return this.$pullDown && this.$pullDown.hasClass(this.options.pullPulledClass);
+      return this.$pullDown.length && this.$pullDown.hasClass(this.options.pullPulledClass);
       },
 
     // Is pull-up in "pulled" state?
     _pullUpIsPulled: function () {
-      return this.$pullUp && this.$pullUp.hasClass(this.options.pullPulledClass);
+      return this.$pullUp.length && this.$pullUp.hasClass(this.options.pullPulledClass);
       },
 
     // Replace the text in a pull block
@@ -1750,15 +1742,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // pull moot.
 
       // Reset pull blocks to their initial state
-      if (this.$pullDown) { this._pullDownSetStateReset(e); }
-      if (this.$pullUp) { this._pullUpSetStateReset(e); }
+      if (this.$pullDown.length) { this._pullDownSetStateReset(e); }
+      if (this.$pullUp.length)   { this._pullUpSetStateReset(e); }
       },
 
     _pullOnScrollMove: function (e) {
       var pullDownIsPulled, pullUpIsPulled, pullDownHeight, pullDownPast, pullUpHeight, pullUpPast,
           y = this.y();
 
-      if (this.$pullDown) {
+      if (this.$pullDown.length) {
         pullDownIsPulled = this._pullDownIsPulled();
         pullDownHeight = this.options.topOffset;
         // User needs to pull down past the top edge of the pulldown element. To prevent false
@@ -1781,7 +1773,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
           }
         }
 
-     if (this.$pullUp) {
+     if (this.$pullUp.length) {
           pullUpIsPulled = this._pullUpIsPulled();
           pullUpHeight = this.options.bottomOffset;
           pullUpPast = pullUpHeight / 2;
