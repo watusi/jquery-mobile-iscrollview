@@ -93,7 +93,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // way to access the version number!
       JQMIsV1_0 = $.mobile.ignoreContentEnabled === undefined,
       
+      $window = $(window),
+      $body = $("body"),
+            
       nextPageID = 1;      // Used to generate event namespaces
+
   
    /* Placed here instead of anonymous functions to facilitate debugging.
       No logging, because these events are too frequent */
@@ -247,7 +251,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //=========================================================
 
   iscroll:            null,  // The underlying iScroll object
-  $window:            $(window), 
+  $window:            $window, 
+  $body:              $body,
   $wrapper:           null,  // The wrapper element
   $scroller:          null,  // The scroller element (first child of wrapper)
   $pullDown:          null,  // The pull-down element (if any)
@@ -322,7 +327,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // The widget adds the fixedHeightClass to all elements that match fixedHeightSelector.
     // Don't add the fixedHeightClass to elements manually. Use data-iscroll-fixed instead.
     fixedHeightSelector: ":jqmData(role='header'), :jqmData(role='footer'), :jqmData(iscroll-fixed)",
-
+    
     // true to resize the wrapper to take all viewport space after fixed-height elements
     // (typically header/footer)
     // false to not change the size of the wrapper
@@ -1006,7 +1011,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //--------------------------------------------------------
   _calculateBarsHeight: function() {
     var barsHeight = 0,
-        $bars = this.$page.find("." + this.options.fixedHeightClass);
+        fixedHeightSelector = "." + this.options.fixedHeightClass,
+        // Persistent footers are sometimes inside the page, sometimes outside of all pages! (as
+        // direct descendant of <body>). They get moved in and out during transitions. There's no 
+        // predictability as to where you might find them when we calculate the bars height, so play hide-and-seek...        
+        $bars = this.$page.find(fixedHeightSelector).add(this.$body.children(fixedHeightSelector));
     $bars.each(function() {  // Iterate over headers/footers/etc.
         barsHeight += $(this).outerHeight(true);
         });
@@ -1460,7 +1469,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this._log("_create() start", then); 
       }  
 
-    this.createdAt = then;    
+    this.createdAt = then;   
     this._instanceCount(this._instanceCount() + 1);  // The count of extant instances of this widget on the page
     this.instanceID = this._nextInstanceID();       // The serial ID of this instance of this widget on the page
     this._nextInstanceID(this._instanceID + 1);     
