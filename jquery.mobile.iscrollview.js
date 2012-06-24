@@ -1221,8 +1221,8 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // Fake fullscreen or webview by using custom user agent and removing "Safari" from string
       (IsMobileSafari && !IsIPad ? 60 : 0) +  // Add 60px for space recovered from Mobile Safari address bar
       this.options.wrapperAdd;                // User-supplied fudge-factor if needed
-    
-    this.$wrapper.height(newWrapperHeight);   
+     
+    this.$wrapper.css("height", newWrapperHeight);
     this._expandScrollerToFillWrapper(); 
     
     if (this.options.traceResizeWrapper) {
@@ -1237,7 +1237,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     },
 
   _undoResizeWrapper: function() {
-    if (this._origWrapperHeight !== undefined) { this.$wrapper.height(this._origWrapperHeight); }
     },
 
   //---------------------------------------------------------
@@ -1473,9 +1472,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     }
     this.pageID = this._pageID();
 
-    hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work
-    // Save the original wrapper height, so it can be restored in destroy  
-    this._origWrapperHeight = this.$wrapper.height() - this._wrapperHeightAdjustForBoxModel;    
+    hidden = this._setPageVisible();   // Fake page visibility, so dimension functions work    
     this._adaptPage();    
     this._createScroller();
     this.$scroller = this.$wrapper.children(":first");   // Get the first child of the wrapper, which is the
