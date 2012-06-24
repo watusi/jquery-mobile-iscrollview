@@ -92,10 +92,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       // Kludgey way to seeing if we have JQM v1.0.x, since there apparently is no
       // way to access the version number!
       JQMIsV1_0 = $.mobile.ignoreContentEnabled === undefined,
-      
-      $window = $(window),
-      $body = $("body"),
-            
+                
       nextPageID = 1;      // Used to generate event namespaces
 
   
@@ -251,8 +248,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //=========================================================
 
   iscroll:            null,  // The underlying iScroll object
-  $window:            $window, 
-  $body:              $body,
+  $window:            $(window), 
   $wrapper:           [],  // The wrapper element
   $scroller:          [],  // The scroller element (first child of wrapper)
   $pullDown:          [],  // The pull-down element (if any)
@@ -868,43 +864,34 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   // Functions that we bind to. They are declared as named members rather than as
   // inline closures so we can properly unbind them.
   //------------------------------------------------------------------------------
-
   _pageBeforeShowFunc: function(e) {
    var then = this._logWidgetEvent("_pageBeforeShowFunc", e);
-       
-   if (this._sizeDirty) {
-       this.resizeWrapper();
-      }
-      
    if (this._dirty) {
-       _this.refresh(0, this._dirtyCallbackBefore, _this._dirtyCallbackAfter, true);
-       _this._dirty = false;
-       _this._dirtyCallbackBefore = null;
-       _this._dirtyCallbackAfter = null;
+     this.resizeWrapper();
+     this.refresh(null, this._dirtyCallbackBefore, this._dirtyCallbackAfter, true);
+     this._dirty = false;
+     this._dirtyCallbackBefore = null;
+     this._dirtyCallbackAfter = null;
      }
-     
    else if (this.options.refreshOnPageBeforeShow || this._sizeDirty) {
-      this.refresh();           
+      this.refresh(null,this._resizeWrapper,null,true);           
       }
-   
-   this._sizeDirty = false;  
-       
+   this._sizeDirty = false;        
    this._logWidgetEvent("_pageBeforeShowFunc", e, then);
    },
 
   // Called on resize events
   // TODO: Detect if size is unchanged, and if so just ignore?
   _windowResizeFunc: function(e) {
-    var then = this._logWidgetEvent("_windowResizeFunc", e);         
+    var then = this._logWidgetEvent("_windowResizeFunc", e);   
     // Defer if not active page
-    if (this.options.deferNonActiveResize && !this.$page.hasClass("ui-page-active"))  {
+    if (this.options.deferNonActiveResize && !(this.$page.is($.mobile.activePage))) {
       this._sizeDirty = true;
       if (this.options.traceResizeWrapper) { this._log("resizeWrapper() (deferred)"); }
       }
     else {    
       this.resizeWrapper();
-      this.refresh();
-      //this.refresh(0, null, null, true);
+      this.refresh(null,null,null,true);
       }
     this._logWidgetEvent("_windowResizeFunc", e, then);
     },
@@ -1011,12 +998,31 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     var barsHeight = 0,
         fixedHeightSelector = "." + this.options.fixedHeightClass,
         // Persistent footers are sometimes inside the page, sometimes outside of all pages! (as
-        // direct descendant of <body>). They get moved in and out during transitions. There's no 
-        // predictability as to where you might find them when we calculate the bars height, so play hide-and-seek...        
-        $bars = this.$page.find(fixedHeightSelector).add(this.$body.children(fixedHeightSelector));
-    $bars.each(function() {  // Iterate over headers/footers/etc.
-        barsHeight += $(this).outerHeight(true);
+        // direct descendant of <body>). And sometimes both. During transitions, the page that
+        // is transitioning in will have had it's persistent footer moved outside of the page,
+        // while all other pages will have their persistent footer internal to the page.
+        //
+        // To deal with this, we find iscroll-fixed elements in the page, as well as outside
+        // of the page (as direct descendants of <body>). We avoid double-counting persistent
+        // footers that have the same data-id. (Experimentally, then, we also permit the user
+        // to place fixed-height elements outside of the page, but unsure if this is of any
+        // practical use.)
+        $barsInPage = this.$page.find(fixedHeightSelector),
+        $barsOutsidePage = $("body").children(fixedHeightSelector);
+    
+    $barsInPage.each(function() {  // Iterate over headers/footers/etc.
+        barsHeight += $(this).outerHeight(true); 
         });
+    
+    $barsOutsidePage.each(function() {
+      var id = $(this).jqmData("id");  // Find data-id if present 
+      // Count bars outside of the page if they don't have data-id (so not a persistent
+      // footer, but something the developer put there and tagged with data-iscroll-fixed class),
+      // or if a matching data-id is NOT found among the bars that are inside the page.
+      if (id === "" || !$barsInPage.is(":jqmData(id='" + id + "')'")) {
+        barsHeight += $(this).outerHeight(true);
+        }
+      });
     return barsHeight;
     },
    
@@ -1339,7 +1345,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     // Our expectation is that callback and context will be identical for all such refresh
     // calls. In any case, only the last callback and context will be used. This allows
     // refresh of jQuery Mobile widgets within the scroller to be deferred, as well.
-    if (!noDefer && this.options.deferNonActiveRefresh && !this.$page.hasClass("ui-page-active")) {
+    if (!noDefer && this.options.deferNonActiveRefresh && !(this.$page.is($.mobile.activePage))) {
       this._dirty = true;
       this._dirtyCallbackBefore = callbackBefore;
       this._dirtyCallbackAfter = callbackAfter;
