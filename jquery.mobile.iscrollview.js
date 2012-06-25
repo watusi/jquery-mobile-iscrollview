@@ -286,11 +286,11 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
 
     // iscrollview widget options
 
-    debug: true,                      // Enable some messages to console
+    debug: false,                      // Enable some messages to console
                                        // Debug true needed for any trace options
-    traceResizeWrapper: true,         // Enable to trace resize wrapper
-    traceRefresh: true,               // Enable to trace refresh
-    traceCreateDestroy: true,         // Enable to trace create/destroy
+    traceResizeWrapper: false,         // Enable to trace resize wrapper
+    traceRefresh: false,               // Enable to trace refresh
+    traceCreateDestroy: false,         // Enable to trace create/destroy
     traceIscrollEvents: false,         // Enable to trace events handled by iScroll
     tracedIscrollEvents: [],           // List of specific iScroll events to trace, empty list for all
                                        // Items are strings, like "touchstart"
