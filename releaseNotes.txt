@@ -1,0 +1,51 @@
+jquery.mobile.iscrollview
+Release Notes
+
+Version 1.2
+===========
+
+Non Backward-Compatible
+-----------------------
+- You no longer need to create a <div> to contain multiple scrolled elements. In fact, you
+  shouldn't (it will interfere with pull-down/pull-up). It will now scroll all content that is 
+  inside of the wrapper. iScroll itself only scrolls the first child of the wrapper, but the widget 
+  now creates a <div> around your content to contain it. 
+  
+- Events have been renamed. They are now all prefixed with "iscroll_on". See the documentation.
+
+- Now comes with a jquery.mobile.iscrollview.css file. Please add this to your header.
+
+New Features
+------------
+- Pull-down/Pull-up to refresh is implemented. Please see the documentation on how to use.
+
+- Now deals correctly with padding on wrapper. It removes the padding and transfers it to the
+  inner <div> that it creates to wrap your scrolled content. You shouldn't have to do anything
+  special now to scroll either normal or inset listviews, for example. You will have to remove
+  any padding/margins you added in the past to deal with padding issues.
+
+- By default, calls made to refresh() and resizeWrapper() while a page is not the current page
+  are deferred to the next pagebeforeshow event for that page. There are options to control this.
+  
+- No longer uses jquery.actual or patched iscroll.js.
+
+- Option to prevent touch hover in scrollers when using jQuery Mobile 1.0 or 1.0.1.
+
+- Demo has been much expanded. It now has 5 tabs demostrating different features, has buttons
+  to load either jQuery Mobile 1.0.1 or 1.1, and illustrates changing header/footer size with
+  orientation.
+
+Performance
+-----------
+- Significantly faster than 1.1 - 10X or more faster at widget creation and refresh.
+
+- Extensive logging system for tracing and measuring critical methods, events, and callbacks.
+
+Bug Fixes
+---------
+- Correct sizing on Safari Mobile related to address-bar.
+
+- Persistant footer plays hide-and-seek, moving in and out of the page during transitions. Deal
+  with this when sizing fixed-height elements.
+  
+
