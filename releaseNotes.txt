@@ -34,6 +34,9 @@ New Features
 - Demo has been much expanded. It now has 5 tabs demostrating different features, has buttons
   to load either jQuery Mobile 1.0.1 or 1.1, and illustrates changing header/footer size with
   orientation.
+  
+- Includes patched version of jQuery Mobile 1.1, with fix applied for slow links from long
+  listviews.
 
 Performance
 -----------

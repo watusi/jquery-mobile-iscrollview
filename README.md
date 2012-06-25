@@ -194,7 +194,7 @@ and either supply a function as an option value or else (recommended) bind or de
 a jQuery event callback function. 
 
 You also need to include the file `jquery.mobile.iscrollview-pull-css` in your
-<head>. Finally, this CSS file references an image file that contains an arrow icon and a
+`<head>`. Finally, this CSS file references an image file that contains an arrow icon and a
 spinner icon. You can replace this with your own image file. If you rename or move this file, make
 sure to edit the CSS file or override the rule in your own CSS file.
 
@@ -435,7 +435,7 @@ a newer version, and this widget has not been updated yet.)
 Please see the iScroll documentation for details on using these
 methods.
 
-####refresh(timeout, beforeCallback, afterCallback, context, noDefer)
+####refresh(timeout, beforeCallback, afterCallback, noDefer)
 
 Note that this performs the proper timing for the iScroll `refresh()`
 function using `setTimeout`. If you want to call the iScroll `refresh()`
@@ -445,14 +445,17 @@ If the timeout value is present, then the internal call of iScroll `refresh()` w
 by this value. If the value is `null` or `undefined`, then the value of the `refreshDelay`
 option will be used.
 
-If present, the optional `beforeCallback` function will be called (with the supplied optional context
-parameter) just prior to refreshing iScroll. This is useful if you have updated content inside the 
+If present, the optional `beforeCallback` function will be called just prior to refreshing iScroll. 
+This is useful if you have updated content inside the 
 scroller, and need to refresh widgets inside the scroller (such as a listview) prior to iScroll 
 refresh. While this is similar to the `iscroll_onbeforerefresh`, the callback is specific to 
 a particular call to `refresh()`.
 
-If present, the  optional `afterCallback` function will be called (with the supplied optional context
-parameter) just after refreshing iScroll. This is useful if you want to perform some action on
+If your callback requires some context, you should use jQuery's $.proxy() function to provide a
+`this` reference that will be available when the callback executes.
+
+If present, the  optional `afterCallback` function will be called just after refreshing iScroll. 
+This is useful if you want to perform some action on
 the scroller after updating content. For example, this might be used to scroll to a particular
 position or element within the scroller after updating content. This is particularly useful
 when adding content to the *end* of the scroller, when you might like to scroll the new content
@@ -464,11 +467,7 @@ next `iscroll_onbeforepagerefresh` event for the page. This avoids unnecessary r
 that if the `refreshOnPageBeforeChange` option is true, then the scroller will *always* be 
 refreshed on `iscroll_pagebeforefresh()`.
 
-The `context` parameter is passed to any callbacks that you provide. You might pass a reference
-to some object of yours, or you might pass a convenient reference to the iscrollview, so that
-the callback doesn't have to fish it out of the DOM with a selector and `jqmData()`.
-
-Each deferred call to `refresh()` overwrites the callback and context values from any previous
+Each deferred call to `refresh()` overwrites the callback values from any previous
 deferred `refresh()` call for the same iscrollview. This means that you should not use refresh
 callbacks to modify content, because there is no guarantee that any particular callback will
 be called - only that the callbacks for the *last* deferred `refresh()` will be called.
@@ -518,9 +517,13 @@ the scroll is immediate.
 
 ####disable()
 
-Note that this method also calls the default widget `disable()` method.
-If you want to call the iScroll `disable()`
-method directly, please see "calling methods" above.
+Note that this method also calls the default widget `disable()` method. 
+
+Note: This has not been tested, and probably doesn't work correctly. Further, the iscroll-internal
+`disable()` probably doesn't do what you wish it would do. You can't re-enable iScroll by calling
+`enable()` after calling `disable()`.
+
+If you do want to call the iScroll `disable()` method directly, please see "calling methods" above.
 
 ####enable()
 
@@ -1317,7 +1320,7 @@ If this *is* used, then the browser may be forced to cache the content in advanc
 in smoother scrolling, but with the side-effect of increasing initial rendering time.
    
 This can more than *double* initial rendering time if you are not careful with the selector. The
-ecommended CSS at the above link is NOT optimal.
+recommended CSS at the above link is NOT optimal.
       
 You need to apply this judiciously. For example, if you know your scroller content consists
 of list items, use `li` not `*` to select. `*` as the right-most component of a select is
@@ -1347,7 +1350,7 @@ on iPad, but on iPhone and iPad, it can be made to scroll off-screen by scrollin
 jQuery Mobile normally does this, but the address bar is always present at the time that a page
 loads. jQuery Mobile then scrolls in order to push the address bar back up.
 
-jQuery Mobile handles the address bar better than jQuery Mobile 1.0 or 1.0.1. With 1.1, the
+jQuery Mobile 1.1 handles the address bar better than jQuery Mobile 1.0 or 1.0.1. With 1.1, the
 address bar usually will not appear during a page transition.
 
 It doesn't appear possible to consistently detect the real window height, though it is possible
@@ -1359,9 +1362,12 @@ iPhone/iPod if running a native app in a  UIWebView, or when running in "full sc
 If you are testing using desktop Safari's `Develop` `User Agent` option, please note that this
 adaptation will fail. It depends on specific behaviour of the real Mobile Safari browser. If
 you want to use desktop Safari to test pages designed to run on iPhone, either use the standard
-Safari User Agent, or else use an "Other" User Agent.  From the iPhone user agent setting, remove
-the string "Safari". This will fool the widget into thinking you are running in "full screen"
-mode, without the disappearing address bar.
+Safari User Agent, or else use an "Other" User Agent:
+
+First, set the User Agent to `Safari ... iPhone`. then, select `User Agent` `Other`. The user-agent 
+string will be pre-populated with the Mobile Safari user-agent string. Remove `Safari` from the 
+user agent. This will fool the widget into thinking you are running in "full screen" mode, without
+the disappearing address bar which is not present on desktop Safari.
 
 ---
 
