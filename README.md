@@ -215,7 +215,7 @@ To implement pull-up and/or pull-down, structure your HTML similar to the follow
       </ul>
       <div class="iscroll-pullup">
         <span class="iscroll-pull-icon"></span>
-         span class="iscroll-pull-label"></span>
+        <span class="iscroll-pull-label"></span>
       </div>
     </div>
     
