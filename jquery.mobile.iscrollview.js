@@ -1415,9 +1415,16 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   //-----------------------------------------
   _createScroller: function() {
     if (this.options.createScroller) {
-    this.$wrapper.children().wrapAll("<div/>");
-    }
-  },
+      if (this.$wrapper.children().length) {
+        // Wrap the content with a div  
+        this.$wrapper.children().wrapAll("<div/");    
+        }
+      else {
+        // Create an empty div for content and wrap with a div
+        this.$wrapper.append("<div><div></div></div>"); 
+        }
+      }
+    },
 
   _undoCreateScroller: function() {
     if (this.options.createScroller) {
