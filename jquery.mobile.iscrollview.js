@@ -161,7 +161,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       var v = this.iscrollview,
           then = v._logCallback(callbackName, e);
       if (f) { f.call(this, e); }                          // Perform passed function if present
-      v._trigger(callbackName.toLowerCase, e, {"iscrollview": v}); // Then trigger widget event
+      v._trigger(callbackName.toLowerCase(), e, {"iscrollview": v}); // Then trigger widget event
       v._logCallback(callbackName, e, then);
     };
 
@@ -831,7 +831,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._trigger(type, e, {"iscrollview":this});
     this._logWidgetCallback(type, e, then);
   },
-
+  
   //-------------------------------------------------------------------
   // Returns status of dirty flag, indicating that refresh() was called
   // while the page was not active, and refresh will be deferred until
