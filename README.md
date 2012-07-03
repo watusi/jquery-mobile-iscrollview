@@ -1,5 +1,5 @@
-watusi/jquery-mobile-iscrollview, Version 1.2pre1
-=================================================
+watusi/jquery-mobile-iscrollview, Version 1.2pre1+
+==================================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
@@ -19,16 +19,14 @@ this preview.
 This is a significant update from 1.1, and is much faster (as much as 10X) vs. 1.1 at certain
 operations. Initial construction and refresh are much faster than 1.1.
 
-I am preparing release notes, but wanted to make this preview available as soon as possible for
-testing. I would suggest that you approach this version as if you have never used it before.
-The documentation is up-to-date as far as I am aware. 
+Please see the release notes for detailed change information.
 
 The most signficant change to be aware of is that you no longer need (and should not have) a
 protective `<div>` around your scrolled content. The widget creates this for you (and must do
 so for proper pull-down/pull-up operation.)
 
 The most significant known flaws are in pages that have input elements. On touch devices, you
-can scroll the entire page by dragging on an input element. As well, it doesn't play well with
+may be able to scroll the entire page by dragging on an input element. As well, it doesn't play well with
 the Mobile Safari Forms Assistant or other schemes that scroll the page when a virtual keyboard
 is used. This is an area that I am actively working on - I need it for my own work, so it will
 get fixed. ;) (The most likely approach I will take is to un-enhance the widget during input
@@ -71,9 +69,14 @@ Usage
 The most basic usage of this widget is simple: just add a `data-iscroll`
 attribute to a container. All content inside this container will be scrolled.
 
-Note that iScroll itself scrolls only the first child of it's wrapper. However, by
-default, this widget automatically creates a protective `<div>` around all
-children of the wrapper, and so it will scroll *all* of the children of the wrapper element.
+Note that iscroll.js itself scrolls only the first child of it's wrapper. However, by
+default, this plugin automatically creates a protective `<div>` around all
+children of the wrapper, and so unlike iscroll.js it will scroll *all* of the children of the 
+wrapper element - not just the first.
+
+As well, you may have *no* content in the wrapper initially. You might do this, for example, if
+you will be inserting dynamic content later. In this case, the plugin will create an empty
+`<div>` for you.
 
 If, for some reason, you do not want the widget to create
 this protective container, set the `createScroller` option to `false`. 
@@ -156,6 +159,52 @@ Example
     </div>
   </body>
 </html>
+```
+
+---
+
+Dynamic Content
+---------------
+If you will be adding dynamic content that you want to have scrolled, you first need to understand
+the HTML structure that the plugin creates for you. 
+
+If you supply initial content, the plugin will create two `<div>`s around that content.
+
+The outermost `<div>` is called the scroller, and contains everything that will be scrolled
+by iScroll. It is given a class of `iscroll-scroller`.
+
+If you supplied pull-down and/or pull-up blocks, they are moved to inside the scroller.
+
+An additional `<div>` is also added around the scrolled content, sandwiched between the
+(possibly absent) pull-down and/or pull-up blocks. This `<div>` is given a class of
+`iscroll-content`. This contains everthing that the scroller scrolls, *other* than any
+pull-down and/or pull-up blocks.
+
+When you add dynamic content, make sure to add it inside the `<div>` that has class `iscroll-content`.
+
+What you wrote:
+
+```html
+    <div data-role="content" data-iscroll>
+      <p>This is some content that I want to scroll</p>
+      <p>This is some more content</p>
+    </div>
+```
+
+What the plugin produces:
+
+```html
+    <div data-role="content" data-iscroll class="iscroll-wrapper">
+      <div class="iscroll-scroller">
+        <!-- If you included a pull-down under the wrapper, it will wind-up here -->
+        <div class="iscroll-content">
+          <!-- If you included no content above under the content div, then this div is empty -->
+          <p>This is some content that I want to scroll</p>
+          <p>This is some more content</p>
+        </div>
+        <!-- If you included a pull-up under the wrapper, it will wind-up here -->
+      </div>
+    </div>
 ```
 
 ---
