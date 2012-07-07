@@ -2,6 +2,7 @@
  Default Pull-up and Pull-down styling 
  Replace/modify/override to your preferences  
 *******************************************/
+
 .iscroll-pullup {
     /* The wrapper is position:relative or position:absolute, so the pullUp is positioned here 
        relative to the scroller, not the page. If we don't do this, the pullUp will initially 
