@@ -1484,7 +1484,7 @@ following additional components:
 * JQuery Mobile 1.0.1
 * jQuery Mobile 1.1.0, patched for listview link bug (very long delay when clicking on list items
 in unpatched version - due for fix in 1.1.1).
-$ iscroll4, master commit a8b8720296 6/4/2012
+$ iscroll4, master commit 04676afd69 6/20/2012
 
 
 Please obtain these components independently for your projects, so that
