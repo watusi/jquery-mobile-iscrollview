@@ -1,0 +1,35 @@
+tabs:
+  - { label: List,  base_name: index }
+  - { label: Inset, base_name: inset }
+  - { label: Pull,  base_name: pull }
+  - { label: Short, base_name: shortpull }
+  - { label: Form,  base_name: form}
+  
+stylesheets:
+  v10:
+    - jquery.mobile-1.0.1.min
+    - jquery.mobile.iscrollview 
+    - jquery.mobile.iscrollview-pull 
+    - demo
+  v11:
+    - jquery.mobile-1.1.0.min
+    - jquery.mobile.iscrollview 
+    - jquery.mobile.iscrollview-pull 
+    - demo
+  
+scripts:
+  v10:
+    - jquery-1.6.4.min
+    - demo
+    - jquery.mobile-1.0.1.min
+    - iscroll
+    - jquery.mobile.iscrollview
+    - pull-example
+  v11:
+    - jquery-1.7.1.min
+    - demo
+    - jquery.mobile-1.1.0-patched-listview.min
+    - iscroll
+    - jquery.mobile.iscrollview
+    - pull-example    
+  

@@ -1,119 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>jquery.mobile.iscrollview.js Demo</title>
-   
-    <link rel="stylesheet" href="jquery.mobile-1.1.0.min.css"/>
-    <link rel="stylesheet" href="../jquery.mobile.iscrollview.css"/>
-    <link rel="stylesheet" href="../jquery.mobile.iscrollview-pull.css"/> <!--  Can remove if not using pull-down/pull-up -->    
-    <link rel="stylesheet" href="demo.css"/>    
+    <title>iscrollview Demo</title>
     
-    <script src="jquery-1.7.1.min.js"></script>
-    <script src="demo.js"></script>       
-    <script src="jquery.mobile-1.1.0-patched-listview.min.js"></script>
-    <script src="iscroll.js"></script>
-    <script src="../jquery.mobile.iscrollview.js"></script>
-    <script src="pull-example.js"></script> 
-  </head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    
+    <link href="stylesheets/jquery.mobile-1.1.0.min.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/jquery.mobile.iscrollview.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/jquery.mobile.iscrollview-pull.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/demo.css" media="screen" rel="stylesheet" type="text/css" />
+    
+    <script src="javascripts/jquery-1.7.1.min.js" type="text/javascript"></script>
+    <script src="javascripts/demo.js" type="text/javascript"></script>
+    <script src="javascripts/jquery.mobile-1.1.0-patched-listview.min.js" type="text/javascript"></script>
+    <script src="javascripts/iscroll.js" type="text/javascript"></script>
+    <script src="javascripts/jquery.mobile.iscrollview.js" type="text/javascript"></script>
+    <script src="javascripts/pull-example.js" type="text/javascript"></script>
+    </head>
   
   <body>
-    <div data-role="page" class="pull-demo-page">
-
-      <div data-role="header" data-position="inline">
-        <h1>Pull</h1>
-        <div data-role="controlgroup" data-type="horizontal" class="ui-btn-right" style="margin-top:0;border-top:0;">      
-          <a href="pull.html" rel="external" data-role="button">1.0.1</a>
-          <a href="pull11.html" rel="external" data-role="button" data-theme="b">1.1</a>
-        </div>         
-      </div>
-
-      <div data-role="content" data-iscroll>
+    <div class="pull-demo-page" data-role="page">
       
+      <div data-position="inline" data-role="header">
+        <h1>Pull</h1>
+        <div class="ui-btn-right" data-role="controlgroup" data-type="horizontal" style="margin-top:0;border-top:0;">
+          <a data-role="button" data-theme="a" href="pull.html" rel="external">1.0.1 </a>
+          <a data-role="button" data-theme="b" href="pull_11.html" rel="external">1.1</a>
+        </div>
+      </div>
+      
+      <div data-iscroll="" data-role="content">
+        
         <div class="iscroll-pulldown">
-          <span class="iscroll-pull-icon"></span>
-          <span class="iscroll-pull-label"></span>
+          <span class="iscroll-pull-icon"></span><span class="iscroll-pull-label"></span>
         </div>
-    
+        
+        
         <ul data-role="listview">
-          <li>Original row 1</li>
-          <li>Original row 2</li>
-          <li>Original row 3</li>
-          <li>Original row 4</li>
-          <li>Original row 5</li>
-          <li>Original row 6</li>
-          <li>Original row 7</li>
-          <li>Original row 8</li>
-          <li>Original row 9</li>
-          <li>Original row 10</li>
-          <li>Original row 11</li>
-          <li>Original row 12</li>
-          <li>Original row 13</li>
-          <li>Original row 14</li>
-          <li>Original row 15</li>
-          <li>Original row 16</li>
-          <li>Original row 17</li>
-          <li>Original row 18</li>
-          <li>Original row 19</li>
-          <li>Original row 20</li>
-          <li>Original row 21</li>
-          <li>Original row 22</li>
-          <li>Original row 23</li>
-          <li>Original row 24</li>
-          <li>Original row 25</li>
-          <li>Original row 26</li>
-          <li>Original row 27</li>
-          <li>Original row 28</li>
-          <li>Original row 29</li>
-          <li>Original row 30</li>
-          <li>Original row 31</li>
-          <li>Original row 32</li>
-          <li>Original row 33</li>
-          <li>Original row 34</li>
-          <li>Original row 35</li>
-          <li>Original row 36</li>
-          <li>Original row 37</li>
-          <li>Original row 38</li>
-          <li>Original row 39</li>
-          <li>Original row 40</li>
-          <li>Original row 41</li>
-          <li>Original row 42</li>
-          <li>Original row 43</li>
-          <li>Original row 44</li>
-          <li>Original row 45</li>
-          <li>Original row 46</li>
-          <li>Original row 47</li>
-          <li>Original row 48</li>
-          <li>Original row 49</li>
-          <li>Original row 50</li>   
+          <li>Item 1 nemo expedita suscipit est</li>
+          <li>Item 2 et distinctio qui et</li>
+          <li>Item 3 numquam ex quo dolorum</li>
+          <li>Item 4 quia ut est at</li>
+          <li>Item 5 tempore eligendi voluptas excepturi</li>
+          <li>Item 6 molestiae cumque reiciendis et</li>
+          <li>Item 7 sit sequi id adipisci</li>
+          <li>Item 8 aut ipsa repudiandae officia</li>
+          <li>Item 9 ut repellendus repellendus eligendi</li>
+          <li>Item 10 unde nobis repudiandae fuga</li>
+          <li>Item 11 consequuntur sunt et ad</li>
+          <li>Item 12 recusandae mollitia qui accusamus</li>
+          <li>Item 13 saepe distinctio modi eum</li>
+          <li>Item 14 non sed quidem quo</li>
+          <li>Item 15 unde autem autem repellat</li>
+          <li>Item 16 consequatur ut voluptas rerum</li>
+          <li>Item 17 enim exercitationem dolorem fugit</li>
+          <li>Item 18 sint ut ut eos</li>
+          <li>Item 19 consequatur neque pariatur in</li>
+          <li>Item 20 debitis ea quasi qui</li>
+          <li>Item 21 ea nemo repellendus deleniti</li>
+          <li>Item 22 commodi aut ex excepturi</li>
+          <li>Item 23 nemo voluptatem consequatur ut</li>
+          <li>Item 24 ut voluptatem alias magni</li>
+          <li>Item 25 accusamus cumque officia possimus</li>
+          <li>Item 26 eum sint adipisci sunt</li>
+          <li>Item 27 reprehenderit repellat libero asperiores</li>
+          <li>Item 28 quasi dicta quo molestiae</li>
+          <li>Item 29 et et ipsum eos</li>
+          <li>Item 30 earum repellendus ab et</li>
+          <li>Item 31 in quia error eum</li>
+          <li>Item 32 dolor est nulla nisi</li>
+          <li>Item 33 culpa consequuntur temporibus dolorum</li>
+          <li>Item 34 sint dolor illo nostrum</li>
+          <li>Item 35 sed neque non officia</li>
+          <li>Item 36 ut vero qui dolores</li>
+          <li>Item 37 harum ullam quo enim</li>
+          <li>Item 38 laborum voluptates at rem</li>
+          <li>Item 39 nihil temporibus aspernatur aut</li>
+          <li>Item 40 cumque non sint hic</li>
+          <li>Item 41 laudantium consectetur similique alias</li>
+          <li>Item 42 distinctio qui ut qui</li>
+          <li>Item 43 id exercitationem ea corrupti</li>
+          <li>Item 44 qui optio reiciendis voluptatem</li>
+          <li>Item 45 qui et occaecati aut</li>
+          <li>Item 46 ex rem rerum voluptas</li>
+          <li>Item 47 aut laboriosam tenetur ut</li>
+          <li>Item 48 ducimus molestiae excepturi mollitia</li>
+          <li>Item 49 reiciendis inventore cupiditate vero</li>
+          <li>Item 50 maiores quis consectetur facilis</li>
         </ul>
-          
+        
         <div class="iscroll-pullup">
-          <span class="iscroll-pull-icon"></span>
-          <span 
-            data-iscroll-pulled-text="Custom pulled text"
-            data-iscroll-loading-text="Custom loading text"
-            class="iscroll-pull-label" >Custom reset text</span>
+          <span class="iscroll-pull-icon"></span><span class="iscroll-pull-label" data-iscroll-loading-text="Custom loading text" data-iscroll-pulled-text="Custom pulled text">Custom reset text</span>
         </div>
-                            
-      </div> <!--  content -->
-
-      <div data-role="footer" data-position="inline" data-id="my-persistent-footer">
+        
+        </div>
+      
+      <div data-id="my-persistent-footer" data-position="inline" data-role="footer">
         <div data-role="navbar">
           <ul>
-            <li><a href="index11.html" data-transition="slide">List</a></li>
-            <li><a href="inset11.html" data-transition="slide">Inset</a></li>
-            <li><a href="pull11.html" class="ui-btn-active ui-state-persist" data-transition="slide">Pull</a></li>
-            <li><a href="shortpull11.html" data-transition="slide">Short</a></li>
-            <li><a href="form11.html" data-transition="slide">Form</a></li>             
+            <li>
+              <a href="index_11.html">List</a>
+            </li>
+            <li>
+              <a href="inset_11.html">Inset</a>
+            </li>
+            <li>
+              <a class="ui-btn-active ui-state-persist" href="pull_11.html">Pull</a>
+            </li>
+            <li>
+              <a href="shortpull_11.html">Short</a>
+            </li>
+            <li>
+              <a href="form_11.html">Form</a>
+            </li>
           </ul>
         </div>
       </div>
       
-    </div> <!-- page -->
-     
+      </div>
   </body>
 </html>

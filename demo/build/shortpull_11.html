@@ -1,72 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>iscrollview Demo</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>jquery.mobile.iscrollview.js Demo</title>
-   
-    <link rel="stylesheet" href="jquery.mobile-1.1.0.min.css"/>
-    <link rel="stylesheet" href="../jquery.mobile.iscrollview.css"/>
-    <link rel="stylesheet" href="../jquery.mobile.iscrollview-pull.css"/> <!--  Can remove if not using pull-down/pull-up -->    
-    <link rel="stylesheet" href="demo.css"/>    
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
     
-    <script src="jquery-1.7.1.min.js"></script>
-    <script src="demo.js"></script>       
-    <script src="jquery.mobile-1.1.0-patched-listview.min.js"></script>
-    <script src="iscroll.js"></script>
-    <script src="../jquery.mobile.iscrollview.js"></script>
-    <script src="pull-example.js"></script> 
-  </head>
-
+    <link href="stylesheets/jquery.mobile-1.1.0.min.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/jquery.mobile.iscrollview.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/jquery.mobile.iscrollview-pull.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/demo.css" media="screen" rel="stylesheet" type="text/css" />
+    
+    <script src="javascripts/jquery-1.7.1.min.js" type="text/javascript"></script>
+    <script src="javascripts/demo.js" type="text/javascript"></script>
+    <script src="javascripts/jquery.mobile-1.1.0-patched-listview.min.js" type="text/javascript"></script>
+    <script src="javascripts/iscroll.js" type="text/javascript"></script>
+    <script src="javascripts/jquery.mobile.iscrollview.js" type="text/javascript"></script>
+    <script src="javascripts/pull-example.js" type="text/javascript"></script>
+    </head>
+  
   <body>
-    <div data-role="page" class="short-pull-demo-page">
-
-      <div data-role="header" data-position="inline">
-        <h1>Short</h1>
-        <div data-role="controlgroup" data-type="horizontal" class="ui-btn-right" style="margin-top:0;border-top:0;">      
-          <a href="shortpull.html" rel="external" data-role="button">1.0.1</a>
-          <a href="shortpull11.html" rel="external" data-role="button" data-theme="b">1.1</a>
-        </div>         
-      </div>
-
-      <div data-role="content" data-iscroll>
+    <div class="short-pull-demo-page" data-role="page">
       
-        <div class="iscroll-pulldown">
-          <span class="iscroll-pull-icon"></span>
-          <span class="iscroll-pull-label"></span>
+      <div data-position="inline" data-role="header">
+        <h1>Short Pull</h1>
+        <div class="ui-btn-right" data-role="controlgroup" data-type="horizontal" style="margin-top:0;border-top:0;">
+          <a data-role="button" data-theme="a" href="shortpull.html" rel="external">1.0.1 </a>
+          <a data-role="button" data-theme="b" href="shortpull_11.html" rel="external">1.1</a>
         </div>
-    
-        <ul data-role="listview">
-          <li>Original row 1</li>
-          <li>Original row 2</li>
-          <li>Original row 3</li>
-        </ul>
-          
-        <div class="iscroll-pullup">
-          <span class="iscroll-pull-icon"></span>
-          <span 
-            data-iscroll-pulled-text="Custom pulled text"
-            data-iscroll-loading-text="Custom loading text"
-            class="iscroll-pull-label" >Custom reset text</span>
-        </div>
-                            
       </div>
-
-      <div data-role="footer" data-position="inline" data-id="my-persistent-footer">
+      
+      <div data-iscroll="" data-role="content">
+        
+        <div class="iscroll-pulldown">
+          <span class="iscroll-pull-icon"></span><span class="iscroll-pull-label"></span>
+        </div>
+        
+        
+        <ul data-role="listview">
+          <li>Item 1 ex et omnis dolorem</li>
+          <li>Item 2 repudiandae rerum rerum sed</li>
+          <li>Item 3 non aut incidunt modi</li>
+        </ul>
+        
+        <div class="iscroll-pullup">
+          <span class="iscroll-pull-icon"></span><span class="iscroll-pull-label" data-iscroll-loading-text="Custom loading text" data-iscroll-pulled-text="Custom pulled text">Custom reset text</span>
+        </div>
+        
+        </div>
+      
+      <div data-id="my-persistent-footer" data-position="inline" data-role="footer">
         <div data-role="navbar">
           <ul>
-            <li><a href="index11.html" data-transition="slide">List</a></li>
-            <li><a href="inset11.html" data-transition="slide">Inset</a></li>
-            <li><a href="pull11.html"  data-transition="slide">Pull</a></li>
-            <li><a href="shortpull11.html" class="ui-btn-active ui-state-persist" data-transition="slide">Short</a></li>
-            <li><a href="form11.html" data-transition="slide">Form</a></li>             
+            <li>
+              <a href="index_11.html">List</a>
+            </li>
+            <li>
+              <a href="inset_11.html">Inset</a>
+            </li>
+            <li>
+              <a href="pull_11.html">Pull</a>
+            </li>
+            <li>
+              <a class="ui-btn-active ui-state-persist" href="shortpull_11.html">Short</a>
+            </li>
+            <li>
+              <a href="form_11.html">Form</a>
+            </li>
           </ul>
         </div>
       </div>
       
-    </div>
-     
+      </div>
   </body>
 </html>

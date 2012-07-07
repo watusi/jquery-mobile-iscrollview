@@ -1,0 +1,11 @@
+=blank_line
+div(data-role="footer" data-position="inline" data-id="my-persistent-footer")
+  div(data-role="navbar")
+    ul
+      - data.demo.tabs.each_index do |i| 
+        - tab = data.demo.tabs[i] 
+        - selected_classes = (i == data.page.tab_index) ? "ui-btn-active ui-state-persist" : ''
+        li
+          a(href="#{tab[:base_name]}#{@link_suffix}.html" class=selected_classes)
+            =tab[:label]
+=blank_line

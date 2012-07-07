@@ -1,104 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>jquery.mobile.iscrollview.js Demo</title>
-   
-    <link rel="stylesheet" href="jquery.mobile-1.1.0.min.css"/>
-    <link rel="stylesheet" href="../jquery.mobile.iscrollview.css"/>
-    <link rel="stylesheet" href="../jquery.mobile.iscrollview-pull.css"/> <!--  Can remove if not using pull-down/pull-up -->    
-    <link rel="stylesheet" href="demo.css"/>    
+    <title>iscrollview Demo</title>
     
-    <script src="jquery-1.7.1.min.js"></script>
-    <script src="demo.js"></script>       
-    <script src="jquery.mobile-1.1.0-patched-listview.min.js"></script>
-    <script src="iscroll.js"></script>
-    <script src="../jquery.mobile.iscrollview.js"></script>
-    <script src="pull-example.js"></script> 
-  </head>
-
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    
+    <link href="stylesheets/jquery.mobile-1.1.0.min.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/jquery.mobile.iscrollview.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/jquery.mobile.iscrollview-pull.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="stylesheets/demo.css" media="screen" rel="stylesheet" type="text/css" />
+    
+    <script src="javascripts/jquery-1.7.1.min.js" type="text/javascript"></script>
+    <script src="javascripts/demo.js" type="text/javascript"></script>
+    <script src="javascripts/jquery.mobile-1.1.0-patched-listview.min.js" type="text/javascript"></script>
+    <script src="javascripts/iscroll.js" type="text/javascript"></script>
+    <script src="javascripts/jquery.mobile.iscrollview.js" type="text/javascript"></script>
+    <script src="javascripts/pull-example.js" type="text/javascript"></script>
+    </head>
+  
   <body>
-    <div data-role="page" class="list-demo-page">
-
-      <div data-role="header" data-position="inline">
-        <h1>List</h1>        
-        <div data-role="controlgroup" data-type="horizontal" class="ui-btn-right" style="margin-top:0;border-top:0;">      
-          <a href="index.html" rel="external" data-role="button">1.0.1</a>
-          <a href="index11.html" rel="external" data-role="button" data-theme="b">1.1</a>
-        </div>      
+    <div class="list-demo-page" data-role="page">
+      
+      <div data-position="inline" data-role="header">
+        <h1>List</h1>
+        <div class="ui-btn-right" data-role="controlgroup" data-type="horizontal" style="margin-top:0;border-top:0;">
+          <a data-role="button" data-theme="a" href="index.html" rel="external">1.0.1 </a>
+          <a data-role="button" data-theme="b" href="index_11.html" rel="external">1.1</a>
+        </div>
       </div>
-
-      <div data-role="content" data-iscroll>
-        <ol data-role="listview">
-            <li><a href="inset11.html" data-transition="slide">row 1</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 2</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 3</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 4</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 5</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 6</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 7</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 8</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 9</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 10</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 11</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 12</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 13</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 14</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 15</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 16</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 17</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 18</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 19</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 20</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 21</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 22</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 23</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 24</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 25</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 26</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 27</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 28</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 29</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 30</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 31</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 32</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 33</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 34</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 35</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 36</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 37</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 38</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 39</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 40</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 41</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 42</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 43</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 44</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 45</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 46</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 47</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 48</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 49</a></li>
-            <li><a href="inset11.html" data-transition="slide">row 50</a></li>                                                                                            
-          </ol>
-      </div>
-
-      <div data-role="footer" data-position="inline" data-id="my-persistent-footer">
+      
+      <div data-iscroll="" data-role="content">
+        <ul data-role="listview">
+          <li>
+            <a href="inset.html">Item 1 quidem unde illo quos</a></li>
+          <li>
+            <a href="inset.html">Item 2 itaque dolorem rem deleniti</a></li>
+          <li>
+            <a href="inset.html">Item 3 sint laudantium in omnis</a></li>
+          <li>
+            <a href="inset.html">Item 4 minus tempora ut alias</a></li>
+          <li>
+            <a href="inset.html">Item 5 nulla rerum commodi molestiae</a></li>
+          <li>
+            <a href="inset.html">Item 6 quia molestiae temporibus exercitationem</a></li>
+          <li>
+            <a href="inset.html">Item 7 quaerat neque sint adipisci</a></li>
+          <li>
+            <a href="inset.html">Item 8 iusto facilis fuga impedit</a></li>
+          <li>
+            <a href="inset.html">Item 9 quo illo facere consequuntur</a></li>
+          <li>
+            <a href="inset.html">Item 10 illum amet delectus quam</a></li>
+          <li>
+            <a href="inset.html">Item 11 natus vel iure cumque</a></li>
+          <li>
+            <a href="inset.html">Item 12 modi sed quasi quia</a></li>
+          <li>
+            <a href="inset.html">Item 13 aperiam eum non necessitatibus</a></li>
+          <li>
+            <a href="inset.html">Item 14 libero quaerat est earum</a></li>
+          <li>
+            <a href="inset.html">Item 15 modi pariatur tenetur voluptatibus</a></li>
+          <li>
+            <a href="inset.html">Item 16 et saepe atque ex</a></li>
+          <li>
+            <a href="inset.html">Item 17 ab placeat sed et</a></li>
+          <li>
+            <a href="inset.html">Item 18 sunt praesentium tenetur tempore</a></li>
+          <li>
+            <a href="inset.html">Item 19 in magnam ratione et</a></li>
+          <li>
+            <a href="inset.html">Item 20 impedit molestias nesciunt dolor</a></li>
+          <li>
+            <a href="inset.html">Item 21 eum numquam quae ipsa</a></li>
+          <li>
+            <a href="inset.html">Item 22 labore assumenda labore quas</a></li>
+          <li>
+            <a href="inset.html">Item 23 qui aperiam laboriosam explicabo</a></li>
+          <li>
+            <a href="inset.html">Item 24 ad ut ipsa non</a></li>
+          <li>
+            <a href="inset.html">Item 25 est accusamus repellat non</a></li>
+          <li>
+            <a href="inset.html">Item 26 rerum dolores explicabo fugit</a></li>
+          <li>
+            <a href="inset.html">Item 27 magni repudiandae nulla iste</a></li>
+          <li>
+            <a href="inset.html">Item 28 placeat molestiae dignissimos quos</a></li>
+          <li>
+            <a href="inset.html">Item 29 similique rerum earum sunt</a></li>
+          <li>
+            <a href="inset.html">Item 30 labore nisi porro incidunt</a></li>
+          <li>
+            <a href="inset.html">Item 31 error mollitia in voluptas</a></li>
+          <li>
+            <a href="inset.html">Item 32 repudiandae et vel adipisci</a></li>
+          <li>
+            <a href="inset.html">Item 33 doloribus sit voluptas aut</a></li>
+          <li>
+            <a href="inset.html">Item 34 laboriosam magnam tempore ut</a></li>
+          <li>
+            <a href="inset.html">Item 35 impedit quas tempore consequatur</a></li>
+          <li>
+            <a href="inset.html">Item 36 ab tempora sunt laboriosam</a></li>
+          <li>
+            <a href="inset.html">Item 37 quo ea quo saepe</a></li>
+          <li>
+            <a href="inset.html">Item 38 dolores sed illo quo</a></li>
+          <li>
+            <a href="inset.html">Item 39 corrupti voluptas ducimus in</a></li>
+          <li>
+            <a href="inset.html">Item 40 facilis eligendi vitae optio</a></li>
+          <li>
+            <a href="inset.html">Item 41 ea id aut dolorem</a></li>
+          <li>
+            <a href="inset.html">Item 42 quasi consequatur corrupti aut</a></li>
+          <li>
+            <a href="inset.html">Item 43 maxime cumque est totam</a></li>
+          <li>
+            <a href="inset.html">Item 44 nesciunt autem cum omnis</a></li>
+          <li>
+            <a href="inset.html">Item 45 nulla sequi et asperiores</a></li>
+          <li>
+            <a href="inset.html">Item 46 quam omnis et commodi</a></li>
+          <li>
+            <a href="inset.html">Item 47 quia voluptas est similique</a></li>
+          <li>
+            <a href="inset.html">Item 48 est itaque eaque aut</a></li>
+          <li>
+            <a href="inset.html">Item 49 saepe dolores natus qui</a></li>
+          <li>
+            <a href="inset.html">Item 50 totam harum esse officiis</a></li>
+        </ul></div>
+      
+      <div data-id="my-persistent-footer" data-position="inline" data-role="footer">
         <div data-role="navbar">
           <ul>
-            <li><a href="index11.html" class="ui-btn-active ui-state-persist" data-transition="slide">List</a></li>
-            <li><a href="inset11.html" data-transition="slide">Inset</a></li>
-            <li><a href="pull11.html" data-transition="slide">Pull</a></li>
-            <li><a href="shortpull11.html" data-transition="slide">Short</a></li> 
-            <li><a href="form11.html" data-transition="slide">Form</a></li>                          
+            <li>
+              <a class="ui-btn-active ui-state-persist" href="index_11.html">List</a>
+            </li>
+            <li>
+              <a href="inset_11.html">Inset</a>
+            </li>
+            <li>
+              <a href="pull_11.html">Pull</a>
+            </li>
+            <li>
+              <a href="shortpull_11.html">Short</a>
+            </li>
+            <li>
+              <a href="form_11.html">Form</a>
+            </li>
           </ul>
         </div>
       </div>
       
-    </div>
-
+      </div>
   </body>
 </html>

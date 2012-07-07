@@ -1,11 +1,17 @@
-watusi/jquery-mobile-iscrollview, Version 1.2pre1+
+watusi/jquery-mobile-iscrollview, Version 1.2pre2
 ==================================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
 
-This is a full JQuery [Widget Factory](https://github.com/scottgonzalez/jquery-ui-1.8-widget-factory)
-widget implementation. It follows the *widget-factory-mobile*
+iSCroll is a javascript that can scroll content in a window within a web browser with very
+similar behaviour to native scrolling on mobile devices such as iPhone and Android. This means you 
+can scroll a *window* within the browser using native-like scrollbars and physics.
+
+jquery.mobile.iscrollview adapts the iScroll javascript to the jQuery Mobile environment.
+
+It is an implementation of a JQuery [Widget Factory](https://github.com/scottgonzalez/jquery-ui-1.8-widget-factory)
+widget. It follows the *widget-factory-mobile*
 [Widget Factory Pattern](https://github.com/addyosmani/jquery-plugin-patterns).
 
 ---
@@ -21,11 +27,16 @@ operations. Initial construction and refresh are much faster than 1.1.
 
 Please see the release notes for detailed change information.
 
-The most signficant change to be aware of is that you no longer need (and should not have) a
-protective `<div>` around your scrolled content. The widget creates this for you (and must do
-so for proper pull-down/pull-up operation.)
+=== Important Changes from 1.1 to Know About
 
-The most significant known flaws are in pages that have input elements. On touch devices, you
+- The code has been moved from the base directory of the project to `/lib` directory.
+
+- The demo has been moved from /`demo` to `/demo/build`.
+
+- You no longer need (and should not have) a protective `<div>` around your scrolled content. 
+The widget creates this for you (and must do so for proper pull-down/pull-up operation.)
+
+- The most significant known flaws are in pages that have input elements. On touch devices, you
 may be able to scroll the entire page by dragging on an input element. As well, it doesn't play well with
 the Mobile Safari Forms Assistant or other schemes that scroll the page when a virtual keyboard
 is used. This is an area that I am actively working on - I need it for my own work, so it will
@@ -33,28 +44,30 @@ get fixed. ;) (The most likely approach I will take is to un-enhance the widget 
 on such devices, and optionally hide the header/footer, so that the Forms Assistant is dealing
 with a normal page that doesn't have a scroller.)
 
-Targeted Applications and Use Cases
------------------------------------
-While this widget is intended for use in any jQuery Mobile project, it is most targeted at specific
-use cases. First and foremost are native mobile applications that use HTML/CSS/Javascript in a
-webview for their user interface. I feel this is the most important target because it is
-especially desirable that such applications reproduce a "native" look and feel. A native look
-and feel is impossible to achieve without an embeddable scroller with native-like physics and
-scrollbar action. 
+What This is For
+----------------
+This widget is intended for use in any jQuery Mobile project, but it was designed to be especially
+useful for some specific uses. 
 
-While iScroll4 has been used to help achieve this goal, it is difficult to use along with
+First and foremost are native mobile applications that use HTML/CSS/Javascript in a
+webview for their user interface. It is especially desirable that such applications reproduce a 
+"native" look and feel. A native look and feel is impossible to achieve without an embeddable 
+scroller with native-like physics and scrollbar action. 
+
+While iScroll4 is useful to help achieve this goal, it is difficult to use along with
 jQuery Mobile. It is not an easy task to integrate iScroll4 with jQuery Mobile - at least not
-correctly and efficiently.  My goal is that this widget will handle 80% of use cases (the need
+correctly and efficiently.  My intention is that this widget will handle 80% of use cases (the need
 for a fixed header and footer with a scrollable area in-between) by simply including the required 
 files in the `<head>` and added a single `data-scroll` attribute to your content `<div>`. Everything
 else you read here is optional. 
 
-Because this is the primary target for this widget, it has a large number of configurable options
-that in many cases might be usable only in a single target environment. I want you to be able
+Becaause the primary target for this widget is native mobile applications, it has a large number of 
+configurable options that be usable only in a single target environment. I want you to be able
 to tailor the widget to your specific needs when you are using it in a specific, known environment.
 
-Secondarily, it is intended to support websites viewed on mobile browsers, and "full-screen" 
-websites and "web apps" (i.e. "Add to Home Screen" in Mobile Safari).
+Secondarily, it is intended to support websites that will be viewed on mobile browsers, and 
+"full-screen" websites and "web apps" for mobile devices (i.e. "Add to Home Screen" in 
+Mobile Safari).
 
 Finally, it supports desktop browsers, and is regularly tested using current versions of
 FireFox, Safari, Chrome, and Opera. It generally works well in these browsers, and fortunately
@@ -1422,8 +1435,14 @@ the disappearing address bar which is not present on desktop Safari.
 
 Demo
 ----
-The demo directory contains a simple example with 5 pages. You can switch between
-the pages using the tabbar at the bottom. The pages demonstrate:
+The demo contains a simple example with 5 pages. The demo can be found in `/demo/build`. It is built
+using a static site generator (written in Ruby) called Middleman, but the demo has already been
+built for you. 
+
+Just copy the contents of `/demo/build` to your web server, or open the index.html file directly
+from `/demo/build`.
+
+You can switch between the pages using the tabbar at the bottom. The pages demonstrate:
 
 * a listview
 * an inset listview

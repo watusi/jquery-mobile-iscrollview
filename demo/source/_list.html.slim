@@ -1,0 +1,25 @@
+
+/ _list.html.slim - Partial to generate a list of dummy data
+   
+- quantity = quantity || 50
+- link_url = link_url || "inset.html" 
+- inset = inset || false
+
+- inset_value = inset ? "true" : false
+- ordered = true if !defined? ordered
+- links = links || false
+
+- if ordered
+  ol(data-role="listview" data-inset=inset_value)
+- else
+  ul(data-role="listview" data-inset=inset_value)
+    -quantity.times do |count|
+      - text = "Item #{count+1} #{lorem.words 4}"
+      li 
+        - if links
+          a href=link_url =text
+        - else 
+          =text
+        
+                                                                                       
+
