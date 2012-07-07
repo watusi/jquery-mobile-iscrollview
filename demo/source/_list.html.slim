@@ -2,7 +2,7 @@
 / _list.html.slim - Partial to generate a list of dummy data
    
 - quantity = quantity || 50
-- link_url = link_url || "inset.html" 
+- link_url = (link_url || "inset") + @link_suffix + '.html'
 - inset = inset || false
 
 - inset_value = inset ? "true" : false
