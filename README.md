@@ -4,7 +4,7 @@ JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cu
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
 
-iSCroll is a javascript that can scroll content in a window within a web browser with very
+iScroll is a javascript that can scroll content in a window within a web browser with very
 similar behaviour to native scrolling on mobile devices such as iPhone and Android. This means you 
 can scroll a *window* within the browser using native-like scrollbars and physics.
 
