@@ -61,7 +61,7 @@ set :slim, {
 # end
   
 [:index, :inset, :pull, :shortpull, :form].each do |base|
-  page "/#{base}.html", :proxy => "/#{base}.html" do
+  page "/#{base}.html" do
     @is_ver_11 = false
     @link_suffix = ''
     @asset_set = 'v10'
