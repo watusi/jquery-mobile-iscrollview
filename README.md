@@ -61,9 +61,9 @@ for a fixed header and footer with a scrollable area in-between) by simply inclu
 files in the `<head>` and added a single `data-scroll` attribute to your content `<div>`. Everything
 else you read here is optional. 
 
-Becaause the primary target for this widget is native mobile applications, it has a large number of 
-configurable options that be usable only in a single target environment. I want you to be able
-to tailor the widget to your specific needs when you are using it in a specific, known environment.
+Because the primary target for this widget is native mobile applications, it has a large number of 
+configurable options that be usable only in certain target environments. I want you to be able
+to tailor the widget to your specific needs when you are using it in specific, known environments.
 
 Secondarily, it is intended to support websites that will be viewed on mobile browsers, and 
 "full-screen" websites and "web apps" for mobile devices (i.e. "Add to Home Screen" in 
@@ -551,7 +551,9 @@ avoids unnecessary duplicate refreshes. If content were to be updated several ti
 page is not active, only a single refresh will be performed.
 
 If you want to force a refresh to a scroller on a non-active page to be performed immediately,
-you can set the `noDefer` parameter to `true`.
+you can set the `noDefer` parameter to `true`. Note that the `noDefer` parameter is intended
+for the widget's internal use, and you should not normally set it to `true`. You should normally
+just leave this parameter out of your call.
 
 You can disable deferred refreshes completely by setting the `deferNonActiveRefresh` widget
 option to `false`.
@@ -670,6 +672,47 @@ user can drag past the maximum Y, but then the scroller will snap-back to the ma
 Y position.
 
 ---
+
+Public Members
+--------------
+The widget maintains several public data members that may be useful to you:
+
+###iscroll
+
+This is a reference the iScroll object.
+
+###$window
+
+A jQuery collection object containing the window (viewport).
+
+###$wrapper
+
+A jQuery collection object containing the iscrollview wrapper element.
+
+###$scroller
+
+A jQuery collection object containing the scroller element.
+
+###scrollerContent
+
+a jQuery collection object containing the scroller content element.
+
+###$pullDown
+
+a jQuery collection object containing any pull-down element. If there is no pull-down element, then the
+length of the collection will be zero.
+
+###$pullUp
+
+A jQuery collection object containing any pull-up element. If there is no pull-up element, then
+the length of the collection will be zero.
+
+###$page
+
+A jQuery collection object containing the page that the widget is contained in.
+
+---
+
 
 Options
 -------
