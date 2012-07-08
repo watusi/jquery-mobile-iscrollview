@@ -29,7 +29,7 @@
 
 /*
 jquery.mobile.iscrollview.js
-Version: 1.2pre2
+Version: 1.2pre2+
 jQuery Mobile iScroll4 view widget
 Copyright (c), 2012 Watusiware Corporation
 Distributed under the MIT License
@@ -252,6 +252,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
   $window:            $(window), 
   $wrapper:           [],  // The wrapper element
   $scroller:          [],  // The scroller element (first child of wrapper)
+  $scrollerContent:   [],  // Content of scroller, sandwitched between any pull-down/pull-up
   $pullDown:          [],  // The pull-down element (if any)
   $pullUp:            [],  // The pull-up element (if any)
   $pullUpSpacer:      [],
@@ -908,6 +909,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     this._logWidgetEvent("_orientationChangeFunc", e, then);
     },
     
+   // Called when jQuery Mobile updates content such that a reflow is needed. This happens
+   // on collapsible content, etc.
+    _updateLayoutFunc: function(e) {
+    this.refresh(); 
+  },
+    
   // Get or set the count of instances on the page containing the widget  
   // This increases or decreases depending on the number of iscrollview widgets currently
   // instantiated on the page.
@@ -1516,8 +1523,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       this._bind(this.$window, this.options.resizeEvents, this._windowResizeFunc, "$window");
       if (this.options.scrollTopOnOrientationChange) {
          this._bind(this.$window, "orientationchange", this._orientationChangeFunc, "$window");
-         }        
+         }  
       }
+    
+    // Refresh on trigger of updatelayout of content
+    this.$scrollerContent = this.$scroller.find("." + this.options.scrollerContentClass);
+    this._bind(this.$scrollerContent, "updatelayout", this._updateLayoutFunc, "$scrollerContent");    
    
     if (this.options.debug && this.options.traceCreateDestroy) {
       this._logInterval("_create() end", then);
@@ -1535,6 +1546,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
       } 
       
     // Unbind events
+    this._unbind(this.$scrollerContent, "updatelayout", "$scrollerContent");
     this._unbind(this.$window, this.options.resizeEvents, "$window");
     this._unbind(this.$window, "orientationchange", "$window");  
     if (this._instanceCount() === 1) { 
