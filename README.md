@@ -1084,28 +1084,101 @@ of the option corresponds to the event name **without** the widget name
 prefix. So, you can add a callback function for the refresh event
 with the key `onrefresh`.
 
+I don't recommend using option callbacks. They are supported because they are required by
+the jQuery Widget Factory.
+
 
 ###Bound Callback parameters
 
 Bound event callbacks receive two parameters:
 
-* event - The underlying DOM event (if any) associated with this event
-* data -  A map containing data passed to the event by this widget
- * :iscrollview reference to the iscrollview object associated with this event
+* `event` - The underlying DOM event (if any) associated with this event
+* `data` -  A map containing data passed to the event by this widget
+ * `:iscrollview` - a reference to the iscrollview object associated with this event
 
 As well, when a bound event callback is called, `this` will be the DOM
 object that triggered the event. (e.g. the wrapper).
 
-###Example event delegation:
+
+###Binding to Events
+
+All events triggered by this widget trigger on the wrapper element. This includes events generated
+by iScroll itself (and reflected to jQuery events) as well as those triggered by the widget.
+
+It is most efficient, then, to bind directly to the wrapper element. If you bind from a script
+within an HTML page, make sure that the script is at the *end* of the page, within the `<body>`
+element. 
+
+Do not put code to bind to events directly in `<head>` on a particular page, because jQuery Mobile
+ignores the content of `<head>` on all but the first page encountered. (Thus the content of
+`<head>` should be identical for every page.)
+
+In this case, you can locate the wrapper element with:
 
 ```javascript
 
-    $(document).delegate("div.my-content", "iscroll_onrefresh", function(event, data) {
-        var v = data.iscrollview;  // In case we need to reference the iscrollview
-        console.write("iscroll_onrefresh occured");
-        }
-        
+    $.mobile.activePage.find(".iscroll-wrapper")
+    
 ```
+   
+or
+
+```javascript
+
+    (".iscroll-wrapper", $.mobile.activepage)
+    
+```
+   
+If you have multiple scrollers on a page, you will need to assign an ID or class to individual
+wrappers so that you can locate them.
+
+So, within a page, you can bind simply, such as:
+
+```javascript
+
+    $.mobile.activePage.find(".iscroll-wrapper").bind("iscroll_onpulldown", function () {
+      alert("Pull-down gesture was completed");
+      } );
+      
+```
+
+To bind in common code called from `<head>`, you will need to first delegate a function to the
+`pageinit` event. This event is triggered whenever a page is first created. You can test (using
+an ID or class) to see if that page has a scroller you want to bind to, and then bind from
+within the delegated function. The file `pull-example.js` in the demo uses this technique.
+
+```javascript
+
+    $(document).delegate("div.contacts-page", "pageinit", function () {
+      this.find(".iscroll-wrapper").bind("iscroll_onpulldown", function () {
+        alert("Pull-down gesture was completred");
+        });
+    });
+    
+```
+
+You can also use a delegation at the document level. This is shorter, but somewhat less efficient,
+since events will bubble-up to the document:
+
+```javascript
+
+    $(document).delegate("div.contacts-wrapper", "iscroll_onpulldown", function () {
+      alert("Pull-down gesture was completed");
+      });
+      
+```  
+
+Finally, if you have a reference to an `iscrollview` object, you can use it's public `$wrapper`
+member to bind:
+
+```javascript
+
+    var view = $('.some-wrapper').jqmData('iscrollview');
+    view.$wrapper.bind("iscroll_onpulldown", function ()  {
+      alert("Pull-down gesture was completed");
+      });
+     
+```  
 
 ###Supported Events
 
@@ -1437,7 +1510,8 @@ Demo
 ----
 The demo contains a simple example with 5 pages. The demo can be found in `/demo/build`. It is built
 using a static site generator (written in Ruby) called Middleman, but the demo has already been
-built for you. 
+built for you. If you do wish to build the demo yourself, you will need to install Middleman 3.0 or 
+higher.
 
 Just copy the contents of `/demo/build` to your web server, or open the index.html file directly
 from `/demo/build`.
