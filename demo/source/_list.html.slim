@@ -6,20 +6,19 @@
 - inset = inset || false
 
 - inset_value = inset ? "true" : false
-- ordered = true if !defined? ordered
+- ordered_defined = defined? ordered
+- ordered = ordered_defined ? ordered : true
+- tag = ordered ? 'ol' : 'ul'
 - links = links || false
 
-- if ordered
-  ol(data-role="listview" data-inset=inset_value)
-- else
-  ul(data-role="listview" data-inset=inset_value)
-    -quantity.times do |count|
-      - text = "Item #{count+1} #{lorem.words 4}"
-      li 
-        - if links
-          a href=link_url =text
-        - else 
-          =text
+*{:tag => tag, 'data-role' => 'listview', 'data-inset' => inset_value}
+  -quantity.times do |count|
+    - text = "Item #{count+1} #{lorem.words 4}"
+    li 
+      - if links
+        a href=link_url =text
+      - else 
+        =text
         
                                                                                        
 
