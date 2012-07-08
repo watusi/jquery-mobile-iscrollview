@@ -1,3 +1,5 @@
+require 'slim'
+
 set :slim, {
   :tabsize => 2,
   :format => :html,

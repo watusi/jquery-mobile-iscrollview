@@ -10,6 +10,7 @@
 /* The iscroll-page style is added to the page when the first iscrollview widget is created
  * on the page, and removed when the last iscrollview widget on the page is destroyed.
  */
+
 .iscroll-page {
   /* Add any styles that you want on pages that use iScroll */
 }
