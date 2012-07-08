@@ -1562,7 +1562,7 @@ from `/demo/build`.
 You can switch between the pages using the tabbar at the bottom. The pages demonstrate:
 
 * a listview
-* an inset listview
+* an inset listview (also has two expandible elements)
 * a listview with pull-down and pull-up blocks
 * a listview with a short list and pull-down/pull-up blocks
 * a form
