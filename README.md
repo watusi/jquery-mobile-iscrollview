@@ -56,7 +56,7 @@ If you need to do something different than this, this widget will probably work 
 you will probably have to set some options and dig into the documentation a bit.
 
 Because the primary target for this widget is native mobile applications, it has a large number of 
-configurable options that be usable only in certain target environments. I want you to be able
+configurable options, which may be usable only in certain target environments. I want you to be able
 to tailor the widget to your specific needs when you are using it in specific, known environments.
 
 Secondarily, it is intended to support websites that will be viewed on mobile browsers, and 
@@ -76,7 +76,7 @@ Usage
 The most basic usage of this widget is simple: just add a `data-iscroll`
 attribute to a container. All content inside this container will be scrolled.
 
-Note that iscroll.js itself scrolls only the first child of it's wrapper. However, by
+Note that `iscroll.js` itself scrolls only the first child of it's wrapper. However, by
 default, this plugin automatically creates a protective `<div>` around all
 children of the wrapper, and so unlike iscroll.js it will scroll *all* of the children of the 
 wrapper element - not just the first.
@@ -180,7 +180,8 @@ If you supply initial content, the plugin will create two `<div>`s around that c
 The outermost `<div>` is called the scroller, and contains everything that will be scrolled
 by iScroll. It is given a class of `iscroll-scroller`.
 
-If you supplied pull-down and/or pull-up blocks, they are moved to inside the scroller.
+If you supplied pull-down and/or pull-up blocks, they are moved to inside the scroller, after
+the scroller is created.
 
 An additional `<div>` is also added around the scrolled content, sandwiched between the
 (possibly absent) pull-down and/or pull-up blocks. This `<div>` is given a class of
@@ -212,6 +213,7 @@ What the plugin produces:
         <!-- If you included a pull-up under the wrapper, it will wind-up here -->
       </div>
     </div>
+```    
     
 ### Refreshing
 
@@ -226,8 +228,6 @@ refresh is not performed immediately, but after a timeout that insures that the 
 updated with your new content.
 
 Please see the section on the `refresh()` function for full details.
-
-```
 
 ---
 
@@ -516,6 +516,8 @@ If the timeout value is present, then the internal call of iScroll `refresh()` w
 by this value. If the value is `null` or `undefined`, then the value of the `refreshDelay`
 option will be used.
 
+##### Refresh Callbacks
+
 If present, the optional `beforeCallback` function will be called just prior to refreshing iScroll. 
 This is useful if you have updated content inside the 
 scroller, and need to refresh widgets inside the scroller (such as a listview) prior to iScroll 
@@ -531,6 +533,8 @@ the scroller after updating content. For example, this might be used to scroll t
 position or element within the scroller after updating content. This is particularly useful
 when adding content to the *end* of the scroller, when you might like to scroll the new content
 into view.
+
+##### Deferred Refresh
 
 Calls made to `refresh()` for an iscrollview which is on a cached page that is not the active page 
 are normally (depending on the value of the `deferNonActiveRefresh` option) deferred until the 
@@ -559,6 +563,7 @@ As well, if content is updated while a page is not the active page, then deferri
 avoids unnecessary duplicate refreshes. If content were to be updated several times while the
 page is not active, only a single refresh will be performed.
 
+##### NoDefer Argument
 If you want to force a refresh to a scroller on a non-active page to be performed immediately,
 you can set the `noDefer` parameter to `true`. Note that the `noDefer` parameter is intended
 for the widget's internal use, and you should not normally set it to `true`. You should normally
@@ -1372,7 +1377,7 @@ Either `absolute` or `relative` positioning of the wrapper will cause elements i
 wrapper which themselves have `absolute` positioning to be positioned relative to the wrapper.
 iScroll depends on this behaviour for positioning of the scrollbar.
 
-### Customization of Position
+### Customizing Scrollbar Position
 
 iScroll gives you the ability to customize scroll bars. See the iScroll4 documentation
 for full details. You can customize the height, width, position, color, etc. etc. of
@@ -1609,7 +1614,7 @@ following additional components:
 * jQuery 1.7.1
 * JQuery Mobile 1.0.1
 * jQuery Mobile 1.1.1
-$ iscroll4, master commit 04676afd69 6/20/2012
+* iscroll4, master commit 04676afd69 6/20/2012
 
 
 Please obtain these components independently for your projects, so that
