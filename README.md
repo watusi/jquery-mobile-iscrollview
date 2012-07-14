@@ -45,9 +45,10 @@ While iScroll4 is useful to help achieve this goal, it is difficult to use along
 jQuery Mobile. It is not an easy task to integrate iScroll4 with jQuery Mobile - at least not
 correctly and efficiently. 
 
-My intention is that this widget will handle 80% of use cases. The most common need for iScroll
-in jQuery Mobile projects is to have a fixed header and footer with a single vertically-scrollable 
-area in-between. 
+My intention is that this widget will handle 80% of use cases with very minimal effort. 
+
+The most common need for iScroll in jQuery Mobile projects is to have a fixed header and footer 
+with a single vertically-scrollable area in-between. 
 
 This can be accomplished by simply including the required files in the `<head>` and adding a 
 single `data-scroll` attribute to your content `<div>`.
