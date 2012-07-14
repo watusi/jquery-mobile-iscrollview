@@ -1,5 +1,5 @@
-watusi/jquery-mobile-iscrollview, Version 1.2pre2+
-==================================================
+watusi/jquery-mobile-iscrollview, Version 1.2
+=============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
@@ -155,7 +155,7 @@ Example
         <h1>INDEX PAGE</h1>
       </div>
       
-      <div data-role="content" data-iscroll>
+      <div data-role="content" class="example-wrapper" data-iscroll>
         <p>some content that will be scrolled</p>
         <p>Some more content that will be scrolled</p>
         <ul data-role="listview">
@@ -218,6 +218,21 @@ What the plugin produces:
         <!-- If you included a pull-up under the wrapper, it will wind-up here -->
       </div>
     </div>
+    
+### Refreshing
+
+Any time you alter the content of a scroller, in such a way that the dimensions of the scrolled
+content might be changed, you need to refresh the scroller widget using the `refresh()` function.
+
+The `refresh()` function has optional pre and post-refresh function arguments that can be used
+to perform some action before and/or after the refresh. For example, you might also refresh some other
+widget, such as a listview, prior to refreshing the scroller, or you might want to scroll to
+a particular position after the refresh has been performed. The callbacks are necessary because
+refresh is not performed immediately, but after a timeout that insures that the DOM has been fully
+updated with your new content.
+
+Please see the section on the `refresh()` function for full details.
+
 ```
 
 ---
@@ -392,19 +407,19 @@ content. See the demo for an example.
 
 ---
 
-Calling methods
----------------
-The standard way of calling widget methods is by passing a sub-method name
-as a string parameter to the widget function. Any parameters to the method
+Calling functions
+-----------------
+The standard way of calling widget functions is by passing a sub-function name
+as a string parameter to the widget function. Any parameters to the function
 should follow.
 
-For example, to call the `refresh` method:
+For example, to call the `refresh` function:
 
 ```javascript
     $(".example-wrapper").iscrollview("refresh");
 ```
 
-The widget factory allows you to access widget methods directly, by
+The widget factory allows you to access widget functions directly, by
 accessing a data variable stored in the widget's element:
 
 ```javascript
@@ -413,54 +428,54 @@ accessing a data variable stored in the widget's element:
 
 While this is a bit awkward, it is also more conventional. It is
 handy in case you need to make a series of calls to different widget
-methods. You can first get the instance into a variable:
+functions. You can first get the instance into a variable:
 
 ```javascript
     var myView = $(".example-wrapper").jqmData("iscrollview");
     myView.refresh();
 ```
 
-This means, as well, you can easily call any underlying iScroll method
+This means, as well, you can easily call any underlying iScroll function
 through the exposed `iscroll` member variable. For example,
 
 ```javascript
     $(".example-wrapper").jqmData('iscrollview').iscroll.scrollTo(0,10,200,true);
 ```
 
-So, if you replace iscroll.js with a newer version that has new methods,
-or if you need to call iScroll private methods,  or access iScroll
+So, if you replace iscroll.js with a newer version that has new functions,
+or if you need to call iScroll private functions,  or access iScroll
 member variables, you can call them without any need to modify this widget.
 
-This widget wraps all current iScroll public methods,
+This widget wraps all current iScroll public functions,
 so the above example can also be called like this:
 
 ```javascript
     $(".example-wrapper").iscrollview("scrollTo", 0, 10, 200, true);
 ```
 
-The exceptions are the `destroy`, `refresh`, `enable`, and `disable` methods.
+The exceptions are the `destroy`, `refresh`, `enable`, and `disable` functions.
 
-`destroy` is a standard widget factory method. In this widget, it
-calls the iScroll `destroy` method and then calls the base widget
-destroy. If you need direct access to iScroll's `destroy` method,
+`destroy` is a standard widget factory function. In this widget, it
+calls the iScroll `destroy` function and then calls the base widget
+destroy. If you need direct access to iScroll's `destroy` function,
 you can access it directly using the `iscroll` member variable.
 
-The widget's `refresh` method insures that the underlying iScroll
-refresh method is called with the proper timing. If you need to call
-the iScroll refresh method directly, do so using the `iscroll` member
+The widget's `refresh` function insures that the underlying iScroll
+refresh function is called with the proper timing. If you need to call
+the iScroll refresh function directly, do so using the `iscroll` member
 variable.
 
-`enable` and `disable` are standard widget methods. Each of these calls
-iScroll's corresponding method and then calls the underlying widget
-method.
+`enable` and `disable` are standard widget functions. Each of these calls
+iScroll's corresponding function and then calls the underlying widget
+function.
 
 ---
 
-Methods
--------
-###Standard Widget Methods
+Functions
+---------
+###Standard Widget Functions
 
-These are methods that are typically implemented for ALL widgets:
+These are functions that are typically implemented for ALL widgets:
 
 ####option(key, [value_or_object])
 
@@ -471,10 +486,10 @@ See "Options", below.
 Destroys the iScroll instance and removes page modifications. Also calls the
 underlying widget `destroy()` code.
 
-###Custom Widget Methods
+###Custom Widget Functions
 
-These are additional methods implemented in this widget which do
-not have corresponding iScroll methods.
+These are additional functions implemented in this widget which do
+not have corresponding iScroll functions.
 
 ####resizeWrapper()
 
@@ -486,22 +501,22 @@ if you have change the page structure and so need to resize the wrapper.
 This is also normally called for you when page orientation or page
 size changes.
 
-###iScroll Methods
+###iScroll Functions
 
-These are methods that exist in iScroll. They are available on
-the widget as a convenience. See "calling methods" for information
-on how to access any iScroll methods that are not implemented in
+These are functions that exist in iScroll. They are available on
+the widget as a convenience. See "calling functions" for information
+on how to access any iScroll functions that are not implemented in
 the widget. (For example, because you have updated iScroll to
 a newer version, and this widget has not been updated yet.)
 
 Please see the iScroll documentation for details on using these
-methods.
+functions.
 
 ####refresh(timeout, beforeCallback, afterCallback, noDefer)
 
 Note that this performs the proper timing for the iScroll `refresh()`
 function using `setTimeout`. If you want to call the iScroll `refresh()`
-method directly, please see "calling methods" above.
+function directly, please see "calling functions" above.
 
 If the timeout value is present, then the internal call of iScroll `refresh()` will be delayed
 by this value. If the value is `null` or `undefined`, then the value of the `refreshDelay`
@@ -581,19 +596,19 @@ the scroll is immediate.
 
 ####disable()
 
-Note that this method also calls the default widget `disable()` method. 
+Note that this function also calls the default widget `disable()` function. 
 
 Note: This has not been tested, and probably doesn't work correctly. Further, the iscroll-internal
 `disable()` probably doesn't do what you wish it would do. You can't re-enable iScroll by calling
 `enable()` after calling `disable()`.
 
-If you do want to call the iScroll `disable()` method directly, please see "calling methods" above.
+If you do want to call the iScroll `disable()` function directly, please see "calling functions" above.
 
 ####enable()
 
-Note that this method also calls the default widget `enable()` method.
+Note that this function also calls the default widget `enable()` function.
 If you want to call the iScroll `enable()`
-method directly, please see "calling methods" above.
+function directly, please see "calling functions" above.
 
 ####stop()
 
@@ -1050,7 +1065,7 @@ Default: `false`
 
 ###fastDestroy
 
-If `true`, an assumption is made that you will not call the widget's `destroy()` method to
+If `true`, an assumption is made that you will not call the widget's `destroy()` function to
 un-enhance the widget while retaining the page. The assumption is that `destroy()` will only 
 be called internally by the page plugin when the page is removed from the DOM. This saves
 the overhead of un-enhancing the page.
@@ -1599,8 +1614,7 @@ following additional components:
 * jQuery 1.6.4
 * jQuery 1.7.1
 * JQuery Mobile 1.0.1
-* jQuery Mobile 1.1.0, patched for listview link bug (very long delay when clicking on list items
-in unpatched version - due for fix in 1.1.1).
+* jQuery Mobile 1.1.1
 $ iscroll4, master commit 04676afd69 6/20/2012
 
 
@@ -1707,7 +1721,7 @@ The source code code follows the following conventions:
 
 * Upper-case first letter: constant
 * $ first letter: variable contains a JQuery object
-* (underscore) first letter: Private method
+* (underscore) first letter: Private funcion
 
 ---
 

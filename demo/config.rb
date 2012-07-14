@@ -64,11 +64,13 @@ set :slim, {
   
 [:index, :inset, :pull, :shortpull, :form].each do |base|
   page "/#{base}.html" do
+    @base = base
     @is_ver_11 = false
     @link_suffix = ''
     @asset_set = 'v10'
   end  
   page "/#{base}_11.html", :proxy => "/#{base}.html" do
+    @base = base
     @is_ver_11 = true
     @link_suffix = '_11'
     @asset_set = 'v11'

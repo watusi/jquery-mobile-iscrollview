@@ -5,7 +5,7 @@
 div(data-role="header" data-position="inline")
   h1 = data.page.title
   div.ui-btn-right(data-role="controlgroup" data-type="horizontal" style="margin-top:0;border-top:0;")
-    a(data-theme=button_theme_1 href="#{request.path}" rel="external" data-role="button")1.0.1 
+    a(data-theme=button_theme_1 href="#{@base}.html" rel="external" data-role="button")1.0.1 
     =next_line
-    a(data-theme=button_theme_11 href="#{File.basename(request.path,'.html')}_11.html" rel="external" data-role="button")1.1
+    a(data-theme=button_theme_11 href="#{@base}_11.html" rel="external" data-role="button")1.1.1
 =blank_line

@@ -912,7 +912,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
    // Called when jQuery Mobile updates content such that a reflow is needed. This happens
    // on collapsible content, etc.
     _updateLayoutFunc: function(e) {
-    this.refresh(); 
+      this.refresh();
   },
     
   // Get or set the count of instances on the page containing the widget  
@@ -1217,7 +1217,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later or,
     if (this.options.traceResizeWrapper) {
       then = this._log("resizeWrapper() start");
       }
-    this.$page.trigger("updatelayout");  // Let jQuery mobile update fixed header/footer, collapsables, etc.
+    this.$wrapper.trigger("updatelayout");  // Let jQuery mobile update fixed header/footer, collapsables, etc.
     viewportHeight = this.$window.height();
     barsHeight = this._calculateBarsHeight();
           
