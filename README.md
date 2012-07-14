@@ -16,33 +16,17 @@ widget. It follows the *widget-factory-mobile*
 
 ---
 
-Preview
+Release Notes
+-------------
+Please see releaseNotes.txt for information on changes in this and prior releases.
+
+Roadmap
 -------
-This is a preview of version 1.2. I have not pushed to GitHub since 1.1, and so it has not been
-exposed to external testing. Please help me make jquery-mobile-iscrollview bug-free by trying-out
-this preview.
+1.3 - Option to un-enhance widget temporarily during virtual-keyboard input (and optionally hide 
+headers/footers) to eliminate all form input problems. 
 
-This is a significant update from 1.1, and is much faster (as much as 10X) vs. 1.1 at certain
-operations. Initial construction and refresh are much faster than 1.1.
+1.3 - Better support for collapsible content (scroll on expand if expanded content below window)
 
-Please see the release notes for detailed change information.
-
-=== Important Changes from 1.1 to Know About
-
-- The code has been moved from the base directory of the project to `/lib` directory.
-
-- The demo has been moved from /`demo` to `/demo/build`.
-
-- You no longer need (and should not have) a protective `<div>` around your scrolled content. 
-The widget creates this for you (and must do so for proper pull-down/pull-up operation.)
-
-- The most significant known flaws are in pages that have input elements. On touch devices, you
-may be able to scroll the entire page by dragging on an input element. As well, it doesn't play well with
-the Mobile Safari Forms Assistant or other schemes that scroll the page when a virtual keyboard
-is used. This is an area that I am actively working on - I need it for my own work, so it will
-get fixed. ;) (The most likely approach I will take is to un-enhance the widget during input
-on such devices, and optionally hide the header/footer, so that the Forms Assistant is dealing
-with a normal page that doesn't have a scroller.)
 
 What This is For
 ----------------
