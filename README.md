@@ -22,8 +22,9 @@ Please see releaseNotes.txt for information on changes in this and prior release
 
 Roadmap
 -------
-1.3 - Option to un-enhance widget temporarily during virtual-keyboard input (and optionally hide 
-headers/footers) to eliminate all form input problems. 
+1.3 - Option to un-enhance widget temporarily (and optionally hide headers/footers) during 
+virtual-keyboard input on select devices (iOS first),  to eliminate all form input problems 
+when using a virtual keyboard.
 
 1.3 - Better support for collapsible content (scroll on expand if expanded content below window)
 
