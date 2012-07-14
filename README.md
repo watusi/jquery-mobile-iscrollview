@@ -43,10 +43,17 @@ scroller with native-like physics and scrollbar action.
 
 While iScroll4 is useful to help achieve this goal, it is difficult to use along with
 jQuery Mobile. It is not an easy task to integrate iScroll4 with jQuery Mobile - at least not
-correctly and efficiently.  My intention is that this widget will handle 80% of use cases (the need
-for a fixed header and footer with a scrollable area in-between) by simply including the required 
-files in the `<head>` and added a single `data-scroll` attribute to your content `<div>`. Everything
-else you read here is optional. 
+correctly and efficiently. 
+
+My intention is that this widget will handle 80% of use cases. The most common need for iScroll
+in jQuery Mobile projects is to have a fixed header and footer with a single vertically-scrollable 
+area in-between. 
+
+This can be accomplished by simply including the required files in the `<head>` and added a 
+single `data-scroll` attribute to your content `<div>`.
+ 
+If you need to do something different than this, this widget will probably work for you, but
+you will probably have to set some options and dig into the documentation a bit.
 
 Because the primary target for this widget is native mobile applications, it has a large number of 
 configurable options that be usable only in certain target environments. I want you to be able
