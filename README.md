@@ -708,7 +708,7 @@ A jQuery collection object containing the iscrollview wrapper element.
 
 A jQuery collection object containing the scroller element.
 
-###scrollerContent
+###$scrollerContent
 
 a jQuery collection object containing the scroller content element.
 
