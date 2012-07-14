@@ -49,7 +49,7 @@ My intention is that this widget will handle 80% of use cases. The most common n
 in jQuery Mobile projects is to have a fixed header and footer with a single vertically-scrollable 
 area in-between. 
 
-This can be accomplished by simply including the required files in the `<head>` and added a 
+This can be accomplished by simply including the required files in the `<head>` and adding a 
 single `data-scroll` attribute to your content `<div>`.
  
 If you need to do something different than this, this widget will probably work for you, but
