@@ -18,7 +18,9 @@ widget. It follows the *widget-factory-mobile*
 
 Release Notes
 -------------
-Please see releaseNotes.txt for information on changes in this and prior releases.
+Please see releaseNotes.txt for information on changes in this and prior releases. There are 
+significant changes in this release vs. the prior release (1.1) that will likely require changes
+in your application code and markup.
 
 Roadmap
 -------
