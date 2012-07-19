@@ -29,13 +29,4 @@
 
 $(document).bind("mobileinit", function() {
   $.mobile.defaultPageTransition = "slide";
-  // Starting with jQuery Mobile 1.1, JQM has an option to set the maximum page height that
-  // will cause a page scroll to top and back during transitions. When iScroll is used to scroll
-  // page contents between fixed header/footer, this is completely unnecessary, since iScroll
-  // will maintain position. The new option is a function that returns an integer value.
-  if ($.mobile.maxScrollForTransition) {
-    $.mobile.maxScrollForTransition = function() {
-      return 0;
-      };
-  }
-});
+  });
