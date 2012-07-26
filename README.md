@@ -30,6 +30,14 @@ when using a virtual keyboard.
 
 1.3 - Better support for collapsible content (scroll on expand if expanded content below window)
 
+Plug for jquery.mobile.simultaneous-transitions
+-----------------------------------------------
+This plugin works best when used with 
+[jquery.mobile.simultaneous-transitions](https://github.com/watusi/jquery.mobile.simultaneous-transitions)
+
+It puts back the old, simultaneous, non-scrolling transitions that everybody knew and loved
+from jQuery Mobile 1.0. It's an ideal companion for jquery.mobile.iscrollview! Stop fighting the
+goofy transitions in jQuery Mobile 1.1. If you're using iScroll, you probably don't need them.
 
 What This is For
 ----------------
