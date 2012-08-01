@@ -1,6 +1,12 @@
 jquery.mobile.iscrollview
 Release Notes
 
+Version 1.2.1
+=============
+- Bug fix for compatability with jQuery Mobile 1.2. The widget's _bind() function had a name 
+conflict with the Widget Factory implementation in JQM 1.2. Renamed _bind -> _isvBind, 
+_unbind -> _isvUnbind
+
 Version 1.2
 ===========
 
