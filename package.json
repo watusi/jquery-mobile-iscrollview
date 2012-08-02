@@ -1,6 +1,6 @@
 {
   "name": "jquery.mobile.iscrollview",
-  "version": "1.2",
+  "version": "1.2.2",
   "title" "jQuery Mobile iScroll adapter widget",
   "author": {
     "name": "WatusiWare Corporation",
@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "jquery": "=1.6.4 || =1.7.1",
-    "jquery.mobile": ">=1.0 ~1.1",
+    "jquery.mobile": ">=1.0 ~1.1", "~1.2"
     "iscroll": "~4.1.9"
   },
   "description": "JQuery Mobile widget plug-in for easy use of the iscroll4 scroller in JQuery Mobile projects",
