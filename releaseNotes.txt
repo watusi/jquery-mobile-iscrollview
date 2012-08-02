@@ -1,6 +1,10 @@
 jquery.mobile.iscrollview
 Release Notes
 
+Version 1.2.3
+=============
+- Failed to build demo after adding iScroll4 4.2 to 1.2.2. Re-built demo. No other changes.
+
 Version 1.2.2
 =============
 - $.support.touch was removed from jQuery Mobile 1.7.2. Work around it.
