@@ -5,6 +5,8 @@ Version 1.2.2
 =============
 - $.support.touch was removed from jQuery Mobile 1.7.2. Work around it.
 
+- Updated iScroll4 in demo to version 4.2
+
 Version 1.2.1
 =============
 - Bug fix for compatability with jQuery Mobile 1.2. The widget's _bind() function had a name 

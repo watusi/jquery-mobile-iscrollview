@@ -1623,7 +1623,7 @@ following additional components:
 * jQuery 1.7.1
 * JQuery Mobile 1.0.1
 * jQuery Mobile 1.1.1
-* iscroll4, master commit 04676afd69 6/20/2012
+* iscroll4, version 4.2
 
 
 Please obtain these components independently for your projects, so that
