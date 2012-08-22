@@ -1,4 +1,4 @@
-watusi/jquery-mobile-iscrollview, Version 1.2.3
+watusi/jquery-mobile-iscrollview, Version 1.2.4
 ===============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
@@ -1732,6 +1732,14 @@ The source code code follows the following conventions:
 * (underscore) first letter: Private funcion
 
 ---
+
+Minified Version
+----------------
+As a convenience, I have added YUI and Google Closure-compressed versions of the JS file. You
+will find these in the /lib directory along with the uncompressed version.
+
+You should evaluate your own needs for compression, and use the compressor and options that are
+appropriate for your own site.
 
 Bugs and Enhancements
 ---------------------

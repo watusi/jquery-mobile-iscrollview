@@ -37,6 +37,8 @@
   ],
   "files": [
     "lib/jquery.mobile.iscrollview.js",
+    "lib/jquery.mobile.iscrollview-yui-min.js",
+    "lib/jquery.mobile.iscrollview-closure-min.js",
     "lib/jquery.mobile.iscrollview.css",
     "lib/jquery.mobile.iscrollview-pull.css",
     "lib/iscroll-pull-icon@2x.png"
