@@ -131,7 +131,7 @@ Example
 ```html
 
 <!DOCTYPE html>
-<html lang="en">
+<html style="height:100% !important" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
@@ -151,7 +151,7 @@ Example
     <script src="additional-site-specific-scripts.js"></script>
   </head>
 
-  <body>
+  <body style="height: 100% !important">
     <div data-role="page" id="index-page">
     
       <div data-role="header" data-position="inline">
@@ -1497,6 +1497,24 @@ between states.
 ```
       
 ---
+
+Removing the jQuery Mobile 99.99% Height Hack
+---------------------------------------------
+jQuery Mobile CSS sizes the `<html>` and `<body>` elements to 99.99%. This is apparently a 
+work-around for some Firebug issue, but it applied regardless of browser. This will cause you
+grief if you are trying to make your pages the same height as the viewport (which this plugin
+does by default.)
+
+You may find that your pages sometimes come up a pixel short, and show a gap at the bottom. And
+sometimes not. A sometimes-remedy is to do a silentScroll(0) on the `pageshow` event. This is the
+wrong remedy.
+
+As most use cases for this plugin are in native apps using a WebKit WebView, this hack is not
+needed, and will just cause you trouble - so, remove it!
+
+I've found it may not be effective to apply this in your CSS, even if you use `!important`.
+I recommend that you remove it by adding the following style directly to your `<html>` and
+`<body>` elements: `style="height:100% !important;"`
 
 Caching List Items
 ------------------
