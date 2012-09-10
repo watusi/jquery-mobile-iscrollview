@@ -1498,24 +1498,6 @@ between states.
       
 ---
 
-Removing the jQuery Mobile 99.99% Height Hack
----------------------------------------------
-jQuery Mobile CSS sizes the `<html>` and `<body>` elements to 99.99%. This is apparently a 
-work-around for some Firebug issue, but it applied regardless of browser. This will cause you
-grief if you are trying to make your pages the same height as the viewport (which this plugin
-does by default.)
-
-You may find that your pages sometimes come up a pixel short, and show a gap at the bottom. And
-sometimes not. A sometimes-remedy is to do a silentScroll(0) on the `pageshow` event. This is the
-wrong remedy.
-
-As most use cases for this plugin are in native apps using a WebKit WebView, this hack is not
-needed, and will just cause you trouble - so, remove it!
-
-I've found it may not be effective to apply this in your CSS, even if you use `!important`.
-I recommend that you remove it by adding the following style directly to your `<html>` and
-`<body>` elements: `style="height:100% !important;"`
-
 Caching List Items
 ------------------
 Webkit-based browsers can exhibit a "flicker" effect wwhen scrolling
