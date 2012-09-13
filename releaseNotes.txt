@@ -1,6 +1,34 @@
 jquery.mobile.iscrollview
 Release Notes
 
+Version 1.2.5
+=============
+- Changed demo to use fixed/persistent header and footer.
+
+- Insure that demo gets the current versions of .js and .css from /lib by using relative symlinks. 
+
+- Use data-position="fixed" persistent header in demo. The use of persistent header/footer for
+other than Navbars is poorly documented in JQM. It works great in 1.1.1, but 1.0.1 will always
+transition the header with the page.
+
+- Use data-position="fixed" footer in demo. This is needed for correct operation of persistent
+toolbar. This works great in JQM 1.1.1, but there seems to be a slight problem still in 1.0.1,
+where sometimes you will see the footer slide with the page.
+
+- Fixed Issue #19, syntax error in calculateBarsHeight. This effected projects that use a
+persistent toolbar.
+
+- Get correct viewport height. The jQuery documentation incorrectly states that
+viewport height = window height. This is not always the case, as the window height can be set
+by code, and the viewport height can't. In fact, jQuery Mobile sets the window height to 99.99% of
+the viewport height. Probably does not make a practical difference in most cases, but it is better
+to do it correctly, in case a developer decides to go mucking with window height. The viewport is
+technically the parent of window.
+
+Version 1.2.4
+=============
+- Added minified versions of the library. (YUI and Closure)
+
 Version 1.2.3
 =============
 - Failed to build demo after adding iScroll4 4.2 to 1.2.2. Re-built demo. No other changes.

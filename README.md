@@ -1,4 +1,4 @@
-watusi/jquery-mobile-iscrollview, Version 1.2.4
+watusi/jquery-mobile-iscrollview, Version 1.2.5
 ===============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
@@ -18,9 +18,12 @@ widget. It follows the *widget-factory-mobile*
 
 Release Notes
 -------------
-Please see releaseNotes.txt for information on changes in this and prior releases. There are 
-significant changes in this release vs. the prior release (1.1) that will likely require changes
-in your application code and markup.
+Please see releaseNotes.txt for information on changes in this and prior releases.
+
+iSCroll Version 4.2.2
+---------------------
+This widget is not yet compatible with iScroll version 4.2.2. Please stick with iScroll 4.2 for
+now. Some investigation and testing is needed due to changes in iScroll event code.
 
 Roadmap
 -------
@@ -131,7 +134,7 @@ Example
 ```html
 
 <!DOCTYPE html>
-<html style="height:100% !important" lang="en">
+<html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
@@ -139,22 +142,22 @@ Example
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>Demo</title>
    
-    <link rel="stylesheet" href="jquery.mobile-1.0.1.min.css"/>
+    <link rel="stylesheet" href="jquery.mobile-1.1.1.min.css"/>
     <link rel="stylesheet" href="jquery.mobile.iscrollview.css"/>
     <link rel="stylesheet" href="jquery.mobile.iscrollview-pull.css"/>
     <link rel="stylesheet" href="additional-site-specific-styles.css"/>
     
-    <script src="jquery-1.6.4.min.js"></script>
-    <script src="jquery.mobile-1.0.1.min.js"></script>
+    <script src="jquery-1.7.1.min.js"></script>
+    <script src="jquery.mobile-1.1.1.min.js"></script>
     <script src="iscroll.js"></script>
     <script src="jquery.mobile.iscrollview.js"></script>
     <script src="additional-site-specific-scripts.js"></script>
   </head>
 
-  <body style="height: 100% !important">
+  <body>
     <div data-role="page" id="index-page">
     
-      <div data-role="header" data-position="inline">
+      <div data-role="header" data-position="fixed" data-tap-toggle="false">
         <h1>INDEX PAGE</h1>
       </div>
       
@@ -168,7 +171,7 @@ Example
         <p>Even more content. It will scroll whatever is in the data-iscroll div.</p>
       </div>
       
-      <div data-role="footer" data-position="inline">
+      <div data-role="footer" data-position="fixed" data-tap-toggle="false">
         <h1>My Footer</h1>
       </div>
       
@@ -178,6 +181,58 @@ Example
 ```
 
 ---
+
+Fixed and persistent Toolbars (Headers/Footers)
+-----------------------------------------------
+This plugin now works fairly well with both fixed and persistent toolbars, as long as you use
+jQuery Mobile 1.1.1 or later.
+
+Make sure you use `data-tap-toggle="false"` if you don't want goofy disppearing tolbars when the
+user taps on the toolbar!
+
+Note, however: *do not use `data-tap-toggle="false"` for Navbars!* This is an apparent bug
+in jQuery Mobile. `data-tap-toggle` is not possible for NavBars in any case, because the buttons
+cover the entire toolbar surface. There isn't anywhere for the user to tap-to-toggle.
+
+If you add `data-tap-toggle="false"` to a Navbar, the Navbar will fail to
+work in certain circumstances when using certain browsers (Mobile Safari/iOS 5.1.1 on iPhone, 
+but not on iPad or iOS 4.3.5). After a window resize (for example, orientation change), the Navbar 
+will become non-responsive if `data-tap-toggle` is present. In this case, just leave this option out
+completely.
+
+You can also use persistent toolbars. The JQM documentation has in the past been ambiguous
+as to whether these can be used with toolbars other than Navbars. They can: at least with
+jQuery Mobile 1.1.1. The demo now uses fixed, persistent toolbars for both header and footer.
+
+To use a persistent toolbar, assign the same `data-id` value to the toolbar in each page in
+which it appears. jQuery Mobile will move the toolbar out of the page temporarily during 
+transitions, so that it will appear fixed. A "none" transition is used to transition the toolbars,
+so that elements that are positioned in the same place within the toolbar will appear to not
+change during the transition.
+
+Because the page height is restricted to the viewport height (at least by default) when using
+this plugin, jQuery Mobile (1.1.1) will not fade the toolbar during transitions.
+
+Bear in mind, though, that the combination of fixed toolbars and a page size that equals the
+viewport height (the default when using this plugin) may cause unwanted results in some 
+enviroments. In particular, in Mobile Safari, this will cause the browser's navigation bar
+to show during page transitions. So, fixed toolbars are most appropriate only in a native
+environment (such as when using a WebView with PhoneGap.)
+
+I am seeking feedback on how well fixed and persistent toolbars work (or don't) in different 
+browsers and environments. So, I have enabled fixed/persistent toolbars in the demo. If this causes 
+issues in your environment, please try with `data-position="inline"`.
+
+In the demo, you can use see the difference
+between how jQuery Mobile 1.0.1 and 1.1.1 handle this. You can see that the
+header is fixed with 1.1.1 but slides with the page with 1.0.1. JQM *tries* to keep the footer
+fixed in 1.0.1 but is not completely successful. You will see that sometimes it stays fixed
+and sometimes it slides with the page transition. Ths seems related to queued transitions.
+
+Additionally, you may notice that the footer is shown briefly in the wrong position during
+transitions. If this is a problem in your environment, you can use an inline footer, and the
+plugin will insure it always appears in the right place. However, you cannot implement a persistent
+toolbar in JQM 1.1 with an inline footer.
 
 Dynamic Content
 ---------------
