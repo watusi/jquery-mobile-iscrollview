@@ -2,7 +2,7 @@
 - button_theme_11 = @is_ver_11 ? 'b' : 'a'
    
 =blank_line
-div(data-role="header" data-position="inline")
+div(data-role="header" data-position="fixed" data-tap-toggle="false" data-id="my-persistent-header")
   h1 = data.page.title
   div.ui-btn-right(data-role="controlgroup" data-type="horizontal" style="margin-top:0;border-top:0;")
     a(data-theme=button_theme_1 href="#{@base}.html" rel="external" data-role="button")1.0.1 
