@@ -1272,7 +1272,7 @@ within the delegated function. The file `pull-example.js` in the demo uses this 
 
     $(document).delegate("div.contacts-page", "pageinit", function () {
       this.find(".iscroll-wrapper").bind("iscroll_onpulldown", function () {
-        alert("Pull-down gesture was completred");
+        alert("Pull-down gesture was completed");
         });
     });
     
