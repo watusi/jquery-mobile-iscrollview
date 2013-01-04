@@ -1,6 +1,13 @@
 jquery.mobile.iscrollview
 Release Notes
 
+Version 1.2.6
+=============
+- Fixed `resizeWrapper()` so that calls from user code will always resize the wrapper, ignoring
+the `resizeWrapper` setting. The purpose of the resizeWrapper setting is to prevent 
+jquery.mobile.iscrollview from resizing the wrapper automatically, but it should always be permissible
+for user code to resize the wrapper.
+
 Version 1.2.5
 =============
 - Changed demo to use fixed/persistent header and footer.

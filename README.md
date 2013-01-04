@@ -20,7 +20,7 @@ Release Notes
 -------------
 Please see releaseNotes.txt for information on changes in this and prior releases.
 
-iSCroll Version 4.2.2
+iScroll Version 4.2.2
 ---------------------
 This widget is not yet compatible with iScroll version 4.2.2. Please stick with iScroll 4.2 for
 now. Some investigation and testing is needed due to changes in iScroll event code.

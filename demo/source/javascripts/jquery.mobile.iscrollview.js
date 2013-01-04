@@ -11,7 +11,7 @@
          JQuery Widget Factory private members
 *******************************************************************************/
 
-/*jslint browser: true, sloppy: true, white: true, nomen: true, regexp: true, todo: true, 
+/*jslint browser: true, sloppy: true, white: true, nomen: true, regexp: true, todo: true,
 maxerr: 50, indent: 2 */
 /*global jQuery:false, iScroll:false, console:false, Event:false*/
 
@@ -24,16 +24,16 @@ maxerr: 50, indent: 2 */
   still complain
 *******************************************************************************/
 
-/*jshint forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true, 
-curly:true, browser:true, jquery:true, indent:2, maxerr:50, sloppy:true, white:false, nomen:false, 
+/*jshint forin:true, noarg:true, noempty:true, eqeqeq:true, bitwise:true, strict:true, undef:true,
+curly:true, browser:true, jquery:true, indent:2, maxerr:50, sloppy:true, white:false, nomen:false,
 regexp:false, todo:true */
 
 
 /*
 jquery.mobile.iscrollview.js
-Version: 1.2.5
+Version: 1.2.6
 jQuery Mobile iScroll4 view widget
-Copyright (c), 2012 Watusiware Corporation
+Copyright (c), 2012, 2013 Watusiware Corporation
 Distributed under the MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this
@@ -871,7 +871,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
   _pageBeforeShowFunc: function(e) {
    var then = this._logWidgetEvent("_pageBeforeShowFunc", e);
    if (this._dirty) {
-     this.resizeWrapper();
+     this.resizeWrapper(true);
      this.refresh(null, this._dirtyCallbackBefore, this._dirtyCallbackAfter, true);
      this._dirty = false;
      this._dirtyCallbackBefore = null;
@@ -894,7 +894,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
       if (this.options.traceResizeWrapper) { this._log("resizeWrapper() (deferred)"); }
       }
     else {
-      this.resizeWrapper();
+      this.resizeWrapper(true);
       this.refresh(null,null,null,true);
       }
     this._logWidgetEvent("_windowResizeFunc", e, then);
@@ -1206,14 +1206,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
   //--------------------------------------------------------
   //Resize the wrapper for the scrolled region to fill the
   // viewport remaining after all fixed-height elements
+  // force makes it ignore resizeWrapper option
   //--------------------------------------------------------
-  _resizeWrapper: function() {
+  _resizeWrapper: function(force) {
     var then = null,
          viewportHeight,
          barsHeight,
          newWrapperHeight;
 
-    if (!this.options.resizeWrapper) {
+    if ( !force && !this.options.resizeWrapper ) {
       return;
       }
     if (this.options.traceResizeWrapper) {
@@ -1246,9 +1247,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
       }
     },
 
-    resizeWrapper: function () {
+    // Internal flag is meant for internal use from jquery.mobile.iscrollview only
+    // If this flag is omitted, then the force flag is set when calling _resizeWrapper
+    // This causes it to ignore the resizeWrapper option setting. i.e. if user code
+    // calls resizeWrapper, always resize the wrapper, regardless of setting.
+    resizeWrapper: function (internal) {
       var hidden = this._setPageVisible();
-      this._resizeWrapper();
+      this._resizeWrapper(internal !== undefined);
       this._restorePageVisibility(hidden);
     },
 
