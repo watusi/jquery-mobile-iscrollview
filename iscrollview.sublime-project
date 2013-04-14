@@ -1,0 +1,15 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+      "name": "jquery-mobile-iscrollview",
+      "folder_exclude_patterns": ["*.settings", "*.bundle"],
+      "file_exclude_patterns": [".project"]
+		}
+	],
+  "settings":
+  {
+    "tab-size": 2
+  }
+}
