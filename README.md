@@ -137,27 +137,27 @@ Example
 <html lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>Demo</title>
 
-    <link rel="stylesheet" href="jquery.mobile-1.1.1.min.css"/>
+    <link rel="stylesheet" href="jquery.mobile-1.3.1.min.css"/>
     <link rel="stylesheet" href="jquery.mobile.iscrollview.css"/>
     <link rel="stylesheet" href="jquery.mobile.iscrollview-pull.css"/>
     <link rel="stylesheet" href="additional-site-specific-styles.css"/>
 
-    <script src="jquery-1.7.1.min.js"></script>
-    <script src="jquery.mobile-1.1.1.min.js"></script>
+    <script src="jquery-1.9.1.min.js"></script>
+    <script src="jquery.mobile-1.3.1.min.js"></script>
     <script src="iscroll.js"></script>
     <script src="jquery.mobile.iscrollview.js"></script>
     <script src="additional-site-specific-scripts.js"></script>
   </head>
 
   <body>
-    <div data-role="page" id="index-page">
+    <div data-role="page" class="index-page">
 
-      <div data-role="header" data-position="fixed" data-tap-toggle="false">
+      <div data-role="header" data-position="fixed" data-tap-toggle="false" data-transition="none" data-id="header">
         <h1>INDEX PAGE</h1>
       </div>
 
@@ -171,7 +171,7 @@ Example
         <p>Even more content. It will scroll whatever is in the data-iscroll div.</p>
       </div>
 
-      <div data-role="footer" data-position="fixed" data-tap-toggle="false">
+      <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-transition="none" data-id="footer">
         <h1>My Footer</h1>
       </div>
 
@@ -292,6 +292,12 @@ refresh is not performed immediately, but after a timeout that insures that the 
 updated with your new content.
 
 Please see the section on the `refresh()` function for full details.
+
+Alternately, you can trigger an `updatelayout` event on the element whose dimensions you changed.
+The widget listens for any `updatelayout` events triggered on elements inside a scroller and
+refreshes automatically. `updatelayout` is triggered by jQuery Mobile on certain jQuery Mobile
+widgets, such as, for example, collapsibles. So, it is not necessary to call `refresh()` when
+collapsibles are expanded or collapsed.
 
 ---
 
