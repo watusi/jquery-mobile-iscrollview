@@ -68,6 +68,7 @@ set :slim, {
     @is_ver_10 = true
     @is_ver_11 = false
     @is_ver_12 = false
+    @is_ver_13 = false
     @link_suffix = ''
     @asset_set = 'v10'
   end
@@ -76,6 +77,7 @@ set :slim, {
     @is_ver_10 = false
     @is_ver_11 = true
     @is_ver_12 = false
+    @is_ver_13 = false
     @link_suffix = '_11'
     @asset_set = 'v11'
   end
@@ -84,8 +86,18 @@ set :slim, {
     @is_ver_10 = false
     @is_ver_11 = false
     @is_ver_12 = true
+    @is_ver_13 = false
     @link_suffix = '_12'
     @asset_set = 'v12'
+  end
+  page "/#{base}_13.html", :proxy => "/#{base}.html" do
+    @base = base
+    @is_ver_10 = false
+    @is_ver_11 = false
+    @is_ver_12 = false
+    @is_ver_13 = true
+    @link_suffix = '_13'
+    @asset_set = 'v13'
   end
 end
 
