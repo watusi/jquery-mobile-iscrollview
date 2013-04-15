@@ -952,7 +952,7 @@ A JQuery selector which selects the fixed-height elements on the page which are 
 of the scrolling area. The heights of these elements will be added-up, and subtracted
 from the total viewport height to arrive at the wrapper height.
 
-Default: `":jqmData(role='header'), :jqmData(role='footer'), :jqmData(iscroll-fixed)"`
+Default: `".ui-page :jqmData(role='header'), .ui-page :jqmData(role='footer'), :jqmData(iscroll-fixed)"`
 
 ####fixedHeightClass
 

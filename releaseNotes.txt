@@ -3,6 +3,8 @@ Release Notes
 
 Version 1.2.7
 =============
+- Fixed Issue #84 - popup header/footer height was erroneously being subtracted from wrapper height
+
 - Fixed Issue #83 - Javascript error when scrollShortContent = false and no pullUp block
 
 Version 1.2.6
