@@ -53,8 +53,10 @@ body {
     border-bottom: 1px solid #ff0000;
 }
 
+/* make room for version buttons in header */
 .ui-header .ui-title {
   text-align: left;
+  margin-left: 10px;
 }
 
 /* Style iScroll wrapper with a 1px green border at top and bottom. You should see no gap

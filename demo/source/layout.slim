@@ -1,20 +1,21 @@
+- asset_set = @asset_set
 doctype 5
-html(lang="en")
+html lang="en" data-jqm-ver="#{asset_set}"
   head
     title iscrollview Demo
     = blank_line
-    = partial :meta 
-    
-    = blank_line 
-    = stylesheet_link_tag data.demo.stylesheets[@asset_set]     
-    = blank_line  
+    = partial :meta
+
+    = blank_line
+    = stylesheet_link_tag data.demo.stylesheets[@asset_set]
+    = blank_line
     = javascript_include_tag data.demo.scripts[@asset_set]
     = next_line
-      
+
   = blank_line
   body
-    div(data-role="page" class="#{data.page.css_class_prefix}-demo-page")    
+    div(data-role="page" class="#{data.page.css_class_prefix}-demo-page")
       = partial :header
-      div(data-role="content" data-iscroll="") = yield  
+      div(data-role="content" data-iscroll="") = yield
       = partial :footer
 

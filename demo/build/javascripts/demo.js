@@ -30,3 +30,21 @@
 $(document).bind("mobileinit", function() {
   $.mobile.defaultPageTransition = "slide";
   });
+
+// Simple fast-click implementation
+// This serves two purposes:
+// - Eliminates 400mSec click latency on iOS
+// - using $.mobile.changePage prevents the iOS address bar from coming down
+// We use data-href instead of href, and data-ajax="false" on links to prevent
+// default browser and JQM Ajax action on all JQM versions. since we use $.mobile.changePage,
+// it uses Ajax page changes.
+var jqmIsVer10 = $("html").attr("data-jqm-ver") === "v10";
+$(document).delegate(".fastclick", jqmIsVer10 ? "click" : "vclick click", function(event) {
+  var
+    $btn = $(this),
+    href = $btn.jqmData("href");
+  if ( (!jqmIsVer10) && event === "click" ) { return; }
+  $.mobile.changePage(href);
+});
+
+
