@@ -653,9 +653,13 @@ to a DOM node object (*not* a jQuery object) or a CSS3 selector. jQuery selector
 cannot be used here.
 
 The `time` parameter is the time in milliseconds over which to perform a smooth scroll. If omitted,
-the scroll is immediate.
+the default iScroll `scrollToElement()` time value is used. This is based on larger of x and x
+pixels scrolled, times 2. For example, if it will scroll 500px vertically (and less than 500px
+horizontally), then the scroll will take place over a period of 1000mSec.
 
 ####scrollToPage(pageX, pageY, time)
+
+The default time value, if not specified, is 400mSec. (Default iScroll.js value)
 
 ####disable()
 
@@ -677,6 +681,8 @@ function directly, please see "calling functions" above.
 
 ####zoom(x, y, scale, time)
 
+The default time value, if not specified, is 200mSec (Default iScroll.js value)
+
 ### iScroll Getters
 
 This widget provides getters for some iScroll internal variables that might be useful
@@ -694,11 +700,11 @@ state of  the scroller.
 
 ####x()
 
-Current x origin (top) of the scroller.
+Current x origin (left) of the scroller.
 
 ####y()
 
-Current y origin (left) of the scroller.
+Current y origin top of the scroller.
 
 ####wrapperW()
 
@@ -808,13 +814,29 @@ value `100`.
     $.mobile.iscrollview.prototype.options.refreshDelay = 100;
 
 If you want to override options for all instances of the widget, a good place to do that is
-at the same time that you override any jQuery Mobile default options.
+at the same time that you override any jQuery Mobile default options. `jquery.mobile.iscrollview`
+triggers an `iscrollview_init` event that is triggered once it has loaded, and you may set any
+global options here.
+
+Note that when `iscrollview_init` is triggered, this does *not* mean that any scroller(s)
+have been initialized. It only means that the iscrollview library is loaded, and so you may
+now set any global options.
+
+It's common to bind to `mobileinit` after jQuery is loaded, but before loading jQuery Mobile.
+You can bind to `iscrollview_init` int he same place. Alternately, you can make changes to
+global options any time after `jquery.mobile.iscrollview` is loaded.
+
+Note: `iscrollview_init` is ONLY available as a jQuery Event. There is no corresponding
+iscrollview callback function.
 
 ```html
     <script>
-      $(document).bind("mobileinit", function(){
+      $(document).on("mobileinit", function(){
         $.mobile.defaultPageTransition = "slide";
-        $.mobile.iscrollview.prototype.options.refreshDelay = 100;
+      });
+
+      $(document).on(""iscrollview_init", function() {
+      $.mobile.iscrollview.prototype.options.refreshDelay = 100;
       });
     </script>
 ```
@@ -1208,6 +1230,8 @@ with the key `onrefresh`.
 I don't recommend using option callbacks. They are supported because they are required by
 the jQuery Widget Factory.
 
+Note that the `iscrollview_init` event has no corresponding Widget Factory callback.
+
 
 ###Bound Callback parameters
 
@@ -1302,6 +1326,15 @@ member to bind:
 ```
 
 ###Supported Events
+
+#### iscroll_init
+
+This event is triggered when jquery.mobile.iscrollview has been loaded. This does *not*
+mean that any iscrollview widgets have been initialized. The purpose of this event is to
+allow you to set global options after the library is loaded, but before any widgets have
+been initialized.
+
+This event does NOT have a corresponding Widget Factory callback option.
 
 ####iscroll_onrefresh
 
