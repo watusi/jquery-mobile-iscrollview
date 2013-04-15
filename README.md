@@ -5,7 +5,7 @@ scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
 projects.
 
 iScroll is a javascript that can scroll content in a window within a web browser with very
-similar behaviour to native scrolling on mobile devices such as iPhone and Android. This means you 
+similar behaviour to native scrolling on mobile devices such as iPhone and Android. This means you
 can scroll a *window* within the browser using native-like scrollbars and physics.
 
 jquery.mobile.iscrollview adapts the iScroll javascript to the jQuery Mobile environment.
@@ -27,15 +27,15 @@ now. Some investigation and testing is needed due to changes in iScroll event co
 
 Roadmap
 -------
-1.3 - Option to un-enhance widget temporarily (and optionally hide headers/footers) during 
-virtual-keyboard input on select devices (iOS first),  to eliminate all form input problems 
+1.3 - Option to un-enhance widget temporarily (and optionally hide headers/footers) during
+virtual-keyboard input on select devices (iOS first),  to eliminate all form input problems
 when using a virtual keyboard.
 
 1.3 - Better support for collapsible content (scroll on expand if expanded content below window)
 
 Plug for jquery.mobile.simultaneous-transitions
 -----------------------------------------------
-This plugin works best when used with 
+This plugin works best when used with
 [jquery.mobile.simultaneous-transitions](https://github.com/watusi/jquery.mobile.simultaneous-transitions)
 
 It puts back the old, simultaneous, non-scrolling transitions that everybody knew and loved
@@ -45,34 +45,34 @@ goofy transitions in jQuery Mobile 1.1. If you're using iScroll, you probably do
 What This is For
 ----------------
 This widget is intended for use in any jQuery Mobile project, but it was designed to be especially
-useful for some specific uses. 
+useful for some specific uses.
 
 First and foremost are native mobile applications that use HTML/CSS/Javascript in a
-webview for their user interface. It is especially desirable that such applications reproduce a 
-"native" look and feel. A native look and feel is impossible to achieve without an embeddable 
-scroller with native-like physics and scrollbar action. 
+webview for their user interface. It is especially desirable that such applications reproduce a
+"native" look and feel. A native look and feel is impossible to achieve without an embeddable
+scroller with native-like physics and scrollbar action.
 
 While iScroll4 is useful to help achieve this goal, it is difficult to use along with
 jQuery Mobile. It is not an easy task to integrate iScroll4 with jQuery Mobile - at least not
-correctly and efficiently. 
+correctly and efficiently.
 
-My intention is that this widget will handle 80% of use cases with very minimal effort. 
+My intention is that this widget will handle 80% of use cases with very minimal effort.
 
-The most common need for iScroll in jQuery Mobile projects is to have a fixed header and footer 
-with a single vertically-scrollable area in-between. 
+The most common need for iScroll in jQuery Mobile projects is to have a fixed header and footer
+with a single vertically-scrollable area in-between.
 
-This can be accomplished by simply including the required files in the `<head>` and adding a 
+This can be accomplished by simply including the required files in the `<head>` and adding a
 single `data-iscroll` attribute to your content `<div>`.
- 
+
 If you need to do something different than this, this widget will probably work for you, but
 you will probably have to set some options and dig into the documentation a bit.
 
-Because the primary target for this widget is native mobile applications, it has a large number of 
+Because the primary target for this widget is native mobile applications, it has a large number of
 configurable options, which may be usable only in certain target environments. I want you to be able
 to tailor the widget to your specific needs when you are using it in specific, known environments.
 
-Secondarily, it is intended to support websites that will be viewed on mobile browsers, and 
-"full-screen" websites and "web apps" for mobile devices (i.e. "Add to Home Screen" in 
+Secondarily, it is intended to support websites that will be viewed on mobile browsers, and
+"full-screen" websites and "web apps" for mobile devices (i.e. "Add to Home Screen" in
 Mobile Safari).
 
 Finally, it supports desktop browsers, and is regularly tested using current versions of
@@ -90,7 +90,7 @@ attribute to a container. All content inside this container will be scrolled.
 
 Note that `iscroll.js` itself scrolls only the first child of it's wrapper. However, by
 default, this plugin automatically creates a protective `<div>` around all
-children of the wrapper, and so unlike iscroll.js it will scroll *all* of the children of the 
+children of the wrapper, and so unlike iscroll.js it will scroll *all* of the children of the
 wrapper element - not just the first.
 
 As well, you may have *no* content in the wrapper initially. You might do this, for example, if
@@ -98,7 +98,7 @@ you will be inserting dynamic content later. In this case, the plugin will creat
 `<div>` for you.
 
 If, for some reason, you do not want the widget to create
-this protective container, set the `createScroller` option to `false`. 
+this protective container, set the `createScroller` option to `false`.
 
 The widget does not use the typical JQuery Mobile `data-role="something"` attribute,
 because a common use case would be to use a `data-role="content"` `<div>` as the
@@ -106,11 +106,11 @@ container, and, of course, you can't have two `data-role` attributes on the
 same element.
 
 The widget will (normally) re-size the container to take up all available height
-within the viewport after fixed headers/footers are taken into account. This behaviour can be 
+within the viewport after fixed headers/footers are taken into account. This behaviour can be
 disabled using the `resizeWrapper` option, which should be se `true` for no more than one widget
 on a given page.
 
-The widget has been designed to support multiple scrollers on a page - for example, you 
+The widget has been designed to support multiple scrollers on a page - for example, you
 might want a second, gallery-like horizontal scroller. So, all
 data related to a scroller is stored in the scroller's container, not the page.
 Feel free to experiment with multiple scrollers - I just haven't had the
@@ -118,7 +118,7 @@ need so haven't put the effort into testing and supporting that scenario.
 
 
 Support for `data-position="fixed"` headers/footers is limited, but improved over previous
-versions. Since this widget resizes the scroller to fit the page, there is no need for fixed 
+versions. Since this widget resizes the scroller to fit the page, there is no need for fixed
 positioning of header/footer. Resizing is fast enough that the footer stays "glued" to the
 bottom of the page fairly well.
 
@@ -141,12 +141,12 @@ Example
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>Demo</title>
-   
+
     <link rel="stylesheet" href="jquery.mobile-1.1.1.min.css"/>
     <link rel="stylesheet" href="jquery.mobile.iscrollview.css"/>
     <link rel="stylesheet" href="jquery.mobile.iscrollview-pull.css"/>
     <link rel="stylesheet" href="additional-site-specific-styles.css"/>
-    
+
     <script src="jquery-1.7.1.min.js"></script>
     <script src="jquery.mobile-1.1.1.min.js"></script>
     <script src="iscroll.js"></script>
@@ -156,11 +156,11 @@ Example
 
   <body>
     <div data-role="page" id="index-page">
-    
+
       <div data-role="header" data-position="fixed" data-tap-toggle="false">
         <h1>INDEX PAGE</h1>
       </div>
-      
+
       <div data-role="content" class="example-wrapper" data-iscroll>
         <p>some content that will be scrolled</p>
         <p>Some more content that will be scrolled</p>
@@ -170,11 +170,11 @@ Example
         </ul>
         <p>Even more content. It will scroll whatever is in the data-iscroll div.</p>
       </div>
-      
+
       <div data-role="footer" data-position="fixed" data-tap-toggle="false">
         <h1>My Footer</h1>
       </div>
-      
+
     </div>
   </body>
 </html>
@@ -195,8 +195,8 @@ in jQuery Mobile. `data-tap-toggle` is not possible for NavBars in any case, bec
 cover the entire toolbar surface. There isn't anywhere for the user to tap-to-toggle.
 
 If you add `data-tap-toggle="false"` to a Navbar, the Navbar will fail to
-work in certain circumstances when using certain browsers (Mobile Safari/iOS 5.1.1 on iPhone, 
-but not on iPad or iOS 4.3.5). After a window resize (for example, orientation change), the Navbar 
+work in certain circumstances when using certain browsers (Mobile Safari/iOS 5.1.1 on iPhone,
+but not on iPad or iOS 4.3.5). After a window resize (for example, orientation change), the Navbar
 will become non-responsive if `data-tap-toggle` is present. In this case, just leave this option out
 completely.
 
@@ -205,7 +205,7 @@ as to whether these can be used with toolbars other than Navbars. They can: at l
 jQuery Mobile 1.1.1. The demo now uses fixed, persistent toolbars for both header and footer.
 
 To use a persistent toolbar, assign the same `data-id` value to the toolbar in each page in
-which it appears. jQuery Mobile will move the toolbar out of the page temporarily during 
+which it appears. jQuery Mobile will move the toolbar out of the page temporarily during
 transitions, so that it will appear fixed. A "none" transition is used to transition the toolbars,
 so that elements that are positioned in the same place within the toolbar will appear to not
 change during the transition.
@@ -214,13 +214,13 @@ Because the page height is restricted to the viewport height (at least by defaul
 this plugin, jQuery Mobile (1.1.1) will not fade the toolbar during transitions.
 
 Bear in mind, though, that the combination of fixed toolbars and a page size that equals the
-viewport height (the default when using this plugin) may cause unwanted results in some 
+viewport height (the default when using this plugin) may cause unwanted results in some
 enviroments. In particular, in Mobile Safari, this will cause the browser's navigation bar
 to show during page transitions. So, fixed toolbars are most appropriate only in a native
 environment (such as when using a WebView with PhoneGap.)
 
-I am seeking feedback on how well fixed and persistent toolbars work (or don't) in different 
-browsers and environments. So, I have enabled fixed/persistent toolbars in the demo. If this causes 
+I am seeking feedback on how well fixed and persistent toolbars work (or don't) in different
+browsers and environments. So, I have enabled fixed/persistent toolbars in the demo. If this causes
 issues in your environment, please try with `data-position="inline"`.
 
 In the demo, you can use see the difference
@@ -237,7 +237,7 @@ toolbar in JQM 1.1 with an inline footer.
 Dynamic Content
 ---------------
 If you will be adding dynamic content that you want to have scrolled, you first need to understand
-the HTML structure that the plugin creates for you. 
+the HTML structure that the plugin creates for you.
 
 If you supply initial content, the plugin will create two `<div>`s around that content.
 
@@ -277,8 +277,8 @@ What the plugin produces:
         <!-- If you included a pull-up under the wrapper, it will wind-up here -->
       </div>
     </div>
-```    
-    
+```
+
 ### Refreshing
 
 Any time you alter the content of a scroller, in such a way that the dimensions of the scrolled
@@ -310,23 +310,23 @@ The padding needs to be moved to *inside* the scroller (and to not include pull-
 so that you will not see padding around the scroller itself.
 
 There are two options that allow you to override this default behavior: `removeWrapperPadding`
-and `addScrollerPadding`. 
+and `addScrollerPadding`.
 
 ---
 
 Pull-to-Refresh
 ---------------
-This widget supports "pull-to-refresh" functionality. You can have a block of HTML that is 
+This widget supports "pull-to-refresh" functionality. You can have a block of HTML that is
 positioned above the top or below the bottom of the scroller that the user can pull down or pull up.
 These blocks can be revealed by scrolling, but the scroller will "snap back" after the user
 stops scrolling to again hide the block. If the user pulls past this block by a certain amount,
-(1/2 the height of the pull block) and then releases, some action that you specify will be 
-performed. That action can be anything, but typically will be to perform some AJAX action to 
+(1/2 the height of the pull block) and then releases, some action that you specify will be
+performed. That action can be anything, but typically will be to perform some AJAX action to
 retrieve data from a server and refresh or add some content within the scroller.
 
 In order to implement pull-to-refresh, you need to add a small amount of HTML markup to your page
 and either supply a function as an option value or else (recommended) bind or delegate to
-a jQuery event callback function. 
+a jQuery event callback function.
 
 You also need to include the file `jquery.mobile.iscrollview-pull-css` in your
 `<head>`. Finally, this CSS file references an image file that contains an arrow icon and a
@@ -343,7 +343,7 @@ To implement pull-up and/or pull-down, structure your HTML similar to the follow
       <div class="iscroll-pulldown">
         <span class="iscroll-pull-icon"></span>
         <span class="iscroll-pull-label"></span>
-      </div> 
+      </div>
       <ul data-role="listview">
         <li>Item 1</li>
         <li>Item 2</li>
@@ -353,9 +353,9 @@ To implement pull-up and/or pull-down, structure your HTML similar to the follow
         <span class="iscroll-pull-label"></span>
       </div>
     </div>
-    
+
 ```
-    
+
 This is all you have to do to implement the pull-up and/or pull-down UI.
 The widget doesn't create the pull blocks for you, in order to provide you with the flexibility
 to format them as you please. The pull blocks can contain other elements, and the spans for
@@ -399,11 +399,11 @@ To change these options programatically, see the options documentation.
 Alternately, you can change the default values in your HTML. When you change the defaults
 in HTML, it changes the corresponding option value.
 
-To change the `Reset` text, simply insert it in the pull block's label `<span>`. 
+To change the `Reset` text, simply insert it in the pull block's label `<span>`.
 
 To change the `Pulled` text, use a `data-iscroll-pulled-text` attribute.
 
-To change the `Loading` test, use a `data-iscroll-loading-text` attribute. 
+To change the `Loading` test, use a `data-iscroll-loading-text` attribute.
 
 Example:
 
@@ -416,7 +416,7 @@ Example:
 ### Fancier Pull States
 
 If you want to do something more elaborate when a pull block enters each state, you can either
-provide a callback option or (recommended) bind or delegate to a jQuery event callback function. 
+provide a callback option or (recommended) bind or delegate to a jQuery event callback function.
 The associated events are:
 
 * `iscroll_onpulldownreset`
@@ -424,7 +424,7 @@ The associated events are:
 * `iscroll_onpulldownloading`
 * `iscroll_onpullupreset`
 * `iscroll_onpulluppulled`
-* `iscroll_onpulluploading`   
+* `iscroll_onpulluploading`
 
 #### Event and Callback Option Functions
 
@@ -437,14 +437,14 @@ The example code below is from the demo:
 ```javascript
 
     $(document).delegate("div.pull-demo-page", "pageinit", function(event) {
-        $(".iscroll-wrapper", this).bind( { 
-        "iscroll_onpulldown" : onPullDown,    
+        $(".iscroll-wrapper", this).bind( {
+        "iscroll_onpulldown" : onPullDown,
         "iscroll_onpullup"   : onPullUp
         });
       });
-      
-``` 
-   
+
+```
+
 #### Callbacks
 
 Your callback function receives two parameters:
@@ -461,7 +461,7 @@ that made the callback.
 
 Your callback should take whatever action you want when the user activates the pull-up/pull-down.
 This might typically involve retrieving some data from a server and inserting it into the scroller
-content. See the demo for an example. 
+content. See the demo for an example.
 
 ---
 
@@ -582,16 +582,16 @@ option will be used.
 
 ##### Refresh Callbacks
 
-If present, the optional `beforeCallback` function will be called just prior to refreshing iScroll. 
-This is useful if you have updated content inside the 
-scroller, and need to refresh widgets inside the scroller (such as a listview) prior to iScroll 
-refresh. While this is similar to the `iscroll_onbeforerefresh`, the callback is specific to 
+If present, the optional `beforeCallback` function will be called just prior to refreshing iScroll.
+This is useful if you have updated content inside the
+scroller, and need to refresh widgets inside the scroller (such as a listview) prior to iScroll
+refresh. While this is similar to the `iscroll_onbeforerefresh`, the callback is specific to
 a particular call to `refresh()`.
 
 If your callback requires some context, you should use jQuery's $.proxy() function to provide a
 `this` reference that will be available when the callback executes.
 
-If present, the  optional `afterCallback` function will be called just after refreshing iScroll. 
+If present, the  optional `afterCallback` function will be called just after refreshing iScroll.
 This is useful if you want to perform some action on
 the scroller after updating content. For example, this might be used to scroll to a particular
 position or element within the scroller after updating content. This is particularly useful
@@ -600,10 +600,10 @@ into view.
 
 ##### Deferred Refresh
 
-Calls made to `refresh()` for an iscrollview which is on a cached page that is not the active page 
-are normally (depending on the value of the `deferNonActiveRefresh` option) deferred until the 
-next `iscroll_onbeforepagerefresh` event for the page. This avoids unnecessary refreshes. Note 
-that if the `refreshOnPageBeforeChange` option is true, then the scroller will *always* be 
+Calls made to `refresh()` for an iscrollview which is on a cached page that is not the active page
+are normally (depending on the value of the `deferNonActiveRefresh` option) deferred until the
+next `iscroll_onbeforepagerefresh` event for the page. This avoids unnecessary refreshes. Note
+that if the `refreshOnPageBeforeChange` option is true, then the scroller will *always* be
 refreshed on `iscroll_pagebeforefresh()`.
 
 Each deferred call to `refresh()` overwrites the callback values from any previous
@@ -613,7 +613,7 @@ be called - only that the callbacks for the *last* deferred `refresh()` will be 
 
 Deferred calls only occur when the scroller being refreshed is *not* the active page. You
 might do this if you are caching pages, and some data arrives that you want to update on
-a page that is not currently the active page. 
+a page that is not currently the active page.
 
 This is particularly useful in environments such
 as PhoneGap, Titanium, or Rhodes, where a controller is able to update pages asynchronously.
@@ -644,7 +644,7 @@ The `time` parameter is the time in milliseconds over which to perform a smooth 
 the scroll is immediate.
 
 The `relative` parameter is `true`, then the `x`, `y` position is relative to the current scroll
-position. 
+position.
 
 ####scrollToElement(el, time)
 
@@ -659,7 +659,7 @@ the scroll is immediate.
 
 ####disable()
 
-Note that this function also calls the default widget `disable()` function. 
+Note that this function also calls the default widget `disable()` function.
 
 Note: This has not been tested, and probably doesn't work correctly. Further, the iscroll-internal
 `disable()` probably doesn't do what you wish it would do. You can't re-enable iScroll by calling
@@ -797,7 +797,7 @@ Options
 
 ### Overriding Option Defaults
 
-You can override the default options for new instances of this widget by setting the 
+You can override the default options for new instances of this widget by setting the
 prototype options in `$.mobile.iscrollview.prototype.options`.
 
 Any options that you set programatically or using `data-` attributes will override the defaults.
@@ -806,7 +806,7 @@ Example: for all new instances of `$.mobile.iscrollview`, set the `refreshDelay`
 value `100`.
 
     $.mobile.iscrollview.prototype.options.refreshDelay = 100;
-    
+
 If you want to override options for all instances of the widget, a good place to do that is
 at the same time that you override any jQuery Mobile default options.
 
@@ -816,8 +816,8 @@ at the same time that you override any jQuery Mobile default options.
         $.mobile.defaultPageTransition = "slide";
         $.mobile.iscrollview.prototype.options.refreshDelay = 100;
       });
-    </script>  
-```  
+    </script>
+```
 
 ###Programatic access
 
@@ -861,7 +861,7 @@ If you modify a widget option (which is not also an iScroll option) after instan
 behaviour depends on the specific option. (Like iScroll) the widget does not currently
 specifically support changing options after instantiation. Generally, if you change an
 option after instantiation. If the option only has an effect at instantiation, then changing
-the option after instantion will do nothing. (And might confuse the widget.) 
+the option after instantion will do nothing. (And might confuse the widget.)
 
 ###Emulated Options
 
@@ -913,7 +913,7 @@ Default: `"iscroll-scroller"`
 
 ####pullDownClass
 
-If this class is found within the scroller, and the `topOffset` option value is not set or is zero, 
+If this class is found within the scroller, and the `topOffset` option value is not set or is zero,
 then the `topOffset` will be set to the height of the pull-down element. As well, the widget makes
 modifications to the pulldown element's CSS.
 
@@ -921,8 +921,8 @@ Default: `"iscroll-pulldown"`
 
 ####pullUpClass
 
-If this class is found within the scroller, and the `bottomOffset` option value is not set or is 
-zero, then the `bottomOffset` will be set to the height of the pull-up element. As well, the widget 
+If this class is found within the scroller, and the `bottomOffset` option value is not set or is
+zero, then the `bottomOffset` will be set to the height of the pull-up element. As well, the widget
 makes modifications to the pullup element's CSS.
 
 Default: `"iscroll-pullup"`
@@ -991,7 +991,7 @@ Default: `false`
 
 If true, applies a fix to allow input elements to work within a scroller. This is optional
 because there is an alternative fix that patches iScroll itself. You should disable this
-option if you are using a patched verison of iScroll that has a input-element fix incorporated, 
+option if you are using a patched verison of iScroll that has a input-element fix incorporated,
 or in case it causes some sort of trouble.
 
 Default: `true`
@@ -1023,7 +1023,7 @@ Default: `200` for Android, otherwise `0`
 ####scrollShortContent
 
 If true, the widget will set the minimum height of the scroller so that it fills the wrapper
-(exclusive of any pull-down/pull-up elements). 
+(exclusive of any pull-down/pull-up elements).
 
 Note that if you have a pull-down or pull-up, then this is done regardless of this setting,
 since otherwise there would be no way to access the pull-down or pull-up if there is no
@@ -1032,7 +1032,7 @@ be able to drag in the empty space.)
 
 Set this to `false` if you want scrollers that do not have a pull-down or pull-up to not display
 a scrollbar and not be draggable if they are shorter than the wrapper. Recommended setting is
-`true` because it provides a more consistent UI experience. 
+`true` because it provides a more consistent UI experience.
 
 Default: `true`
 
@@ -1062,14 +1062,14 @@ Default: `true`
 
 iScroll scrolls only the first child of the wrapper. So that you don't have to wrap multiple
 content elements with a `<div>` the widget does this for you. This `<div>` is always needed if you
-have a pull-up or pull-down block. 
+have a pull-up or pull-down block.
 
 Default: `true`
 
 ####scrollTopOnResize
 
 On some platforms (for example, iOS) when orientation is changed, the address bar pushes the
-page down. jQuery Mobile scroll the pgae back up on hash changes, but doesn't do so for 
+page down. jQuery Mobile scroll the pgae back up on hash changes, but doesn't do so for
 orientation changes. So, the page is left scrolled-down.
 
 Since `orientationchange` seems unreliable on iOS, the widget actually does this on resize. (Though
@@ -1098,19 +1098,19 @@ active page will be deferred to the next `pagebeforeshow` event for the page. Th
 unnecessary resizing when the browser window is resized or device orientation is changed.
 
 Default: `true`
-   
+
 ####preventTouchHover
 
-If `true`, prevent hover in scroller on touch devices.  
+If `true`, prevent hover in scroller on touch devices.
 
-If this is `false`, you will get "piano keyboard" effect if using jQuery Mobile 1.0 or 1.0.1 
+If this is `false`, you will get "piano keyboard" effect if using jQuery Mobile 1.0 or 1.0.1
 when scrolling due to mouseover events, which is both time-consuming and distracting. If this
 is `true`, the widget will prevent the piano-keyboard effect.
 
 This really is a jQuery Mobile problem with listviews, and is solved in jQuery Mobile 1.1.
 
-One negative is that with the current implementation, you will never get a "hover" visual 
-effect within a scroller on touch devices, even when not scrolling. But you still will on desktop 
+One negative is that with the current implementation, you will never get a "hover" visual
+effect within a scroller on touch devices, even when not scrolling. But you still will on desktop
 browser with mouse, and you will still get "down" effect when a link is selected. However, it
 probably isn't desirable to get hover in a listview, because it is distracting.
 
@@ -1118,7 +1118,7 @@ Default: `true` for touch devices if jQuery Mobile < 1.1, `false` for jQuery Mob
 
 ####bindIscrollUsingJqueryEvents
 
-If `true`, iScroll will be bound using jQuery event binding, rather than using `addEventListener()`. 
+If `true`, iScroll will be bound using jQuery event binding, rather than using `addEventListener()`.
 As well, iScroll will use jQuery `mouseleave` event instead of `mouseout`.
 
 This is an experimental feature, and is not yet completely functional. The code is present to
@@ -1129,7 +1129,7 @@ Default: `false`
 ###fastDestroy
 
 If `true`, an assumption is made that you will not call the widget's `destroy()` function to
-un-enhance the widget while retaining the page. The assumption is that `destroy()` will only 
+un-enhance the widget while retaining the page. The assumption is that `destroy()` will only
 be called internally by the page plugin when the page is removed from the DOM. This saves
 the overhead of un-enhancing the page.
 
@@ -1141,7 +1141,7 @@ If `true` prevent scrolling the page by grabbing areas outside of the scroller.
 Normally, this should be true. Set this false if you are NOT using a fixed-height page,
 but instead are using iScroll to scroll an area within a scollable page. If you have
 multiple scrollers on a scrollable page, then set this false for all of them.
-Note that scrolling of the page by dragging inside the scroller is *always* prevented. 
+Note that scrolling of the page by dragging inside the scroller is *always* prevented.
 
 This option has no effect unless the `adaptPage` option is also `true`.
 
@@ -1170,7 +1170,7 @@ Default: `"Release to refresh..."`
 ####pullUpLoadingText
 
 default: `"Loading..."`
-     
+
 ####pullPulledClass
 
 Default: `"iscroll-pull-pulled"`
@@ -1186,7 +1186,7 @@ Events
 There are two ways to be notified when some event occurs in the widget: by binding/delegating
 jQuery events, or by specifying a callback in the widget's `options` object.
 
-When an event is triggered it will call the callback if defined in options, and, as well, trigger 
+When an event is triggered it will call the callback if defined in options, and, as well, trigger
 any bound events.
 
 ###jQuery Event Callbacks
@@ -1228,7 +1228,7 @@ by iScroll itself (and reflected to jQuery events) as well as those triggered by
 
 It is most efficient, then, to bind directly to the wrapper element. If you bind from a script
 within an HTML page, make sure that the script is at the *end* of the page, within the `<body>`
-element. 
+element.
 
 Do not put code to bind to events directly in `<head>` on a particular page, because jQuery Mobile
 ignores the content of `<head>` on all but the first page encountered. (Thus the content of
@@ -1239,17 +1239,17 @@ In this case, you can locate the wrapper element with:
 ```javascript
 
     $.mobile.activePage.find(".iscroll-wrapper")
-    
+
 ```
-   
+
 or
 
 ```javascript
 
     (".iscroll-wrapper", $.mobile.activepage)
-    
+
 ```
-   
+
 If you have multiple scrollers on a page, you will need to assign an ID or class to individual
 wrappers so that you can locate them.
 
@@ -1260,7 +1260,7 @@ So, within a page, you can bind simply, such as:
     $.mobile.activePage.find(".iscroll-wrapper").bind("iscroll_onpulldown", function () {
       alert("Pull-down gesture was completed");
       } );
-      
+
 ```
 
 To bind in common code called from `<head>`, you will need to first delegate a function to the
@@ -1275,7 +1275,7 @@ within the delegated function. The file `pull-example.js` in the demo uses this 
         alert("Pull-down gesture was completed");
         });
     });
-    
+
 ```
 
 You can also use a delegation at the document level. This is shorter, but somewhat less efficient,
@@ -1286,8 +1286,8 @@ since events will bubble-up to the document:
     $(document).delegate("div.contacts-wrapper", "iscroll_onpulldown", function () {
       alert("Pull-down gesture was completed");
       });
-      
-```  
+
+```
 
 Finally, if you have a reference to an `iscrollview` object, you can use it's public `$wrapper`
 member to bind:
@@ -1298,8 +1298,8 @@ member to bind:
     view.$wrapper.bind("iscroll_onpulldown", function ()  {
       alert("Pull-down gesture was completed");
       });
-     
-```  
+
+```
 
 ###Supported Events
 
@@ -1307,9 +1307,9 @@ member to bind:
 
 This event is triggered when iScroll's internal `refresh()` function is called. It is
 called after iScroll has calculated the scroll range, but before it has updated the scroll
-bar. 
+bar.
 
-*This event is of dubious value to applications. The widget uses this internally to 
+*This event is of dubious value to applications. The widget uses this internally to
 support pull-down/pull-up. (It seems it was put just where it is just for that purpose.)*
 
 If you want to do some refresh of jQuery Mobile structures (such as listview) contained within
@@ -1323,7 +1323,7 @@ if you need to do some refresh of jQuery Mobile widgets (such as `listview`) con
 the scroller. It is important to do this *before* iScroll's `refresh()` has been called. Do
 not use `iscroll_onrefresh()` for this.
 
-You can also use the optional `callbackBefore` callback parameter to the widget's `refresh()` 
+You can also use the optional `callbackBefore` callback parameter to the widget's `refresh()`
 function for this.
 
 ####iscroll_onafterrefresh
@@ -1332,7 +1332,7 @@ This event is triggered after the widget calls iScroll's `refresh()` function. I
 if you want to perform some action, such as scrolling, after changing content in the scroller.
 This has to be done *after* the scroller is refreshed.
 
-You can also use the optional `callbackAfter` callback parameter to the widget's `refresh()` 
+You can also use the optional `callbackAfter` callback parameter to the widget's `refresh()`
 function for this.
 
 ####iscroll_onbeforescrollstart
@@ -1394,7 +1394,7 @@ initiate a pull-down sequence.
 ####iscroll_onpulldownpulled
 
 This event is triggered when the user has completed the first half of a pull-down gesture.
-i.e. they have pulled-down, but not yet released. You can use this event for complex 
+i.e. they have pulled-down, but not yet released. You can use this event for complex
 customization of pull-down feedback to the user. The UI should indicate that the user may
 complete a pull-down sequence by releasing.
 
@@ -1417,7 +1417,7 @@ initiate a pull-up sequence.
 ####iscroll_onpulluppulled
 
 This event is triggered when the user has completed the first half of a pull-up gesture.
-i.e. they have pulled-up, but not yet released. You can use this event for complex 
+i.e. they have pulled-up, but not yet released. You can use this event for complex
 customization of pull-up feedback to the user. The UI should indicate that the user may
 complete a pull-up sequence by releasing.
 
@@ -1430,7 +1430,7 @@ Scroll Bars
 ### Wrapper Positioning Requirement
 
 iScroll requires that the wrapper be CSS-positioned either `absolute` or `relative`. If the
-wrapper is positioned `static` (the default, if positioning is not specified), then the 
+wrapper is positioned `static` (the default, if positioning is not specified), then the
 scroll bars will (incorrectly) be created relative to the page, rather than the wrapper. The
 symptom is that the scroll bar will be the full height of the window. (Though the widget
 will hide the scrollbar under any header/footer.)
@@ -1463,7 +1463,7 @@ Instead, you can usually use a CSS rule similar to this:
       top: 46px !important;
       bottom: 22px !important;
     }
-    
+
 ```
 
 iScroll appends the scrollbar to the end of your wrapper. Unless you have appended something
@@ -1500,7 +1500,7 @@ when you are using it with jQuery Mobile 1.0 or 1.0.1 with the `preventTouchHove
 Mobile 1.1 prevents it inherently.)*
 
 Listviews that have list items that are buttons (i.e. the items are clickable,
-because they are wrapped in an `<a>` tag) can be very slow on touchscreen devices. This is not an 
+because they are wrapped in an `<a>` tag) can be very slow on touchscreen devices. This is not an
 iScroll or widget problem per-se - it is inherent to JQuery Mobile 1.0 and 1.0.1.
 
 There is a discussion of this issue here:
@@ -1548,16 +1548,16 @@ between states.
     ul.ui-listview *.ui-btn-down-c a.ui-link-inherit,
     ul.ui-listview *.ui-btn-hover-c a.ui-link-inherit
       { color: #444; }
-      
+
 ```
-      
+
 ---
 
 Caching List Items
 ------------------
 Webkit-based browsers can exhibit a "flicker" effect wwhen scrolling
 toward the bottom of the list, as well as exhibit slow and jerky movement until the first
-time the user has reached the bottom of the list.. Once you have scrolled down to the bottom of 
+time the user has reached the bottom of the list.. Once you have scrolled down to the bottom of
 the list, the flicker will typically stop. This does not seem to be an issue with non-Webkit
 browsers.
 
@@ -1571,23 +1571,23 @@ browsers) on each element, the flicker is avoided, and the content is added to t
 
 This has been reported to cause bluring of text during transform on Android platforms. You will
 need to decide which of two evils you want to live with.
-   
+
 If this *is* used, then the browser may be forced to cache the content in advance, resulting
 in smoother scrolling, but with the side-effect of increasing initial rendering time.
-   
+
 This can more than *double* initial rendering time if you are not careful with the selector. The
 recommended CSS at the above link is NOT optimal.
-      
+
 You need to apply this judiciously. For example, if you know your scroller content consists
 of list items, use `li` not `*` to select. `*` as the right-most component of a select is
-horribly expensive. A small additional performance gain can be made by selecting 
-iscroll-content instead of iscroll-scroller. You might get a 
+horribly expensive. A small additional performance gain can be made by selecting
+iscroll-content instead of iscroll-scroller. You might get a
 glitch on a pull-up if you have one, but it's a small price to pay for doubling speed.
-   
+
 It is important NOT to apply this to `.iscroll-scroller` itself. This will result in a huge
-performance loss. The rule below gives performance on iOS devices very close to not 
+performance loss. The rule below gives performance on iOS devices very close to not
 using this at all.
-   
+
 The demo uses this CSS:
 
 ```css
@@ -1595,8 +1595,8 @@ The demo uses this CSS:
    .iscroll-content li  {
      -webkit-transform: translateZ(0);
    }
-   
-```       
+
+```
 ---
 
 Mobile Safari Address Bar
@@ -1611,8 +1611,8 @@ address bar usually will not appear during a page transition.
 
 It doesn't appear possible to consistently detect the real window height, though it is possible
 to consistently detect the window height assuming that the address bar is present. So, this
-widget adds 60px to page height in this situation. This addition is not applied for iPad, nor for 
-iPhone/iPod if running a native app in a  UIWebView, or when running in "full screen" mode 
+widget adds 60px to page height in this situation. This addition is not applied for iPad, nor for
+iPhone/iPod if running a native app in a  UIWebView, or when running in "full screen" mode
 (web page saved to home screen).
 
 If you are testing using desktop Safari's `Develop` `User Agent` option, please note that this
@@ -1620,8 +1620,8 @@ adaptation will fail. It depends on specific behaviour of the real Mobile Safari
 you want to use desktop Safari to test pages designed to run on iPhone, either use the standard
 Safari User Agent, or else use an "Other" User Agent:
 
-First, set the User Agent to `Safari ... iPhone`. then, select `User Agent` `Other`. The user-agent 
-string will be pre-populated with the Mobile Safari user-agent string. Remove `Safari` from the 
+First, set the User Agent to `Safari ... iPhone`. then, select `User Agent` `Other`. The user-agent
+string will be pre-populated with the Mobile Safari user-agent string. Remove `Safari` from the
 user agent. This will fool the widget into thinking you are running in "full screen" mode, without
 the disappearing address bar which is not present on desktop Safari.
 
@@ -1631,7 +1631,7 @@ Demo
 ----
 The demo contains a simple example with 5 pages. The demo can be found in `/demo/build`. It is built
 using a static site generator (written in Ruby) called Middleman, but the demo has already been
-built for you. If you do wish to build the demo yourself, you will need to install Middleman 3.0 or 
+built for you. If you do wish to build the demo yourself, you will need to install Middleman 3.0 or
 higher.
 
 Just copy the contents of `/demo/build` to your web server, or open the index.html file directly
@@ -1645,8 +1645,8 @@ You can switch between the pages using the tabbar at the bottom. The pages demon
 * a listview with a short list and pull-down/pull-up blocks
 * a form
 
-To demo, simply open the `index.html` file in your browser. Note that the page transitions will 
-not work with some browsers when loading from a local file - for those browsers, you will have 
+To demo, simply open the `index.html` file in your browser. Note that the page transitions will
+not work with some browsers when loading from a local file - for those browsers, you will have
 to load the demo from a server. (It does work with local files for Safari and Firefox.)
 
 You can switch between jQuery Mobile 1.0.1 and 1.1 using the buttons in the headers.
@@ -1689,8 +1689,8 @@ of any updates/improvements.
 
 Performance Logging
 -------------------
-This widget can log events and performance data to the Javascript console when the `debug` option 
-is set to `true`. A number of additional options control what is logged. Setting `debug` false will 
+This widget can log events and performance data to the Javascript console when the `debug` option
+is set to `true`. A number of additional options control what is logged. Setting `debug` false will
 disable all logging.
 
 These log entries are useful both to monitor performance and to understand the sequence of events
@@ -1698,11 +1698,11 @@ that occur as the widget is used.
 
 There is a log entry at the start and end of each traced function, event, or callback. Each
 entry shows the time, file name, function, event, or callback name, and (at end) elapsed mSec that
-the operation took. 
+the operation took.
 
 For some functions, a second set of elapsed mSec and start time are logged (in parenthesis).
 This is for functions that were queued using a SetTimeout or that were initially triggered by
-some event. So, you can see how long the function took to run, as well as the elapsed time from when 
+some event. So, you can see how long the function took to run, as well as the elapsed time from when
 the function was queued.
 
 The `debug` option must be `true` in order for any of the trace options to be enabled.
@@ -1721,7 +1721,7 @@ If `true`, creation and destruction of the widget is traced.
 
 If this option option is `true`, calls to the widget's `refresh()` function are traced.
 
-In the case of `refresh()` there is an initial log entry when the `refresh()` is queued, which 
+In the case of `refresh()` there is an initial log entry when the `refresh()` is queued, which
 will also indicate the timeout value that was used. A second, separate, log entry shows the elapsed
 time that `refresh()` ran as well as elapsed time from when it was queued. The time value shown
 lets you match-up the first and second entries. This will help you evaluate the impact of

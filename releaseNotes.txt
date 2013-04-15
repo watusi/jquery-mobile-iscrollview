@@ -4,7 +4,7 @@ Release Notes
 Version 1.2.6
 =============
 - Fixed `resizeWrapper()` so that calls from user code will always resize the wrapper, ignoring
-the `resizeWrapper` setting. The purpose of the resizeWrapper setting is to prevent 
+the `resizeWrapper` setting. The purpose of the resizeWrapper setting is to prevent
 jquery.mobile.iscrollview from resizing the wrapper automatically, but it should always be permissible
 for user code to resize the wrapper.
 
@@ -12,7 +12,7 @@ Version 1.2.5
 =============
 - Changed demo to use fixed/persistent header and footer.
 
-- Insure that demo gets the current versions of .js and .css from /lib by using relative symlinks. 
+- Insure that demo gets the current versions of .js and .css from /lib by using relative symlinks.
 
 - Use data-position="fixed" persistent header in demo. The use of persistent header/footer for
 other than Navbars is poorly documented in JQM. It works great in 1.1.1, but 1.0.1 will always
@@ -48,8 +48,8 @@ Version 1.2.2
 
 Version 1.2.1
 =============
-- Bug fix for compatability with jQuery Mobile 1.2. The widget's _bind() function had a name 
-conflict with the Widget Factory implementation in JQM 1.2. Renamed _bind -> _isvBind, 
+- Bug fix for compatability with jQuery Mobile 1.2. The widget's _bind() function had a name
+conflict with the Widget Factory implementation in JQM 1.2. Renamed _bind -> _isvBind,
 _unbind -> _isvUnbind
 
 Version 1.2
@@ -58,10 +58,10 @@ Version 1.2
 Non Backward-Compatible
 -----------------------
 - You no longer need to create a <div> to contain multiple scrolled elements. In fact, you
-  shouldn't (it will interfere with pull-down/pull-up). It will now scroll all content that is 
-  inside of the wrapper. iScroll itself only scrolls the first child of the wrapper, but the widget 
-  now creates a <div> around your content to contain it. 
-  
+  shouldn't (it will interfere with pull-down/pull-up). It will now scroll all content that is
+  inside of the wrapper. iScroll itself only scrolls the first child of the wrapper, but the widget
+  now creates a <div> around your content to contain it.
+
 - Events have been renamed. They are now all prefixed with "iscroll_on". See the documentation.
 
 - Now comes with a jquery.mobile.iscrollview.css file. Please add this to your header.
@@ -77,7 +77,7 @@ New Features
 
 - By default, calls made to refresh() and resizeWrapper() while a page is not the current page
   are deferred to the next pagebeforeshow event for that page. There are options to control this.
-  
+
 - No longer uses jquery.actual or patched iscroll.js.
 
 - Option to prevent touch hover in scrollers when using jQuery Mobile 1.0 or 1.0.1.
@@ -85,7 +85,7 @@ New Features
 - Demo has been much expanded. It now has 5 tabs demostrating different features, has buttons
   to load either jQuery Mobile 1.0.1 or 1.1, and illustrates changing header/footer size with
   orientation.
-  
+
 - Includes patched version of jQuery Mobile 1.1, with fix applied for slow links from long
   listviews.
 
@@ -101,5 +101,5 @@ Bug Fixes
 
 - Persistant footer plays hide-and-seek, moving in and out of the page during transitions. Deal
   with this when sizing fixed-height elements.
-  
+
 
