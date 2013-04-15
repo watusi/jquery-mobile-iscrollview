@@ -1,6 +1,10 @@
 jquery.mobile.iscrollview
 Release Notes
 
+Version 1.2.7
+=============
+- Fixed Issue #83 - Javascript error when scrollShortContent = false and no pullUp block
+
 Version 1.2.6
 =============
 - Fixed `resizeWrapper()` so that calls from user code will always resize the wrapper, ignoring
