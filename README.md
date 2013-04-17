@@ -1,4 +1,4 @@
-watusi/jquery-mobile-iscrollview, Version 1.2.7
+watusi/jquery-mobile-iscrollview, Version 1.2.8
 ===============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
@@ -477,6 +477,9 @@ The standard way of calling widget functions is by passing a sub-function name
 as a string parameter to the widget function. Any parameters to the function
 should follow.
 
+Note: This method works for all versions of jQuery Mobile from 1.0 to 1.3.x. See
+below, though, for differences when using an alternative way of calling fucntions.
+
 For example, to call the `refresh` function:
 
 ```javascript
@@ -484,18 +487,33 @@ For example, to call the `refresh` function:
 ```
 
 The widget factory allows you to access widget functions directly, by
-accessing a data variable stored in the widget's element:
+accessing a data variable stored in the widget's element. For jQuery
+Mobile versions < 1.3:
 
 ```javascript
-    $(".example-wrapper").jqmData('iscrollview').refresh();
+    $(".example-wrapper").jqmData("iscrollview").refresh();
+```
+
+The Widget Factory changed in jQuery Mobile version 1.3. Starting
+with this version, you can access this variable like this:
+
+```javascript
+    $(".example-wrapper").data("mobileIscrollview").refresh();
 ```
 
 While this is a bit awkward, it is also more conventional. It is
 handy in case you need to make a series of calls to different widget
-functions. You can first get the instance into a variable:
+functions. You can first get the instance into a variable.
 
 ```javascript
+    // JQM < 1.3
     var myView = $(".example-wrapper").jqmData("iscrollview");
+    myView.refresh();
+```
+
+```javascript
+    // JQM >= 1.3
+    var myView = $(".example-wrapper").data("mobileIscrollview");
     myView.refresh();
 ```
 
@@ -503,7 +521,13 @@ This means, as well, you can easily call any underlying iScroll function
 through the exposed `iscroll` member variable. For example,
 
 ```javascript
-    $(".example-wrapper").jqmData('iscrollview').iscroll.scrollTo(0,10,200,true);
+    // JQM < 1.3
+    $(".example-wrapper").jqmData("iscrollview").iscroll.scrollTo(0,10,200,true);
+```
+
+```javascript
+    // JQM >= 1.3
+    $(".example-wrapper").data("mobileIscrollview").iscroll.scrollTo(0,10,200,true);
 ```
 
 So, if you replace iscroll.js with a newer version that has new functions,
@@ -980,7 +1004,10 @@ A JQuery selector which selects the fixed-height elements on the page which are 
 of the scrolling area. The heights of these elements will be added-up, and subtracted
 from the total viewport height to arrive at the wrapper height.
 
-Default: `".ui-page :jqmData(role='header'), .ui-page :jqmData(role='footer'), :jqmData(iscroll-fixed)"`
+Note: these elements are ignored for purposes of determining scroller height when
+they occur inside of a Popup or Panel.
+
+Default: `":jqmData(role='header'), :jqmData(role='footer'), :jqmData(iscroll-fixed)"`
 
 ####fixedHeightClass
 
@@ -1323,12 +1350,19 @@ Finally, if you have a reference to an `iscrollview` object, you can use it's pu
 member to bind:
 
 ```javascript
-
+    // JQM < 1.3
     var view = $('.some-wrapper').jqmData('iscrollview');
     view.$wrapper.bind("iscroll_onpulldown", function ()  {
       alert("Pull-down gesture was completed");
       });
+```
 
+```javascript
+    // JQM >= 1.3
+    var view = $('.some-wrapper').data('mobileIscrollview');
+    view.$wrapper.bind("iscroll_onpulldown", function ()  {
+      alert("Pull-down gesture was completed");
+      });
 ```
 
 ###Supported Events
