@@ -1,6 +1,14 @@
 jquery.mobile.iscrollview
 Release Notes
 
+Version 1.2.9
+- Fixed Issue #94, wrapper height was calculated incorrectly if wrapper has padding and
+  box model is padding-box
+
+- Fixed Issue #93, typo in default scrollTopOnOrientationChange left the option uninitilized
+
+- Fixed Issue #92, vclick implementation in demo was broken
+
 Version 1.2.8
 =============
 - fixed Issues #73 and #84 - Improper wrapper height when the page has popup(s) and/or panel(s)

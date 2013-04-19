@@ -31,7 +31,7 @@ regexp:false, todo:true */
 
 /*
 jquery.mobile.iscrollview.js
-Version: 1.2.8
+Version: 1.2.9
 jQuery Mobile iScroll4 view widget
 Copyright (c), 2012, 2013 Watusiware Corporation
 Distributed under the MIT License
@@ -64,8 +64,8 @@ Further changes: @addyosmani
 Licensed under the MIT license
 
 dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provided in demo)
-             jQuery 1.6.4  (JQM 1.0.1) or 1.7.1 (JQM 1.1) or 1.7.2 (JQM 1.2)
-             JQuery Mobile = 1.0.1 or 1.1 or 1.2-alpha1
+             jQuery - see jQuery Mobile documentation, depends on JQM version
+             JQuery Mobile = 1.0.1 through 1.3.1
 */
 
 
@@ -386,7 +386,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
     // If you have multiple scrollers, only enable this for one of them
     scrollTopOnResize: true,
 
-    scrollTopOnOrientatationChange: true,
+    scrollTopOnOrientationChange: true,
 
     // iScroll scrolls the first child of the wrapper. I don't see a use case for having more
     // than one child. What kind of mess is going to be shown in that case? So, by default, we
@@ -1091,8 +1091,15 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
       case "content-box":     // AKA W3C  Ignore jshint warning
       default:                // Ignore jslint warning
         // We will subtract padding, border, margin
-        adjust = $elem.outerHeight(true) - $elem.height();
-        break;
+        // However...
+        // wrapper will never have padding, at least once we are done
+        // modifying it. This function is called before any removal of
+        // padding, though. So, if $wrapper, use same calculation as for padding-box,
+        // ignoring padding.
+        // (We actually don't call this for anything but $wrapper, but preseve
+        // functionality in case we ever use it on another element)
+          adjust = $elem.outerHeight($elem !== this.$wrapper ) - $elem.height();
+          break;
       }
     return adjust;
     },
