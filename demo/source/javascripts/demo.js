@@ -38,12 +38,12 @@ $(document).bind("mobileinit", function() {
 // We use data-href instead of href, and data-ajax="false" on links to prevent
 // default browser and JQM Ajax action on all JQM versions. since we use $.mobile.changePage,
 // it uses Ajax page changes.
-var jqmIsVer10 = $("html").attr("data-jqm-ver") === "v10";
-$(document).delegate(".fastclick", jqmIsVer10 ? "click" : "vclick click", function(event) {
+$(document).delegate(".fastclick", "vclick click", function(event) {
   var
     $btn = $(this),
     href = $btn.jqmData("href");
-  if ( (!jqmIsVer10) && event === "click" ) { return; }
+  event.preventDefault();
+  if ( event === "click" ) { return; }
   $.mobile.changePage(href);
 });
 
