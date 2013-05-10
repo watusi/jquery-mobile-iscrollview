@@ -30,6 +30,7 @@ stylesheets:
 scripts:
   v10:
     - jquery-1.6.4.min
+    - layer_xy_hack
     - demo
     - jquery.mobile-1.0.1.min
     - iscroll
