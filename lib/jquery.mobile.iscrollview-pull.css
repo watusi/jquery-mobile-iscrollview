@@ -40,6 +40,10 @@
   -moz-transition: -moz-transform 250ms linear;  
   -o-transition: -o-transform 250ms linear;   
   transition: transform 250ms linear;   
+  -webkit-animation: none;
+  -moz-animation: none;
+  -o-animation: none;
+  animation: none;
 }
 
 /* Note that translateZ(0) triggers hardware acceleration on WebKit browsers 
@@ -48,8 +52,12 @@
 .iscroll-pulldown .iscroll-pull-icon {
   -webkit-transform: rotate(0deg) translateZ(0);
   -moz-transform: rotate(0deg);
-  -o-transform: rotate(0deg);  
-  transform: rotate(0deg) translateZ(0);      
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg) translateZ(0);
+  -webkit-animation: none;
+  -moz-animation: none;
+  -o-animation: none;
+  animation: none;
 }
 
 .iscroll-pullup .iscroll-pull-icon  {
@@ -57,13 +65,21 @@
   -moz-transform: rotate(-180deg);
   -o-transform: rotate(-180deg);  
   transform: rotate(-180deg) translateZ(0);  
+  -webkit-animation: none;
+  -moz-animation: none;
+  -o-animation: none;
+  animation: none;
 }
 
 .iscroll-pulldown.iscroll-pull-pulled .iscroll-pull-icon {
   -webkit-transform: rotate(-180deg) translateZ(0);
   -moz-transform: rotate(-180deg);
   -o-transform: rotate(-180deg);  
-  transform: rotate(-180deg) translateZ(0);  
+  transform: rotate(-180deg) translateZ(0);
+  -webkit-animation: none;
+  -moz-animation: none;
+  -o-animation: none;
+  animation: none;
 }
 
 .iscroll-pullup.iscroll-pull-pulled .iscroll-pull-icon {
@@ -109,4 +125,3 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 } 
-
