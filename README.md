@@ -963,6 +963,16 @@ be scrolled.)
 
 Default: `"iscroll-scroller"`
 
+####topSpacerClass
+
+A CSS class, or a space-separated list of classes, which will be added to the top spacer
+`<div>`.
+
+####bottomSpacerClass
+
+A CSS class, or a space-separated list of classes, which will be added to the bottom spacer
+`<div>`.
+
 ####pullDownClass
 
 If this class is found within the scroller, and the `topOffset` option value is not set or is zero,
@@ -1118,6 +1128,16 @@ Default: `true`
 iScroll scrolls only the first child of the wrapper. So that you don't have to wrap multiple
 content elements with a `<div>` the widget does this for you. This `<div>` is always needed if you
 have a pull-up or pull-down block.
+
+Default: `true`
+
+####addSpacers
+
+If true, spacer `<div>`s will be added before and after the `.iscroll-content` div.
+The height of these spacer `<div>`s will default to 0.
+
+These spacers can be used as a substitute for top/bottom padding in situations where
+top/bottom padding is ineffective, and collapses into the document.
 
 Default: `true`
 
