@@ -31,7 +31,7 @@ regexp:false, todo:true */
 
 /*
 jquery.mobile.iscrollview.js
-Version: 1.2.9
+Version: 1.3.0
 jQuery Mobile iScroll4 view widget
 Copyright (c), 2012, 2013 Watusiware Corporation
 Distributed under the MIT License
@@ -71,8 +71,23 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
 
 ;   // Ignore jslint/jshint warning - for safety - terminate previous file if unterminated
 
-(function ($, window, document, undefined) {   /* Ignore islint warning on "undefined" */
-  "use strict";
+// Prevent annoying "layerX/Y is deprecated" console messages when running in some Webkit browsers
+// See also _doCallback() function.
+//
+// This needs to be a global function, (well, outside of the widget self-invoking function, anyway),
+// because this code will generate warnings ("cannot delete") if executed  within a strict function.
+// The warnings are not generated, though, if executed within a non-strict function CALLED from a
+// strict function.
+//
+// (Other than this little bit, the entirety of this widget is strict.)
+function jqmIscrollviewRemoveLayerXYProps(e) {
+  delete e.layerX;
+  delete e.layerY;
+}
+
+(function ($, window, document, undefined) {   /* Ignore jslint warning on "undefined" */
+   "use strict";    // Comment this out whilst debugging with Safari Web Inspector
+                    // Otherwise, you will not be able to see variables when stopped at breakpoints
 
   //----------------------------------
   // "class constants"
@@ -160,6 +175,10 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
 
     // Perform an iScroll callback.
     this._doCallback = function(callbackName, e, f) {
+      if (typeof e === "object") {  // Prevent annoying "layerX/layerY is deprecated" console messages
+        jqmIscrollviewRemoveLayerXYProps(e);
+      }
+
       var v = this.iscrollview,
           then = v._logCallback(callbackName, e);
       if (f) { f.call(this, e); }                          // Perform passed function if present
@@ -313,15 +332,17 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
     bottomOffset: 0,
     emulateBottomOffset: true,
 
-    pageClass:       "iscroll-page",        // Class to be applied to pages containing this widget
-    wrapperClass:    "iscroll-wrapper",     // Class to be applied to wrapper containing this widget
-    scrollerClass:   "iscroll-scroller",    // Class to be applied to scroller within wrapper
-    pullDownClass:   "iscroll-pulldown",    // Class for pulldown element (if any)
-    pullUpClass:     "iscroll-pullup",      // Class for pullup element (if any)
-    pullLabelClass:  "iscroll-pull-label",  // Class for pull element label span
-    pullUpSpacerClass: "iscroll-pullup-spacer", // Class added to generated pullup spacer
-    scrollerContentClass: "iscroll-content", // Real content of scroller, not including pull-up, pull-down
-    fixedHeightClass: "iscroll-fixed",       // Class applied to elements that match fixedHeightSelector
+    pageClass:            "iscroll-page",          // Class to be applied to pages containing this widget
+    wrapperClass:         "iscroll-wrapper",       // Class to be applied to wrapper containing this widget
+    scrollerClass:        "iscroll-scroller",      // Class to be applied to scroller within wrapper
+    pullDownClass:        "iscroll-pulldown",      // Class for pulldown element (if any)
+    pullUpClass:          "iscroll-pullup",        // Class for pullup element (if any)
+    pullLabelClass:       "iscroll-pull-label",    // Class for pull element label span
+    pullUpSpacerClass:    "iscroll-pullup-spacer", // Class added to generated pullup spacer
+    topSpacerClass:       "iscroll-top-spacer",
+    bottomSpacerClass:    "iscroll-bottom-spacer",
+    scrollerContentClass: "iscroll-content",       // Real content of scroller, not including pull-up, pull-down
+    fixedHeightClass:     "iscroll-fixed",         // Class applied to elements that match fixedHeightSelector
 
     // The widget adds the fixedHeightClass to all elements that match fixedHeightSelector.
     // Don't add the fixedHeightClass to elements manually. Use data-iscroll-fixed instead.
@@ -379,6 +400,12 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
     // But we want to add that padding back inside the scroller. We add a div around the content
     // inside any pull-down/pull-up to replace the padding removed from the wrapper.
     addScrollerPadding: true,
+
+    // Add convenient spacer divs at top and bottom of content.
+    // These initially have no height. They are useful in situations
+    // where padding collapses into the document. For example, can be
+    // used to work with fullscreen header/footer
+    addSpacers: true,
 
     // On some platforms (iOS, for example) we need to scroll to top after orientation change,
     // because the address bar pushed the window down. jQuery Mobile handles this for page links,
@@ -504,6 +531,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
       "scrollerContentClass",
       "pullLabelClass",
       "pullUpSpacerClass",
+      "topSpacerClass",
+      "bottomSpacerClass",
+      "addSpacer",
       "fixedHeightSelector",
       "resizeWrapper",
       "resizeEvents",
@@ -1471,6 +1501,22 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
     }
   },
 
+  //-----------------------------------------
+  // Create spacers
+  //-----------------------------------------
+  _addSpacers: function() {
+    if(this.options.addSpacers) {
+      this.$scrollerContent.before( $( '<div class="' + this.options.topSpacerClass + '"></div>' ) );
+      this.$scrollerContent.after( $( '<div class="' + this.options.bottomSpacerClass + '"></div>' ) );
+    }
+  },
+
+  _undoAddSpacers: function() {
+    this.$wrapper.find(topSpacerClass).remove();
+    this.$wrapper.find(bottomSpacerClass).remove();
+
+  },
+
   // Temporarily change page CSS to make it "visible" so that dimensions can be read.
   // This can be used in any event callback, and so can be used in _create(), since it's called
   // from pageinit event. Because event processing is synchronous, the browser won't render the
@@ -1535,7 +1581,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
     // Merge options from data-iscroll, if present
     $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));
 
-    this._modifyWrapper();                 // Various changes to the wrapper
+    this._modifyWrapper(); // Various changes to the wrapper
 
     // Need this for deferred refresh processing
     this._bindPage("pagebeforeshow", this._pageBeforeShowFunc);
@@ -1543,7 +1589,9 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
     this._setTopOffsetForPullDown();  // If there's a pull-down, set the top offset
     this._setBottomOffsetForPullUp(); // If there's a pull-up, set the bottom offset
     this._resizeWrapper();             // Resize the wrapper to fill available space
-    this._addScrollerPadding();            // Put back padding removed from wrapper
+    this._addScrollerPadding();        // Put back padding removed from wrapper
+    this.$scrollerContent = this.$scroller.find("." + this.options.scrollerContentClass);
+    this._addSpacers();                // Add top/bottom spacers
     this._create_iscroll_object();
     this._merge_from_iscroll_options();     // Merge iscroll options into widget options
     this._restorePageVisibility(hidden);
@@ -1558,7 +1606,6 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
       }
 
     // Refresh on trigger of updatelayout of content
-    this.$scrollerContent = this.$scroller.find("." + this.options.scrollerContentClass);
     this._isvBind(this.$scrollerContent, "updatelayout", this._updateLayoutFunc, "$scrollerContent");
 
     if (this.options.debug && this.options.traceCreateDestroy) {
@@ -1596,6 +1643,7 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
       this._undoExpandScrollerToFillWrapper();
       this._undoModifyPullDown();
       this._undoModifyPullUp();
+      this._undoAddSpacers();
       this._undoAddScrollerPadding();
       this._undoModifyWrapper();
       this.$wrapper.removeClass(this.options.wrapperClass);
@@ -1739,8 +1787,13 @@ dependency:  iScroll 4.1.9 https://github.com/cubiq/iscroll or later (4.2 provid
     // Reset a pull block to the initial state
     _pullSetStateReset: function ($pull, text) {
       if ($pull.is("." + this.options.pullLoadingClass + ", ." + this.options.pullPulledClass)) {
+        var
+          $iconSpan = $pull.find(".iscroll-pull-icon"),
+          $iconSpanClone = $iconSpan.clone();
         $pull.removeClass(this.options.pullPulledClass + " " + this.options.pullLoadingClass);
         this._replacePullText($pull, text);
+        //force animations to stop on iOS, which doesn't seem to want to give up. Stubborn bugger.
+        $iconSpan.replaceWith($iconSpanClone);
         }
       },
 

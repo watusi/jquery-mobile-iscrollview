@@ -1,4 +1,4 @@
-watusi/jquery-mobile-iscrollview, Version 1.2.9
+watusi/jquery-mobile-iscrollview, Version 1.3.0
 ===============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
@@ -20,18 +20,29 @@ Release Notes
 -------------
 Please see releaseNotes.txt for information on changes in this and prior releases.
 
-iScroll Version 4.2.2
+iScroll Version 4.2.5
 ---------------------
-This widget is not yet compatible with iScroll version 4.2.2. Please stick with iScroll 4.2 for
+This widget is not yet compatible with iScroll version 4.2.1 through 4.2.5. Please stick with iScroll 4.2 for
 now. Some investigation and testing is needed due to changes in iScroll event code.
+
+Also, iScroll 4.2.1 introduced and change that may not be desirable. Scrolling continues
+when your finger leaves the wrapper. While this is a nice feature for small scrollers,
+this is not always desirable. It is very odd on desktop browsers, as scroll continues
+when you drag with the mouse, even outside of the browser! It should be optional. (It will be in iScroll5).
 
 Roadmap
 -------
-1.3 - Option to un-enhance widget temporarily (and optionally hide headers/footers) during
+1.4 - Fully implement usejQueryEvents
+
+? - Option to un-enhance widget temporarily (and optionally hide headers/footers) during
 virtual-keyboard input on select devices (iOS first),  to eliminate all form input problems
 when using a virtual keyboard.
 
-1.3 - Better support for collapsible content (scroll on expand if expanded content below window)
+? iOS keyboard handing for inputs. Guess keyboard height based on device/orientation/fullscreen.
+Resize wrapper to fit page in space above keyboard, center focused element.
+
+
+? - Better support for collapsible content (scroll on expand if expanded content below window)
 
 Plug for jquery.mobile.simultaneous-transitions
 -----------------------------------------------
