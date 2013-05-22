@@ -1,6 +1,10 @@
 jquery.mobile.iscrollview
 Release Notes
 
+Version 1.3.1
+- Fixed Issue #100, options given in data-iscroll were merged too late, causing some
+  page-level options (e.g. preventPageScroll) to be ignored if specified in data-iscroll
+
 Version 1.3.0
 - Fixed Issue #59, rotation of arrow icon doesn't always stop
 - Fixed Issue #62 event.layerX, event.layerY deprecation warnings on console

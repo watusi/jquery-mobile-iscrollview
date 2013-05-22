@@ -31,7 +31,7 @@ regexp:false, todo:true */
 
 /*
 jquery.mobile.iscrollview.js
-Version: 1.3.0
+Version: 1.3.1
 jQuery Mobile iScroll4 view widget
 Copyright (c), 2012, 2013 Watusiware Corporation
 Distributed under the MIT License
@@ -567,7 +567,8 @@ function jqmIscrollviewRemoveLayerXYProps(e) {
       "onpullup",
       "onbeforerefresh",
       "onafterrefresh",
-      "fastDestroy"
+      "fastDestroy",
+      "preventPageScroll"
       ],
 
     //-----------------------------------------------------------------------
@@ -1550,6 +1551,9 @@ function jqmIscrollviewRemoveLayerXYProps(e) {
     this.$wrapper = this.element;  // JQuery object containing the element we are creating this widget for
     this.$page = this.$wrapper.parents(":jqmData(role='page')");  // The page containing the wrapper
 
+    // Merge options from data-iscroll, if present
+    $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));
+
     if (this.options.debug && this.options.traceCreateDestroy) {
       this._log("_create() start", then);
       }
@@ -1574,12 +1578,8 @@ function jqmIscrollviewRemoveLayerXYProps(e) {
     // Find pull elements, if present
     this.$pullDown = $("." + this.options.pullDownClass, this.$scroller);
     this._modifyPullDown();
-
     this.$pullUp = $("." + this.options.pullUpClass, this.$scroller);
     this._modifyPullUp();
-
-    // Merge options from data-iscroll, if present
-    $.extend(true, this.options, this.$wrapper.jqmData("iscroll"));
 
     this._modifyWrapper(); // Various changes to the wrapper
 

@@ -1,4 +1,4 @@
-watusi/jquery-mobile-iscrollview, Version 1.3.0
+watusi/jquery-mobile-iscrollview, Version 1.3.1
 ===============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
@@ -1228,8 +1228,6 @@ Normally, this should be true. Set this false if you are NOT using a fixed-heigh
 but instead are using iScroll to scroll an area within a scollable page. If you have
 multiple scrollers on a scrollable page, then set this false for all of them.
 Note that scrolling of the page by dragging inside the scroller is *always* prevented.
-
-This option has no effect unless the `adaptPage` option is also `true`.
 
 Default: `true`
 
