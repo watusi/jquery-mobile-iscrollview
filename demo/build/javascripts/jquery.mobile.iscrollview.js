@@ -31,7 +31,7 @@ regexp:false, todo:true */
 
 /*
 jquery.mobile.iscrollview.js
-Version: 1.3.1
+Version: 1.3.2
 jQuery Mobile iScroll4 view widget
 Copyright (c), 2012, 2013 Watusiware Corporation
 Distributed under the MIT License
@@ -851,7 +851,7 @@ function jqmIscrollviewRemoveLayerXYProps(e) {
   },
 
   _unbindPage: function(types_in) {
-    var types = this._addEventsNamespace(types_in, this._instanceEventNamespace());
+    var types = this._addEventsNamespace(types_in, this._pageEventNamespace());
     this._logWidgetEvent("unbind  $page", types);
     this.$page.unbind(types);
   },
@@ -1561,7 +1561,7 @@ function jqmIscrollviewRemoveLayerXYProps(e) {
     this.createdAt = then;
     this._instanceCount(this._instanceCount() + 1);  // The count of extant instances of this widget on the page
     this.instanceID = this._nextInstanceID();       // The serial ID of this instance of this widget on the page
-    this._nextInstanceID(this._instanceID + 1);
+    this._nextInstanceID(this.instanceID + 1);
     if (this.instanceID === 1) {
       this._pageID(nextPageID);
       nextPageID += 1;

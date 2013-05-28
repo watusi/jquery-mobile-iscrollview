@@ -1,6 +1,10 @@
 jquery.mobile.iscrollview
 Release Notes
 
+Version 1.3.2
+- Fixed Issue #103 Instance IDs are NaN for all but the first scroller on page
+- Fixed Issue #104 _unbindPage() sues wrong namespace
+
 Version 1.3.1
 - Fixed Issue #100, options given in data-iscroll were merged too late, causing some
   page-level options (e.g. preventPageScroll) to be ignored if specified in data-iscroll
