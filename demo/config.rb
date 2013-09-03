@@ -69,6 +69,7 @@ set :slim, {
     @is_ver_11 = false
     @is_ver_12 = false
     @is_ver_13 = false
+    @is_ver_14 = false
     @link_suffix = ''
     @asset_set = 'v10'
   end
@@ -78,6 +79,7 @@ set :slim, {
     @is_ver_11 = true
     @is_ver_12 = false
     @is_ver_13 = false
+    @is_ver_14 = false
     @link_suffix = '_11'
     @asset_set = 'v11'
   end
@@ -87,6 +89,7 @@ set :slim, {
     @is_ver_11 = false
     @is_ver_12 = true
     @is_ver_13 = false
+    @is_ver_14 = false
     @link_suffix = '_12'
     @asset_set = 'v12'
   end
@@ -96,8 +99,19 @@ set :slim, {
     @is_ver_11 = false
     @is_ver_12 = false
     @is_ver_13 = true
+    @is_ver_14 = false
     @link_suffix = '_13'
     @asset_set = 'v13'
+  end
+  page "/#{base}_14.html", :proxy => "/#{base}.html" do
+    @base = base
+    @is_ver_10 = false
+    @is_ver_11 = false
+    @is_ver_12 = false
+    @is_ver_13 = false
+    @is_ver_14 = true
+    @link_suffix = '_14'
+    @asset_set = 'v14'
   end
 end
 

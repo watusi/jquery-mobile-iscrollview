@@ -1,4 +1,4 @@
-watusi/jquery-mobile-iscrollview, Version 1.3.2
+watusi/jquery-mobile-iscrollview, Version 1.3.3
 ===============================================
 JQuery Mobile widget plug-in for easy use of the [iScroll](https://github.com/cubiq/iscroll)
 scroller in [JQuery Mobile](https://github.com/jquery/jquery-mobile)
@@ -488,7 +488,7 @@ The standard way of calling widget functions is by passing a sub-function name
 as a string parameter to the widget function. Any parameters to the function
 should follow.
 
-Note: This method works for all versions of jQuery Mobile from 1.0 to 1.3.x. See
+Note: This method works for all versions of jQuery Mobile from 1.0 to 1.4.x. See
 below, though, for differences when using an alternative way of calling fucntions.
 
 For example, to call the `refresh` function:
