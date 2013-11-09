@@ -1,6 +1,14 @@
 jquery.mobile.iscrollview
 Release Notes
 
+VERSION 1.3.6
+- Removed data-ajax="false" on fastclick links in demo, as these
+  are unnecessary, and might confuse developers. Unrelated to
+  iScroll, the demo is a nice way to demonstrate the radical
+  difference in DOM complexity between jQuery Mobile 1.0-1.3 and
+  1.4. (1.4 creates significantly less complex HTML, yay!)
+  So, remove my own unneeded stuff from the demo.
+
 Version 1.3.5
 - Whoops, I forgot to build the demo again... Demo is built in 1.3.5
   (1.3.4 demo was out of date, missed the merges from 1.3.4)
