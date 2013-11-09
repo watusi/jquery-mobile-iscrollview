@@ -864,7 +864,7 @@ have been initialized. It only means that the iscrollview library is loaded, and
 now set any global options.
 
 It's common to bind to `mobileinit` after jQuery is loaded, but before loading jQuery Mobile.
-You can bind to `iscroll_init` int he same place. Alternately, you can make changes to
+You can bind to `iscroll_init` in the same place. Alternately, you can make changes to
 global options any time after `jquery.mobile.iscrollview` is loaded.
 
 Note: `iscroll_init` is ONLY available as a jQuery Event. There is no corresponding
