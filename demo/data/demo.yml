@@ -27,7 +27,7 @@ stylesheets:
     - jquery.mobile.iscrollview-pull
     - demo
   v14:
-    - 1_4_0/jquery.mobile-1.4.0-alpha.2
+    - 1_4_0/jquery.mobile-1.4.0-rc.1
     - jquery.mobile.iscrollview
     - jquery.mobile.iscrollview-pull
     - demo
@@ -65,7 +65,7 @@ scripts:
   v14:
     - jquery-2.0.3.min
     - demo
-    - jquery.mobile-1.4.0-alpha.2.min
+    - jquery.mobile-1.4.0-rc.1.min
     - iscroll
     - jquery.mobile.iscrollview
     - pull-example
