@@ -31,7 +31,7 @@ regexp:false, todo:true */
 
 /*
 jquery.mobile.iscrollview.js
-Version: 1.3.2
+Version: 1.3.4
 jQuery Mobile iScroll4 view widget
 Copyright (c), 2012, 2013 Watusiware Corporation
 Distributed under the MIT License
@@ -1451,7 +1451,9 @@ function jqmIscrollviewRemoveLayerXYProps(e) {
        hidden = _this._setPageVisible();
         if (_callbackBefore) { _callbackBefore(); }
       _this._triggerWidget("onbeforerefresh");
-      _this.iscroll.refresh();
+      // The if below is reportedly needed when using BackboneJS views when switching
+      // from one view to another. See pull request #80
+      if (_this.iscroll) { _this.iscroll.refresh(); }
       _this._triggerWidget("onafterrefresh");
         if (_callbackAfter) { _callbackAfter(); }
       _this._restorePageVisibility(hidden);
@@ -1513,8 +1515,8 @@ function jqmIscrollviewRemoveLayerXYProps(e) {
   },
 
   _undoAddSpacers: function() {
-    this.$wrapper.find(topSpacerClass).remove();
-    this.$wrapper.find(bottomSpacerClass).remove();
+    this.$wrapper.find(this.options.topSpacerClass).remove();
+    this.$wrapper.find(this.options.bottomSpacerClass).remove();
 
   },
 
