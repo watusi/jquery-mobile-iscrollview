@@ -796,6 +796,16 @@ The maximum Y scroll position. This defines the bottom-most position of the scro
 user can drag past the maximum Y, but then the scroller will snap-back to the maximum
 Y position.
 
+##### Example usage of iscroll getters/setters :
+
+```javascript
+
+   $('.example-wrapper').iscrollview('y'));/* Returns the current y position of the scroller */
+   $('.example-wrapper').iscrollview('minScrollY',-20); /* Sets the min Y scroll position to -20 */
+   $('.example-wrapper').iscrollview('scrollerH');/* Returns the height of the scroller in pixels */
+   $('.example-wrapper').iscrollview('wrapperH');/* Returns the height in pixels of the wrapper*/
+
+```
 ---
 
 Public Members
