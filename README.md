@@ -15,6 +15,40 @@ widget. It follows the *widget-factory-mobile*
 [Widget Factory Pattern](https://github.com/addyosmani/jquery-plugin-patterns).
 
 ---
+**Table of Contents**  *(generated with [DocToc](http://doctoc.herokuapp.com/))*
+
+- [Overview](#user-content-overview)
+	- [Release Notes](#user-content-release-notes)
+	- [What This is For](#user-content-what-this-is-for)
+	- [Usage](#user-content-usage)
+	- [Example](#user-content-example)
+	- [Demo](#user-content-demo)
+- [Technical Details](#user-content-technical-details)
+	- [Plug for jquery.mobile.simultaneous-transitions](#user-content-plug-for-jquerymobilesimultaneous-transitions)
+	- [Fixed and persistent Toolbars (Headers/Footers)](#user-content-fixed-and-persistent-toolbars-headersfooters)
+	- [Dynamic Content](#user-content-dynamic-content)
+	- [Padding Issues](#user-content-padding-issues)
+	- [Pull-to-Refresh](#user-content-pull-to-refresh)
+	- [Calling functions](#user-content-calling-functions)
+	- [Scroll Bars](#user-content-scroll-bars)
+	- [Multiple Scrollers](#user-content-multiple-scrollers)
+	- [Listviews Containing Links](#user-content-listviews-containing-links)
+	- [Caching List Items](#user-content-caching-list-items)
+	- [Mobile Safari Address Bar](#user-content-mobile-safari-address-bar)
+	- [Performance Logging](#user-content-performance-logging)
+	- [Variable names](#user-content-variable-names)
+- [Reference](#user-content-reference)
+	- [Functions](#user-content-functions)
+	- [Public Members](#user-content-public-members)
+	- [Options](#user-content-options)
+	- [Events](#user-content-events)
+- [End Notes](#user-content-end-notes)
+	- [Roadmap](#user-content-roadmap)
+	- [Minified Version](#user-content-minified-version)
+	- [Bugs and Enhancements](#user-content-bugs-and-enhancements)
+	- [License](#user-content-license)
+
+---
 
 # Overview
 ## Release Notes
