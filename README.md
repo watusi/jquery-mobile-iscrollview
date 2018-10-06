@@ -88,7 +88,7 @@ Mobile Safari).
 
 Finally, it supports desktop browsers, and is regularly tested using current versions of
 FireFox, Safari, Chrome, and Opera. It generally works well in these browsers, and fortunately
-hasn't needed a lot of work to acheive compatability.
+hasn't needed a lot of work to achieve compatability.
 
 This widget is *not* well-tested on Android devices, and I very much appreciate assistance in
 ferreting-out Android issues. It is tested regularly in all three modes (Mobile Safari, full-screen,
