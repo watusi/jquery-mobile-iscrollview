@@ -226,7 +226,7 @@ this plugin, jQuery Mobile (1.1.1) will not fade the toolbar during transitions.
 
 Bear in mind, though, that the combination of fixed toolbars and a page size that equals the
 viewport height (the default when using this plugin) may cause unwanted results in some
-enviroments. In particular, in Mobile Safari, this will cause the browser's navigation bar
+environments. In particular, in Mobile Safari, this will cause the browser's navigation bar
 to show during page transitions. So, fixed toolbars are most appropriate only in a native
 environment (such as when using a WebView with PhoneGap.)
 
